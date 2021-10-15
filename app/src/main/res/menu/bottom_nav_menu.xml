@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/mi_music"
+        android:title="@string/music"
+        android:icon="@drawable/ic_round_library_music_24"/>
+
+    <item
+        android:id="@+id/mi_album"
+        android:title="@string/albums"
+        android:icon="@drawable/ic_round_album_24"/>
+
+    <item
+        android:id="@+id/mi_artist"
+        android:title="@string/artists"
+        android:icon="@drawable/ic_round_artists_24"/>
+
+    <item
+        android:id="@+id/mi_search"
+        android:title="@string/search"
+        android:icon="@drawable/ic_round_search_24"/>
+
+    <item
+        android:id="@+id/mi_download"
+        android:title="@string/downloads"
+        android:icon="@drawable/ic_round_download_24"/>
+
+</menu>

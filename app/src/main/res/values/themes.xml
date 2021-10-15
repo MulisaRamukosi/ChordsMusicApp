@@ -1,0 +1,130 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+
+        <item name="bottomNavigationStyle">@style/BottomNavigationStyle</item>
+        <item name="android:textViewStyle">@style/TextAppearance.Regular</item>
+        <item name="textInputStyle">@style/OutlinedTextInputLayout</item>
+        <item name="editTextStyle">@style/TextInputEditTextStyle</item>
+        <item name="circularProgressIndicatorStyle">@style/CircularProgressIndicatorStyle</item>
+        <item name="linearProgressIndicatorStyle">@style/LinearProgressIndicatorStyle</item>
+
+        <!--system-->
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">?android:attr/windowBackground</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="Theme.ChordsMusicApp" parent="Base.Theme">
+
+    </style>
+
+    <style name="TextAppearance.Regular" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/open_sans_regular</item>
+    </style>
+
+    <style name="TextAppearance.Bold" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/open_sans_bold</item>
+    </style>
+
+    <style name="TextAppearance.SemiBold" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/open_sans_semi_bold</item>
+    </style>
+
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="elevation">0dp</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.Regular</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.Regular</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorPrimary">?android:attr/windowBackground</item>
+    </style>
+
+    <style name="TextAppearance.Title.Bold" parent="TextAppearance.Bold">
+        <item name="android:textSize">@dimen/txt_size_title</item>
+    </style>
+
+    <style name="TextAppearance.SubTitle.Bold" parent="TextAppearance.Bold">
+        <item name="android:textSize">@dimen/txt_size_subtitle</item>
+    </style>
+
+    <style name="TextAppearance.SubTitle.SemiBold" parent="TextAppearance.SemiBold">
+        <item name="android:textSize">@dimen/txt_size_subtitle</item>
+    </style>
+
+    <style name="TextAppearance.Caption.Regular" parent="TextAppearance.Regular">
+        <item name="android:textSize">@dimen/txt_size_caption</item>
+    </style>
+
+    <style name="ActionIcon">
+        <item name="tint">@color/secondaryColor</item>
+    </style>
+
+    <style name="ViewOverlay">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:alpha">0.2</item>
+    </style>
+
+    <style name="ShapeAppearance.Radius5dp" parent="">
+        <item name="cornerSize">5dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Radius10dp" parent="">
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="OutlinedTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textAppearance">@style/TextAppearance.Regular</item>
+        <item name="hintTextAppearance">@style/TextAppearance.Regular</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.Regular</item>
+        <item name="errorTextAppearance">@style/TextAppearance.Regular</item>
+        <item name="counterTextAppearance">@style/TextAppearance.Regular</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius2dp</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius2dp</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius2dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius2dp</item>
+        <item name="boxStrokeColor">@color/txt_input_layout_stroke_color</item>
+        <item name="endIconTint">?android:textColorSecondary</item>
+        <item name="hintTextColor">?colorSecondaryVariant</item>
+        <item name="editTextStyle">@style/TextInputEditTextStyle</item>
+    </style>
+
+    <style name="TextInputEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textCursorDrawable">@drawable/bg_edt_cursor</item>
+        <item name="android:textAppearance">@style/TextAppearance.Regular</item>
+    </style>
+
+    <style name="CircularProgressIndicatorStyle" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">?colorSecondary</item>
+        <item name="trackColor">@color/track</item>
+    </style>
+
+    <style name="LinearProgressIndicatorStyle" parent="Widget.MaterialComponents.LinearProgressIndicator">
+        <item name="indicatorColor">?colorSecondary</item>
+        <item name="trackColor">@color/track</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="textAllCaps">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.Title.Bold</item>
+        <item name="shapeAppearanceOverlay">@style/ButtonShapeAppearance</item>
+        <item name="backgroundTint">@color/secondaryColor</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="ButtonShapeAppearance">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+</resources>

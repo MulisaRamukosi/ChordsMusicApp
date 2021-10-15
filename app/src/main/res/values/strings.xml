@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Chords</string>
+    <string name="music">Music</string>
+    <string name="artists">Artists</string>
+    <string name="albums">Albums</string>
+    <string name="downloads">Downloads</string>
+    <string name="desc_play">Play button</string>
+    <string name="desc_queue">Add song to queue</string>
+    <string name="desc_delete_song">Delete song</string>
+    <string name="desc_play_pause">Play and pause button</string>
+    <string name="desc_artist">image of artist</string>
+    <string name="search">Search</string>
+    <string name="Music">Music</string>
+    <string name="search_artist_song">Search artist, song name</string>
+    <string name="search_artist_album">Search artist, album name</string>
+    <string name="error_search_input_required">Search input required</string>
+    <string name="error_search_music">Failed to get music results.</string>
+    <string name="try_again">Try again</string>
+    <string name="okay">Okay</string>
+    <string name="error_permission_reject">The app cannot function without the requested permissions.</string>
+    <string name="request_again">Request Again</string>
+    <string name="trans_album_pic">TranArtistPic</string>
+    <string name="trans_song_name">TransSongName</string>
+    <string name="trans_artist_name">TransArtistName</string>
+    <string name="trans_play_pause">TransPlayPause</string>
+    <string name="trans_seekbar">TransSeekbar</string>
+    <string name="playing_now">Playing Now</string>
+
+    <string-array name="badWords">
+        <item>anal</item>
+        <item>ass</item>
+        <item>bbw</item>
+        <item>bitch</item>
+        <item>butt</item>
+        <item>clit</item>
+        <item>cock</item>
+        <item>fuck</item>
+        <item>juicy</item>
+        <item>milf</item>
+        <item>penis</item>
+        <item>pussy</item>
+        <item>sex</item>
+        <item>suck</item>
+        <item>vagina</item>
+    </string-array>
+
+</resources>

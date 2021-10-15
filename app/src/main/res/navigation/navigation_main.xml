@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/mi_music"
+    android:id="@+id/navigation_main">
+
+    <fragment
+        android:id="@+id/mi_music"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.MusicFragment"
+        android:label="@string/music"
+        tools:layout="@layout/fragment_music"/>
+
+    <fragment
+        android:id="@+id/mi_album"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.AlbumFragment"
+        android:label="@string/albums"
+        tools:layout="@layout/fragment_album"/>
+
+    <fragment
+        android:id="@+id/mi_artist"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.ArtistFragment"
+        android:label="@string/artists"
+        tools:layout="@layout/fragment_artist"/>
+
+    <fragment
+        android:id="@+id/mi_search"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.SearchFragment"
+        android:label="@string/search"
+        tools:layout="@layout/fragment_search"/>
+
+    <fragment
+        android:id="@+id/mi_download"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.DownloadFragment"
+        android:label="@string/downloads"
+        tools:layout="@layout/fragment_download"/>
+
+
+
+</navigation>

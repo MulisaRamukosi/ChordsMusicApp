@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/ll_options"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/navigation_main"/>
+
+    <LinearLayout
+        android:id="@+id/ll_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <LinearLayout
+            android:id="@+id/ll_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/mp_8dp"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_album"
+                    android:layout_width="@dimen/mini_pic_size"
+                    android:layout_height="@dimen/mini_pic_size"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearance="@style/ShapeAppearance.Radius5dp"
+                    android:transitionName="@string/trans_album_pic"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginHorizontal="@dimen/mp_8dp">
+
+                    <TextView
+                        android:id="@+id/tv_song_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Song Name"
+                        android:transitionName="@string/trans_song_name"/>
+
+                    <TextView
+                        android:id="@+id/tv_song_artist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Artist"
+                        style="@style/TextAppearance.Caption.Regular"
+                        android:transitionName="@string/trans_artist_name"/>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_play_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_round_play_arrow_24"
+                    android:contentDescription="@string/desc_play_pause"
+                    style="@style/ActionIcon"
+                    android:transitionName="@string/trans_play_pause"/>
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_song_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:transitionName="@string/trans_seekbar"/>
+
+        </LinearLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu"/>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

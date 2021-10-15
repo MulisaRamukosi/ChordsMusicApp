@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mp_32dp"
+        android:gravity="center"
+        android:text="@string/playing_now"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/mp_16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_album"
+            android:layout_width="@dimen/large_pic_size"
+            android:layout_height="@dimen/large_pic_size"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:transitionName="@string/trans_album_pic"
+            app:shapeAppearance="@style/ShapeAppearance.Radius10dp" />
+
+        <TextView
+            android:id="@+id/tv_song_name"
+            style="@style/TextAppearance.Title.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_8dp"
+            android:textSize="@dimen/txt_size_large"
+            android:transitionName="@string/trans_song_name" />
+
+        <TextView
+            android:id="@+id/tv_song_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:transitionName="@string/trans_artist_name" />
+
+        <SeekBar
+            android:id="@+id/sb_song_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_32dp"
+            android:transitionName="@string/trans_seekbar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/mp_8dp"
+            android:layout_marginTop="@dimen/mp_4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_curr_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_song_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/mp_16dp">
+
+            <ImageView
+                android:id="@+id/iv_prev"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_round_skip_previous_24"
+                android:contentDescription="@null"
+                android:transitionName="@string/trans_play_pause"/>
+
+            <ImageView
+                android:id="@+id/iv_play_pause"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_round_play_arrow_24"
+                android:contentDescription="@string/desc_play_pause"
+                android:layout_marginHorizontal="@dimen/mp_32dp"
+                style="@style/ActionIcon"
+                android:transitionName="@string/trans_play_pause"/>
+
+            <ImageView
+                android:id="@+id/iv_next"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_round_skip_next_24"
+                android:contentDescription="@null"
+                android:transitionName="@string/trans_play_pause"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
