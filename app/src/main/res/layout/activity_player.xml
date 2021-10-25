@@ -92,8 +92,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_round_skip_previous_24"
-                android:contentDescription="@null"
-                android:transitionName="@string/trans_play_pause"/>
+                android:contentDescription="@null"/>
 
             <ImageView
                 android:id="@+id/iv_play_pause"
@@ -110,8 +109,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_round_skip_next_24"
-                android:contentDescription="@null"
-                android:transitionName="@string/trans_play_pause"/>
+                android:contentDescription="@null"/>
 
         </LinearLayout>
 
