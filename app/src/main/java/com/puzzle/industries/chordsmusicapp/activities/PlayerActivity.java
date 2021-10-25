@@ -49,7 +49,9 @@ public class PlayerActivity extends BaseActivity {
 
             mBinding.tvSongName.setText(event.getCurrentSong().getTitle());
             mBinding.tvSongArtist.setText(event.getCurrentSong().getName());
+            mBinding.sbSongProgress.setMax(event.getSongDurationInMilis());
             mBinding.sbSongProgress.setProgress(event.getCurrProgressInMilis());
+            setPlayPauseButtonState(event.isPlaying());
             Glide.with(this).load(event.getCurrentAlbum().getCover_url()).into(mBinding.ivAlbum);
         }
 
