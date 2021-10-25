@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
@@ -57,26 +58,15 @@ public class MusicRVAdapter extends RecyclerView.Adapter<MusicRVAdapter.ViewHold
         if (isCurrentlyPlaying){
             holder.mBinding.tvName.setTextColor(ContextCompat.getColor(ctx, R.color.secondaryLightColor));
             holder.mBinding.tvDetails.setTextColor(ContextCompat.getColor(ctx, R.color.secondaryLightColor));
-            holder.mBinding.ivPlayPause.setImageDrawable(ContextCompat.getDrawable(
-                    ctx, mSongInfo.isPlaying() ? R.drawable.ic_round_pause_24 : R.drawable.ic_round_play_arrow_24));
         }
 
         holder.mBinding.tvName.setText(song.getTitle());
         holder.mBinding.tvDetails.setText(String.format("%s • %s", artist.getName(), album.getTitle()));
 
-        //TODO: set click listener for item
         holder.mBinding.getRoot().setOnClickListener(v -> {
-            if (holder.mBinding.llOptions.getVisibility() == View.VISIBLE){
-                holder.mBinding.llOptions.setVisibility(View.GONE);
-            }
-            else{
-                holder.mBinding.llOptions.setVisibility(View.VISIBLE);
-            }
-        });
-
-        holder.mBinding.ivPlayPause.setOnClickListener(v -> {
             EventBus.getDefault().post(new PlayPauseSongEvent(song.getId()));
         });
+
     }
 
     @Override
@@ -95,10 +85,11 @@ public class MusicRVAdapter extends RecyclerView.Adapter<MusicRVAdapter.ViewHold
             notifyItemChanged(index);
         }
         else if (mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()){
-            final int oldPos = mSongs.indexOf(songInfo.getCurrentSong());
+            final int oldPos = mSongs.indexOf(mSongInfo.getCurrentSong());
             mSongInfo = null;
             notifyItemChanged(oldPos);
-            updateSongInfo(songInfo);
+
+            Chords.applicationHandler.postDelayed(() -> updateSongInfo(songInfo), 100);
         }
     }
 
