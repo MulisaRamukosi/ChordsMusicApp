@@ -17,10 +17,13 @@ import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemMusicBinding;
+import com.puzzle.industries.chordsmusicapp.events.PlayPauseSongEvent;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -72,10 +75,7 @@ public class MusicRVAdapter extends RecyclerView.Adapter<MusicRVAdapter.ViewHold
         });
 
         holder.mBinding.ivPlayPause.setOnClickListener(v -> {
-            final Intent i = new Intent(ctx, MusicPlayerService.class);
-            i.setAction(Constants.ACTION_PLAY_PAUSE);
-            i.putExtra(Constants.KEY_SONG_ID, song.getId());
-            ctx.startService(i);
+            EventBus.getDefault().post(new PlayPauseSongEvent(song.getId()));
         });
     }
 

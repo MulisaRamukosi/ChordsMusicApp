@@ -24,10 +24,15 @@ import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityMainBinding;
+import com.puzzle.industries.chordsmusicapp.events.PlayPauseSongEvent;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,16 +57,7 @@ public class MainActivity extends BaseActivity {
 
     private void init(){
         initNavigation();
-        initMusicList();
         initPlayer();
-    }
-
-    private void initMusicList(){
-        final Intent i = new Intent(this, MusicPlayerService.class);
-        i.setAction(Constants.ACTION_SET_LIST);
-        final ArrayList<TrackArtistAlbumEntity> songs = new ArrayList<>(MusicLibraryService.getInstance().getMSongs());
-        i.putParcelableArrayListExtra(Constants.KEY_SONG_LIST, songs);
-        startService(i);
     }
 
     private void initPlayer() {
@@ -84,12 +80,9 @@ public class MainActivity extends BaseActivity {
 
         mBinding.ivPlayPause.setOnClickListener(v -> {
             boolean isPlaying = mSongInfo != null && mSongInfo.isPlaying();
-            final Intent i = new Intent(this, MusicPlayerService.class);
-
-            i.setAction(Constants.ACTION_PLAY_PAUSE);
-            i.putExtra(Constants.KEY_SONG_ID, mSongInfo.getCurrentSong().getId());
-            startService(i);
-
+            if (mSongInfo != null){
+                mMusicPlayerService.playOrPause(mSongInfo.getCurrentSong().getId());
+            }
             setPlayPauseButtonState(!isPlaying);
         });
 
@@ -97,7 +90,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser){
-
+                    mMusicPlayerService.seekTo(progress);
                 }
             }
 
@@ -164,6 +157,25 @@ public class MainActivity extends BaseActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMusicUpdatedReceiver);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayPauseEvent(PlayPauseSongEvent event){
+        if (mMusicPlayerService != null){
+            mMusicPlayerService.playOrPause(event.getId());
+        }
     }
 
     private void updateState(SongInfoProgressEvent songInfo){
