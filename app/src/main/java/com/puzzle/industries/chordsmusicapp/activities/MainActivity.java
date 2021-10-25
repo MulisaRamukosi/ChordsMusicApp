@@ -43,6 +43,7 @@ public class MainActivity extends BaseActivity {
     private NavHostFragment mNavHost;
     private BroadcastReceiver mMusicUpdatedReceiver;
     private SongInfoProgressEvent mSongInfo;
+    private boolean mCurrentPlayingState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,6 +149,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setPlayPauseButtonState(boolean isPlaying){
+        mCurrentPlayingState = isPlaying;
         mBinding.ivPlayPause.setImageDrawable(ContextCompat.getDrawable(this,
                 isPlaying ? R.drawable.ic_round_pause_24 : R.drawable.ic_round_play_arrow_24
         ));
@@ -179,6 +181,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateState(SongInfoProgressEvent songInfo){
+        mSongInfo.setCurrProgressInMilis(songInfo.getCurrProgressInMilis());
+        if (mCurrentPlayingState != songInfo.isPlaying()) {
+            setPlayPauseButtonState(songInfo.isPlaying());
+            mSongInfo.setPlaying(songInfo.isPlaying());
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mBinding.sbSongProgress.setProgress(songInfo.getCurrProgressInMilis(), true);
         }
