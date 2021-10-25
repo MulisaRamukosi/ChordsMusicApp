@@ -11,8 +11,10 @@ import androidx.work.Operation;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import com.airbnb.lottie.LottieDrawable;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.puzzle.industries.chordsmusicapp.BaseActivity;
+import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivitySplashBinding;
@@ -45,6 +47,7 @@ public class SplashActivity extends BaseActivity {
 
     private void setupLoadingAnimation(){
         mBinding.animation.setAnimation(isInDarkMode() ? R.raw.anim_music_dark : R.raw.anim_music_light);
+        mBinding.animation.setRepeatCount(LottieDrawable.INFINITE);
         mBinding.animation.playAnimation();
     }
 
@@ -58,7 +61,7 @@ public class SplashActivity extends BaseActivity {
 
         result.addListener(() -> {
             if (result.isDone()){
-                new Handler(getMainLooper()).postDelayed(() -> {
+                Chords.applicationHandler.postDelayed(() -> {
                     initMusicPlayerServiceSongList();
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
