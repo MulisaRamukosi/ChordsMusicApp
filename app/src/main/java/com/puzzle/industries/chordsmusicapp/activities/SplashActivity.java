@@ -1,6 +1,8 @@
 package com.puzzle.industries.chordsmusicapp.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -30,11 +32,20 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
 
         mBinding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        setupLoadingAnimation();
+    }
 
+    private boolean isInDarkMode(){
+        return (Resources.getSystem().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private void setupLoadingAnimation(){
+        mBinding.animation.setAnimation(isInDarkMode() ? R.raw.anim_music_dark : R.raw.anim_music_light);
+        mBinding.animation.playAnimation();
     }
 
     private void initMusicLibrary(){
