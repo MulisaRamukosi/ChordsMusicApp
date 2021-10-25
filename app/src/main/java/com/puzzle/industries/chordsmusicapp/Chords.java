@@ -13,10 +13,7 @@ import com.puzzle.industries.chordsmusicapp.database.ChordsMusicDB;
 import com.puzzle.industries.chordsmusicapp.database.Constants;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+
 
 public class Chords extends Application {
 
@@ -41,14 +38,5 @@ public class Chords extends Application {
         applicationHandler = new Handler(this.getApplicationContext().getMainLooper());
         startService(new Intent(this, MusicPlayerService.class));
 
-        /*File[] f = getExternalMediaDirs();
-        File test = new File(f[0], "test.txt");
-        if (!test.exists()) {
-            try {
-                test.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
     }
 }
