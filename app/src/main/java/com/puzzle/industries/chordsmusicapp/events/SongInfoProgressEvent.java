@@ -18,7 +18,7 @@ public class SongInfoProgressEvent implements Parcelable {
     private final TrackArtistAlbumEntity currentSong;
     private final ArtistEntity currentArtist;
     private final AlbumArtistEntity currentAlbum;
-    private final int currProgressInMilis;
+    @Setter private int currProgressInMilis;
     private final int songDurationInMilis;
     @Setter private boolean isPlaying;
 
