@@ -67,8 +67,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindMusicService();
     }
 
@@ -87,7 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
     public void onServiceConnected(ComponentName name, IBinder service) {
         final MusicPlayerService.MusicPlayerBinder binder = (MusicPlayerService.MusicPlayerBinder) service;
         mMusicPlayerService = binder.getService();
-        Log.d("MUSIC_PLAYER_SERVICE", "connected");
     }
 
     @Override
