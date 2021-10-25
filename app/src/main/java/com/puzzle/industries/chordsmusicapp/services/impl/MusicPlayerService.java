@@ -59,23 +59,6 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //switch (intent.getAction()){
-
-            /*case Constants.ACTION_SET_LIST:
-                final List<TrackArtistAlbumEntity> songList = intent.getParcelableArrayListExtra(Constants.KEY_SONG_LIST);
-                setPlayList(songList);
-                break;*/
-
-            /*case Constants.ACTION_PLAY_PAUSE:
-                final int id = intent.getIntExtra(Constants.KEY_SONG_ID, -1);
-                playOrPause(id);
-                break;*/
-
-            /*case Constants.ACTION_SEEK_TO:
-                final int progress = intent.getIntExtra(Constants.KEY_SEEK, 0);
-                seekTo(progress);
-                break;*/
-        //}
         return START_STICKY;
     }
 
@@ -117,8 +100,6 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
         }
         mMediaPlayer.reset();
         try {
-
-            File file = new File(song.getLocation());
             mMediaPlayer.setDataSource(song.getLocation());
             mMediaPlayer.prepare();
             mMediaPlayer.start();
