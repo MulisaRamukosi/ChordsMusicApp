@@ -1,11 +1,14 @@
 package com.puzzle.industries.chordsmusicapp.activities;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -20,6 +23,7 @@ import com.puzzle.industries.chordsmusicapp.databinding.ActivityPlayerBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.helpers.DurationHelper;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.ArtistDataStruct;
+import com.puzzle.industries.chordsmusicapp.services.IMusicPlayerService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
@@ -52,15 +56,11 @@ public class PlayerActivity extends BaseActivity {
         mBinding.ivPlayPause.setOnClickListener(v -> {
             boolean isPlaying = mSongInfo != null && mSongInfo.isPlaying();
             setPlayPauseButtonState(!isPlaying);
-            final Intent i = new Intent(this, MusicPlayerService.class);
-
-            i.setAction(Constants.ACTION_PLAY_PAUSE);
-            i.putExtra(Constants.KEY_SONG_ID, mSongInfo.getCurrentSong().getId());
-            startService(i);
-
-
+            mMusicPlayerService.playOrPause(mSongInfo.getCurrentSong().getId());
         });
     }
+
+
 
     @Override
     public void onResume() {

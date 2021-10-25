@@ -14,14 +14,14 @@ import androidx.work.WorkRequest;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.puzzle.industries.chordsmusicapp.BaseActivity;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivitySplashBinding;
+import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.workers.FetchAlbumsWorker;
 import com.puzzle.industries.chordsmusicapp.workers.FetchArtistsWorker;
 import com.puzzle.industries.chordsmusicapp.workers.FetchSongsWorker;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
@@ -59,11 +59,17 @@ public class SplashActivity extends BaseActivity {
         result.addListener(() -> {
             if (result.isDone()){
                 new Handler(getMainLooper()).postDelayed(() -> {
+                    initMusicPlayerServiceSongList();
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
                 }, 3000);
             }
         }, Executors.newSingleThreadExecutor());
+    }
+
+    private void initMusicPlayerServiceSongList(){
+        final ArrayList<TrackArtistAlbumEntity> songs = new ArrayList<>(MusicLibraryService.getInstance().getMSongs());
+        mMusicPlayerService.setPlayList(songs);
     }
 
     @Override

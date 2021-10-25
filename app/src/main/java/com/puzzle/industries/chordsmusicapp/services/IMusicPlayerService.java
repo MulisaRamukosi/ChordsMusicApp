@@ -16,5 +16,6 @@ public interface IMusicPlayerService {
     TrackArtistAlbumEntity getCurrentSong();
     int getTotalDuration();
     void seekTo(int pos);
+    void playOrPause(int id);
 
 }

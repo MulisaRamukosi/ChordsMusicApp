@@ -28,11 +28,11 @@ public interface Constants {
     String ACTION_AQ = "AQ";
     String KEY_MUSIC_UPDATE = "UM";
     String KEY_MUSIC_PROGRESS = "MP";
-    String ACTION_PLAY_PAUSE = "PP";
-    String KEY_SONG_ID = "KSI";
-    String ACTION_SET_LIST = "ASL";
+    //String ACTION_PLAY_PAUSE = "PP";
+    //String KEY_SONG_ID = "KSI";
+    //String ACTION_SET_LIST = "ASL";
     String KEY_SONG_LIST = "KSL";
     String KEY_ALBUM = "KA";
-    String ACTION_SEEK_TO = "AST";
+    //String ACTION_SEEK_TO = "AST";
     String KEY_SEEK = "K_S";
 }

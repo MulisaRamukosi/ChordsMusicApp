@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
@@ -25,11 +26,24 @@ import java.util.stream.Collectors;
 
 public class MusicPlayerService extends Service implements IMusicPlayerService, MediaPlayer.OnCompletionListener {
 
+    private final IBinder BINDER = new MusicPlayerBinder();
     private List<TrackArtistAlbumEntity> mPlayList;
     private MediaPlayer mMediaPlayer;
     private TrackArtistAlbumEntity mCurrentSong;
     private ArtistEntity mCurrentArtist;
     private AlbumArtistEntity mCurrentAlbum;
+
+    public class MusicPlayerBinder extends Binder{
+        public MusicPlayerService getService(){
+            return MusicPlayerService.this;
+        }
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return BINDER;
+    }
 
     @Override
     public void onCreate() {
@@ -45,27 +59,28 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        switch (intent.getAction()){
+        //switch (intent.getAction()){
 
-            case Constants.ACTION_SET_LIST:
+            /*case Constants.ACTION_SET_LIST:
                 final List<TrackArtistAlbumEntity> songList = intent.getParcelableArrayListExtra(Constants.KEY_SONG_LIST);
                 setPlayList(songList);
-                break;
+                break;*/
 
-            case Constants.ACTION_PLAY_PAUSE:
+            /*case Constants.ACTION_PLAY_PAUSE:
                 final int id = intent.getIntExtra(Constants.KEY_SONG_ID, -1);
                 playOrPause(id);
-                break;
+                break;*/
 
-            case Constants.ACTION_SEEK_TO:
+            /*case Constants.ACTION_SEEK_TO:
                 final int progress = intent.getIntExtra(Constants.KEY_SEEK, 0);
                 seekTo(progress);
-                break;
-        }
-        return super.onStartCommand(intent, flags, startId);
+                break;*/
+        //}
+        return START_STICKY;
     }
 
-    private void playOrPause(int id){
+    @Override
+    public void playOrPause(int id){
         if (mCurrentSong == null || id != mCurrentSong.getId()){
             playSong(id);
         }
@@ -104,10 +119,6 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
         try {
 
             File file = new File(song.getLocation());
-            boolean exists = file.exists();
-            if (exists){
-                file.getPath();
-            }
             mMediaPlayer.setDataSource(song.getLocation());
             mMediaPlayer.prepare();
             mMediaPlayer.start();
@@ -161,12 +172,6 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     @Override
     public void seekTo(int pos) {
         mMediaPlayer.seekTo(pos);
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     @Override
