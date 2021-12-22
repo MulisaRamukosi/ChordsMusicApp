@@ -14,12 +14,14 @@ public class AlbumArtistEntity implements Parcelable {
     private final int id;
     private final String title;
     private final String cover_url;
+    private final int artist_id;
     private final String name;
 
     protected AlbumArtistEntity(Parcel in) {
         id = in.readInt();
         title = in.readString();
         cover_url = in.readString();
+        artist_id = in.readInt();
         name = in.readString();
     }
 
@@ -50,6 +52,7 @@ public class AlbumArtistEntity implements Parcelable {
         dest.writeInt(id);
         dest.writeString(title);
         dest.writeString(cover_url);
+        dest.writeInt(artist_id);
         dest.writeString(name);
     }
 }
