@@ -19,7 +19,6 @@ public class MusicVM extends ViewModel {
     private final DeezerApiCall DEEZER_API = DeezerApiCall.getInstance();
 
     private MutableLiveData<DeezerTrackDataModel> mMusic;
-    private MutableLiveData<List<TrackArtistAlbumEntity>> mLocalMusic;
 
     public LiveData<DeezerTrackDataModel> getMusicResultObservable(){
         if (mMusic == null){
