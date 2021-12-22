@@ -7,7 +7,11 @@
     <color name="secondaryLightColor">#60ad5e</color>
     <color name="secondaryDarkColor">#005005</color>
     <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#FFFFFF</color>
 
     <color name="track">#484848</color>
+    <color name="light_grey">#CFCFCF</color>
+    <color name="red">#D32F2F</color>
+    <color name="blue">#303F9F</color>
+    <color name="white">#FFFFFF</color>
 </resources>
