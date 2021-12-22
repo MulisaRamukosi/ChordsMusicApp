@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mp_16dp"
+        android:gravity="center_vertical"
+        style="@style/TextAppearance.SubTitle.SemiBold"
+        tools:text="text"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/play"
+        app:icon="@drawable/ic_round_play_arrow_24"
+        style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add_to_queue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_to_queue"
+        app:icon="@drawable/ic_round_add_to_queue_24"
+        style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        app:icon="@drawable/ic_round_delete_24"
+        style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/lpi_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"/>
+
+</LinearLayout>
