@@ -58,7 +58,13 @@ public class MainActivity extends BaseActivity {
 
     private void init(){
         initNavigation();
-        initPlayer();
+        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        executorService.scheduleAtFixedRate(() -> {
+            if (getMusicPlayerService() != null){
+                initPlayer();
+                executorService.shutdown();
+            }
+        }, 0, 200, TimeUnit.MILLISECONDS);
     }
 
     private void initPlayer() {
