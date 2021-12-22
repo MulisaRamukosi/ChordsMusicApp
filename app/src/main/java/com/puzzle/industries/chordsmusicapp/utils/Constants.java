@@ -17,22 +17,27 @@ public interface Constants {
     int STATE_SONG_PAGE = 2;
     int STATE_PRIOR_DOWNLOAD = 3;
 
+    int DEFAULT_ARTIST_ID = -1;
+
     String URL_SONG = "SU";
+
+    String ACTION_DOWNLOAD_PROGRESS = "KIF";
+    String ACTION_MUSIC_ADDED_TO_LIST = "MQ";
+    String ACTION_ALBUM_ADDED_TO_LIST = "ABQ";
+    String ACTION_ARTIST_ADDED_TO_LIST = "AQ";
+    String ACTION_MUSIC_PROGRESS_UPDATE = "UM";
+    String ACTION_MUSIC_DELETED = "AMD";
+    String ACTION_ALBUM_DELETED = "AAD";
+    String ACTION_ARTIST_DELETED = "AARD";
+    String ACTION_DOWNLOAD_STATE = "ADS";
 
     String KEY_DOWNLOAD_PROGRESS = "KDP";
     String KEY_SONG = "KS";
-
-    String ACTION_IF = "KIF";
-    String ACTION_MUSIC_ADDED_TO_QUEUE = "MQ";
-    String ACTION_ABQ = "ABQ";
-    String ACTION_AQ = "AQ";
-    String KEY_MUSIC_UPDATE = "UM";
     String KEY_MUSIC_PROGRESS = "MP";
-    //String ACTION_PLAY_PAUSE = "PP";
-    //String KEY_SONG_ID = "KSI";
-    //String ACTION_SET_LIST = "ASL";
-    String KEY_SONG_LIST = "KSL";
+    String KEY_MEDIA_TYPE = "KMT";
     String KEY_ALBUM = "KA";
-    //String ACTION_SEEK_TO = "AST";
-    String KEY_SEEK = "K_S";
+    String KEY_ARTIST = "KAR";
+    String KEY_ARTIST_ID = "KAI";
+    String KEY_MEDIA_ID = "KSID";
+    String KEY_DOWNLOAD_STATE = "KDS";
 }
