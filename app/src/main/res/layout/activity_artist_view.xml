@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_artist_view_scene">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_artist"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/trans_artist_pic"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/bg_artist" />
+
+    <View
+        android:id="@+id/view"
+        style="@style/ViewOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_artist"
+        app:layout_constraintLeft_toLeftOf="@id/iv_artist"
+        app:layout_constraintRight_toRightOf="@id/iv_artist"
+        app:layout_constraintTop_toTopOf="@id/iv_artist" />
+
+    <TextView
+        android:id="@+id/tv_artist_name"
+        style="@style/TextAppearance.Title.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mp_8dp"
+        android:layout_marginBottom="@dimen/mp_8dp"
+        android:textColor="@android:color/white"
+        android:transitionName="@string/trans_artist_name"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_artist"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="Artist Name" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/iv_artist" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tl" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
