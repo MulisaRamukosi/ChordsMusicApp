@@ -14,6 +14,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
 
     private final int id;
     private final String title;
+    private final int disk_number;
     private final String location;
     private final String name;
     private final int artist_id;
