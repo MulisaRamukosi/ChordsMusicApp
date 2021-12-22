@@ -1,4 +1,4 @@
-package com.puzzle.industries.chordsmusicapp.models.adapters;
+package com.puzzle.industries.chordsmusicapp.base;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
