@@ -25,6 +25,26 @@
     <string name="trans_play_pause">TransPlayPause</string>
     <string name="trans_seekbar">TransSeekbar</string>
     <string name="playing_now">Playing Now</string>
+    <string name="song_delete_add_to_queue">Swipe song left or right for options</string>
+    <string name="delete">Delete</string>
+    <string name="trans_album_name">TransAlbumName</string>
+    <string name="trans_artist_pic">TransArtistPic</string>
+    <string name="songs">Songs</string>
+    <string name="play">Play</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="msg_song_s_added_to_queue">Song(s) added to queue.</string>
+    <string name="warning_delete_song">Are you sure you want to delete the song %1$s?</string>
+    <string name="warning_delete_album">Are you sure you want to delete the album %1$s? This will delete every song in this album</string>
+    <string name="warning_delete_artist">Are you sure you want to delete the artist %1$s? This will delete every song and album of the artist</string>
+    <string name="action_yes_delete">Yes delete</string>
+    <string name="error_delete_song">Failed to delete song.</string>
+    <string name="error_delete_album">Failed to delete album.</string>
+    <string name="error_delete_artist">Failed to delete artist.</string>
+    <string name="deleting">Deleting…</string>
+    <string name="search_song_album_artist_name">Search Song, artist or album name</string>
+    <string name="library">Library</string>
+    <string name="playlist">Playlists</string>
+
 
     <string-array name="badWords">
         <item>anal</item>
