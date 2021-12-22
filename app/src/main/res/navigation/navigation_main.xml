@@ -2,26 +2,20 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/mi_music"
+    app:startDestination="@id/mi_library"
     android:id="@+id/navigation_main">
 
     <fragment
-        android:id="@+id/mi_music"
-        android:name="com.puzzle.industries.chordsmusicapp.fragments.MusicFragment"
-        android:label="@string/music"
-        tools:layout="@layout/fragment_music"/>
+        android:id="@+id/mi_library"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.LibraryFragment"
+        android:label="@string/library"
+        tools:layout="@layout/fragment_library"/>
 
     <fragment
-        android:id="@+id/mi_album"
-        android:name="com.puzzle.industries.chordsmusicapp.fragments.AlbumFragment"
-        android:label="@string/albums"
-        tools:layout="@layout/fragment_album"/>
-
-    <fragment
-        android:id="@+id/mi_artist"
-        android:name="com.puzzle.industries.chordsmusicapp.fragments.ArtistFragment"
-        android:label="@string/artists"
-        tools:layout="@layout/fragment_artist"/>
+        android:id="@+id/mi_playlist"
+        android:name="com.puzzle.industries.chordsmusicapp.fragments.PlaylistFragment"
+        android:label="@string/playlist"
+        tools:layout="@layout/fragment_playlists"/>
 
     <fragment
         android:id="@+id/mi_search"
