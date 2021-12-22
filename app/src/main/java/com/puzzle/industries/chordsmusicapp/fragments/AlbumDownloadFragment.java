@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.puzzle.industries.chordsmusicapp.BaseFragment;
+import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadSearchBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.AlbumResultRVAdapter;
@@ -66,7 +66,7 @@ public class AlbumDownloadFragment extends BaseFragment {
             mAdapter = new AlbumResultRVAdapter();
             mBinding.rvResults.setAdapter(mAdapter);
         }
-        mAdapter.setData(results);
+        mAdapter.setData(results.getData());
     }
 
     private void searchForAlbum(String songName) {
