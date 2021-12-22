@@ -58,6 +58,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
+        dest.writeInt(disk_number);
         dest.writeString(location);
         dest.writeString(name);
         dest.writeInt(artist_id);
