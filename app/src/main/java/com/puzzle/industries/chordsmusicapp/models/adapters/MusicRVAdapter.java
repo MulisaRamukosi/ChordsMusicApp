@@ -1,106 +1,93 @@
 package com.puzzle.industries.chordsmusicapp.models.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseMediaRVAdapter;
+import com.puzzle.industries.chordsmusicapp.base.BaseViewHolder;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemMusicBinding;
-import com.puzzle.industries.chordsmusicapp.events.PlayPauseSongEvent;
-import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
+import com.puzzle.industries.chordsmusicapp.events.PlaySongEvent;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
-import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
+public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackArtistAlbumEntity> {
 
-public class MusicRVAdapter extends RecyclerView.Adapter<MusicRVAdapter.ViewHolder> {
-
-    private final List<TrackArtistAlbumEntity> mSongs;
-    private SongInfoProgressEvent mSongInfo;
-
-    public MusicRVAdapter(List<TrackArtistAlbumEntity> mSongs) {
-        this.mSongs = mSongs;
+    public MusicRVAdapter(List<TrackArtistAlbumEntity> mediaList) {
+        this.mediaList = mediaList;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BaseViewHolder<ItemMusicBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final ItemMusicBinding binding = ItemMusicBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(binding);
+        return new BaseViewHolder<>(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BaseViewHolder<ItemMusicBinding> holder, int position) {
         final Context ctx = holder.itemView.getContext();
         final MusicLibraryService musicLibrary = MusicLibraryService.getInstance();
-        final TrackArtistAlbumEntity song = mSongs.get(position);
+        final TrackArtistAlbumEntity song = mediaList.get(position);
         final ArtistEntity artist = musicLibrary.getArtistById(song.getArtist_id());
         final AlbumArtistEntity album = musicLibrary.getAlbumById(song.getAlbum_id());
-        final boolean isCurrentlyPlaying = mSongInfo != null && song.getId() == mSongInfo.getCurrentSong().getId();
+        final boolean isCurrentlyPlaying = currentMediaItem != null && song.getId() == currentMediaItem.getId();
 
-        if (isCurrentlyPlaying){
-            holder.mBinding.tvName.setTextColor(ContextCompat.getColor(ctx, R.color.secondaryLightColor));
-            holder.mBinding.tvDetails.setTextColor(ContextCompat.getColor(ctx, R.color.secondaryLightColor));
-        }
+        final int txtColor = ContextCompat.getColor(ctx, isCurrentlyPlaying
+                ? R.color.secondaryLightColor:
+                R.color.primaryTextColor);
 
+        holder.mBinding.tvName.setTextColor(txtColor);
+        holder.mBinding.tvDetails.setTextColor(txtColor);
         holder.mBinding.tvName.setText(song.getTitle());
         holder.mBinding.tvDetails.setText(String.format("%s • %s", artist.getName(), album.getTitle()));
 
-        holder.mBinding.getRoot().setOnClickListener(v -> {
-            EventBus.getDefault().post(new PlayPauseSongEvent(song.getId()));
+        holder.mBinding.getRoot().setOnLongClickListener(view -> {
+            callback.mediaItemLongClicked(song, mediaList.stream().mapToInt(TrackArtistAlbumEntity::getId).boxed().collect(Collectors.toList()));
+            return true;
         });
+        /*
+         * Event subscriber = BaseMediaActivity
+         * */
+        holder.mBinding.getRoot().setOnClickListener(v -> EventBus
+                .getDefault()
+                .post(new PlaySongEvent(song.getId(), this.mediaList.stream()
+                        .mapToInt(TrackArtistAlbumEntity::getId)
+                        .boxed()
+                        .collect(Collectors.toList()))));
+    }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void showSearchResults(String word) {
+        if (word.isEmpty()) {
+            mediaList.clear();
+            notifyDataSetChanged();
+            return;
+        }
+
+        mediaList.clear();
+        mediaList.addAll(MUSIC_LIBRARY.getSongs().stream().filter(trackArtistAlbumEntity -> meetsFilterRequirements(trackArtistAlbumEntity, word)).collect(Collectors.toList()));
+        notifyDataSetChanged();
     }
 
     @Override
-    public int getItemCount() {
-        return mSongs.size();
+    protected boolean meetsFilterRequirements(TrackArtistAlbumEntity trackArtistAlbumEntity, String word) {
+        return trackArtistAlbumEntity.getFileName().toLowerCase().contains(word.toLowerCase());
     }
 
-    public void updateChanges() {
-        notifyItemInserted(mSongs.size() - 1);
-    }
 
-    public void updateSongInfo(SongInfoProgressEvent songInfo) {
-        if (mSongInfo == null){
-            mSongInfo = songInfo;
-            final int index = mSongs.indexOf(songInfo.getCurrentSong());
-            notifyItemChanged(index);
-        }
-        else if (mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()){
-            final int oldPos = mSongs.indexOf(mSongInfo.getCurrentSong());
-            mSongInfo = null;
-            notifyItemChanged(oldPos);
-
-            Chords.applicationHandler.postDelayed(() -> updateSongInfo(songInfo), 100);
-        }
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-
-        private final ItemMusicBinding mBinding;
-
-        public ViewHolder(@NonNull ItemMusicBinding itemView) {
-            super(itemView.getRoot());
-            mBinding = itemView;
-
-        }
-    }
 }
