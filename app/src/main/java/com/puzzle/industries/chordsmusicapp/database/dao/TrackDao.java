@@ -18,23 +18,23 @@ public interface TrackDao {
     @Query("Select * from Track where id = :id")
     List<TrackEntity> getTrackById(int id);
 
-    @Query("select Track.id, Track.title, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
+    @Query("select Track.id, Track.title, Track.disk_number, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
             "Album.cover_url, Artist.picture_url from Track inner join Artist on Track.artist_id = Artist.id " +
             "inner join Album on Track.album_id = Album.id where Track.artist_id = :id order by Track.title asc")
     List<TrackArtistAlbumEntity> getArtistSongs(int id);
 
-    @Query("select Track.id, Track.title, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
+    @Query("select Track.id, Track.title, Track.disk_number, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
             "Album.cover_url, Artist.picture_url from Track inner join Artist on Track.artist_id = Artist.id " +
             "inner join Album on Track.album_id = Album.id where Track.album_id = :id order by Track.disk_number asc")
     List<TrackArtistAlbumEntity> getAlbumSongs(int id);
 
-    @Query("select Track.id, Track.title, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
+    @Query("select Track.id, Track.title, Track.disk_number, Track.location, Track.artist_id, Track.album_id, Artist.name, " +
             "Album.cover_url, Artist.picture_url from Track inner join Artist on Track.artist_id = Artist.id " +
             "inner join Album on Track.album_id = Album.id order by Track.title asc")
     List<TrackArtistAlbumEntity> getAllTracks();
 
     @Query("delete from Track where Track.id = :id")
-    void delete(int id);
+    int delete(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(TrackEntity track);
