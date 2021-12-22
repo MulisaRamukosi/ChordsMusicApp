@@ -60,14 +60,14 @@
                         android:id="@+id/tv_song_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Song Name"
+                        tools:text="Song Name"
                         android:transitionName="@string/trans_song_name"/>
 
                     <TextView
                         android:id="@+id/tv_song_artist"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Artist"
+                        tools:text="Artist"
                         style="@style/TextAppearance.Caption.Regular"
                         android:transitionName="@string/trans_artist_name"/>
 
