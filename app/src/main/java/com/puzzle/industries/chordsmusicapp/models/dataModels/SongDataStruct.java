@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class SongDataStruct implements Parcelable {
@@ -25,8 +26,8 @@ public class SongDataStruct implements Parcelable {
     @SerializedName("title")
     private final String songName;
 
-    private final ArtistDataStruct artist;
-    private final AlbumDataStruct album;
+    @Setter private ArtistDataStruct artist;
+    @Setter private AlbumDataStruct album;
 
     private final String songGenre;
     private final String songYear;
