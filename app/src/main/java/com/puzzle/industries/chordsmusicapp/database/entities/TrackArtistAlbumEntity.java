@@ -34,6 +34,11 @@ public class TrackArtistAlbumEntity implements Parcelable {
         picture_url = in.readString();
     }
 
+    public String getFileName(){
+        final String[] path = location.split("/");
+        return path[path.length - 1];
+    }
+
     public static final Creator<TrackArtistAlbumEntity> CREATOR = new Creator<TrackArtistAlbumEntity>() {
         @Override
         public TrackArtistAlbumEntity createFromParcel(Parcel in) {
