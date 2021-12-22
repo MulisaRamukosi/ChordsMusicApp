@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface AlbumDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(AlbumEntity album);
 
     @Query("delete from Album where Album.id = :id")
