@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/fragment_library_scene">
+
+    <ImageView
+        android:id="@+id/iv_album"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/desc_artist"
+        android:scaleType="centerCrop"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/bg_artist" />
+
+    <View
+        android:id="@+id/view"
+        style="@style/ViewOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:transitionName="@string/trans_album_pic"
+        app:layout_constraintBottom_toBottomOf="@id/iv_album"
+        app:layout_constraintLeft_toLeftOf="@id/iv_album"
+        app:layout_constraintRight_toRightOf="@id/iv_album"
+        app:layout_constraintTop_toTopOf="@id/iv_album" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_artist_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/mp_16dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_album"
+        app:layout_constraintLeft_toLeftOf="@id/iv_album"
+        app:layout_constraintRight_toRightOf="@id/iv_album"
+        app:layout_constraintTop_toTopOf="@id/iv_album">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_artist_art"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/bg_artist"
+                    android:transitionName="@string/trans_artist_pic"
+                    app:shapeAppearance="@style/ShapeAppearance.Radius5dp" />
+
+                <TextView
+                    android:id="@+id/tv_artist_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mp_8dp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="true"
+                    android:textColor="@color/white"
+                    android:transitionName="@string/trans_artist_name"
+                    tools:text="Artist name" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mp_16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_song_name"
+                    style="@style/TextAppearance.Title.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    tools:text="Song Name" />
+
+                <TextView
+                    android:id="@+id/tv_album_name"
+                    style="@style/TextAppearance.SubTitle.Regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:transitionName="@string/trans_album_name"
+                    tools:text="album name" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_album" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tl" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
