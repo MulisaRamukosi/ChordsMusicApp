@@ -25,6 +25,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
     protected TrackArtistAlbumEntity(Parcel in) {
         id = in.readInt();
         title = in.readString();
+        disk_number = in.readInt();
         location = in.readString();
         name = in.readString();
         artist_id = in.readInt();
