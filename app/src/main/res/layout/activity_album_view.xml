@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_album_view_scene">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_album"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/trans_album_pic"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/bg_album" />
+
+    <View
+        android:id="@+id/view"
+        style="@style/ViewOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_album"
+        app:layout_constraintLeft_toLeftOf="@id/iv_album"
+        app:layout_constraintRight_toRightOf="@id/iv_album"
+        app:layout_constraintTop_toTopOf="@id/iv_album" />
+
+    <TextView
+        android:id="@+id/tv_album_name"
+        style="@style/TextAppearance.Title.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mp_8dp"
+        android:textColor="@android:color/white"
+        android:transitionName="@string/trans_album_name"
+        app:layout_constraintBottom_toTopOf="@+id/tv_album_artist"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="Album Name" />
+
+
+    <TextView
+        android:id="@+id/tv_album_artist"
+        style="@style/TextAppearance.SubTitle.Regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/mp_8dp"
+        android:textColor="@android:color/white"
+        android:transitionName="@string/trans_artist_name"
+        app:layout_constraintBottom_toBottomOf="@id/view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="Artists name" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_song_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_album" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/lpi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintTop_toBottomOf="@id/view" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
