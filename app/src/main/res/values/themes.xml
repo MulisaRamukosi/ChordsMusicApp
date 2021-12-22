@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Base.Theme" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
@@ -16,6 +16,8 @@
         <item name="editTextStyle">@style/TextInputEditTextStyle</item>
         <item name="circularProgressIndicatorStyle">@style/CircularProgressIndicatorStyle</item>
         <item name="linearProgressIndicatorStyle">@style/LinearProgressIndicatorStyle</item>
+        <item name="tabStyle">@style/TabLayoutStyle</item>
+        <item name="materialButtonStyle">@style/ButtonStyle</item>
 
         <!--system-->
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
@@ -40,7 +42,7 @@
         <item name="android:fontFamily">@font/open_sans_semi_bold</item>
     </style>
 
-    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+    <style name="BottomNavigationStyle" parent="Widget.Material3.BottomNavigationView">
         <item name="elevation">0dp</item>
         <item name="itemTextAppearanceActive">@style/TextAppearance.Regular</item>
         <item name="itemTextAppearanceInactive">@style/TextAppearance.Regular</item>
@@ -60,6 +62,10 @@
     </style>
 
     <style name="TextAppearance.SubTitle.SemiBold" parent="TextAppearance.SemiBold">
+        <item name="android:textSize">@dimen/txt_size_subtitle</item>
+    </style>
+
+    <style name="TextAppearance.SubTitle.Regular" parent="TextAppearance.Regular">
         <item name="android:textSize">@dimen/txt_size_subtitle</item>
     </style>
 
@@ -84,7 +90,12 @@
         <item name="cornerSize">10dp</item>
     </style>
 
-    <style name="OutlinedTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="TabLayoutStyle" parent="Widget.Material3.TabLayout">
+        <item name="tabIndicatorColor">?colorSecondary</item>
+        <item name="tabSelectedTextColor">?colorSecondary</item>
+    </style>
+    
+    <style name="OutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="android:textAppearance">@style/TextAppearance.Regular</item>
         <item name="hintTextAppearance">@style/TextAppearance.Regular</item>
         <item name="helperTextTextAppearance">@style/TextAppearance.Regular</item>
@@ -105,26 +116,36 @@
         <item name="android:textAppearance">@style/TextAppearance.Regular</item>
     </style>
 
-    <style name="CircularProgressIndicatorStyle" parent="Widget.MaterialComponents.CircularProgressIndicator">
+    <style name="CircularProgressIndicatorStyle" parent="Widget.Material3.CircularProgressIndicator">
         <item name="indicatorColor">?colorSecondary</item>
         <item name="trackColor">@color/track</item>
     </style>
 
-    <style name="LinearProgressIndicatorStyle" parent="Widget.MaterialComponents.LinearProgressIndicator">
+    <style name="LinearProgressIndicatorStyle" parent="Widget.Material3.LinearProgressIndicator">
         <item name="indicatorColor">?colorSecondary</item>
         <item name="trackColor">@color/track</item>
     </style>
 
-    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="textAllCaps">true</item>
+    <style name="ButtonStyle" parent="Widget.Material3.Button">
+        <item name="textAllCaps">false</item>
         <item name="android:textAppearance">@style/TextAppearance.Title.Bold</item>
         <item name="shapeAppearanceOverlay">@style/ButtonShapeAppearance</item>
         <item name="backgroundTint">@color/secondaryColor</item>
-        <item name="android:elevation">0dp</item>
+        <item name="cornerRadius">32dp</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+
+    <style name="ButtonStyle.Transparent" parent="Widget.Material3.Button.TextButton.Icon">
+        <item name="android:textColor">?colorOnPrimary</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="iconTint">@color/secondaryColor</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.Regular</item>
+        <item name="iconSize">18dp</item>
     </style>
 
     <style name="ButtonShapeAppearance">
-        <item name="cornerFamily">cut</item>
+        <item name="cornerFamily">rounded</item>
         <item name="cornerSize">4dp</item>
     </style>
 </resources>
