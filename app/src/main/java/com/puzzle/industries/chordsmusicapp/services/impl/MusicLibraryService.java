@@ -111,12 +111,12 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
 
     @Override
     public List<ArtistEntity> getArtists() {
-        return new ArrayList<>(ARTISTS.values());
+        return ARTISTS.values().stream().sorted(Comparator.comparing(ArtistEntity::getName)).collect(Collectors.toList());
     }
 
     @Override
     public List<AlbumArtistEntity> getAlbums() {
-        return new ArrayList<>(ALBUMS.values());
+        return ALBUMS.values().stream().sorted(Comparator.comparing(AlbumArtistEntity::getTitle)).collect(Collectors.toList());
     }
 
     @Override
