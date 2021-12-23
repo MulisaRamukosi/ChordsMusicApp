@@ -12,38 +12,35 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.puzzle.industries.chordsmusicapp.BaseFragment;
+import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadsBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.DownloadsRVAdapter;
+import com.puzzle.industries.chordsmusicapp.models.dataModels.DownloadItemDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
+import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
-import java.util.List;
+import java.util.Map;
 
 public class DownloadsFragment extends BaseFragment {
 
     private FragmentDownloadsBinding mBinding;
     private DownloadsRVAdapter mAdapter;
-    private List<SongDataStruct> mSongsDownloadQueue;
-    private IntentFilter mDownloadFilter;
-    private BroadcastReceiver mDownloadReceiver;
+    private BroadcastReceiver mDownloadProgressReceiver;
+    private BroadcastReceiver mDownloadItemStateChangeReceiver;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = FragmentDownloadsBinding.inflate(inflater, container, false);
-        mDownloadFilter = new IntentFilter();
-        mDownloadFilter.addAction(Constants.ACTION_IF);
         return mBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mSongsDownloadQueue = DownloadManagerService.getInstance().getDownloadsQueue();
-        mAdapter = new DownloadsRVAdapter(mSongsDownloadQueue);
+        mAdapter = new DownloadsRVAdapter(DownloadManagerService.getInstance().getDownloadsQueue());
         mBinding.rv.setAdapter(mAdapter);
         initReceivers();
     }
@@ -81,7 +78,8 @@ public class DownloadsFragment extends BaseFragment {
 
     public void onPause(){
         super.onPause();
-        requireActivity().unregisterReceiver(mDownloadReceiver);
+        requireActivity().unregisterReceiver(mDownloadProgressReceiver);
+        requireActivity().unregisterReceiver(mDownloadItemStateChangeReceiver);
     }
 
 }
