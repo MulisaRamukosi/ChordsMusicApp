@@ -63,14 +63,18 @@ public class DownloadService implements IDownloadService {
                     output.flush();
                     output.close();
                     input.close();
+
+                    callback.downloadComplete(song);
                 }
                 catch (IOException e) {
                     e.printStackTrace();
+                    callback.downloadFailed();
                 }
 
             });
         }
         else{
+            callback.downloadComplete(song);
             Chords.applicationHandler.post(() ->
                     Toast.makeText(Chords.getAppContext(), String.format("%s already exists.", fileName),
                             Toast.LENGTH_SHORT).show());
