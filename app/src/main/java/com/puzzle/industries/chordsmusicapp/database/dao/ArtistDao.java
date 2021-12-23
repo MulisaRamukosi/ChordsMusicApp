@@ -21,7 +21,7 @@ public interface ArtistDao {
     long insert(ArtistEntity artist);
 
     @Query("Delete from Artist where Artist.id = :id")
-    void delete(int id);
+    int delete(int id);
 
 
 }
