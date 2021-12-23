@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/mp_16dp"
     android:paddingVertical="@dimen/mp_8dp"
@@ -13,7 +13,8 @@
         android:id="@+id/iv_album_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/bg_artist"
+        tools:src="@drawable/bg_artist"
+        android:transitionName="@string/trans_album_pic"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Radius5dp"/>
 
     <LinearLayout
@@ -26,15 +27,17 @@
             android:id="@+id/tv_album_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="album name"
+            tools:text="album name"
             android:textStyle="bold"
+            android:transitionName="@string/trans_album_name"
             style="@style/TextAppearance.Title.Bold"/>
 
         <TextView
             android:id="@+id/tv_artist_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="artist name"/>
+            android:transitionName="@string/trans_artist_name"
+            tools:text="artist name"/>
 
     </LinearLayout>
 </LinearLayout>
