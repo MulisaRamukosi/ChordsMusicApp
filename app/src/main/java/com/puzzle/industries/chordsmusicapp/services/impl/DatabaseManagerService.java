@@ -9,10 +9,14 @@ import com.puzzle.industries.chordsmusicapp.database.entities.AlbumEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackEntity;
+import com.puzzle.industries.chordsmusicapp.helpers.SongFileNameHelper;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.AlbumDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.ArtistDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IDatabaseManagerService;
+import com.puzzle.industries.chordsmusicapp.services.IMediaBroadCastService;
+import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
+import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -41,7 +45,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
     public void saveSongToDb(SongDataStruct downloadedSongInfo) {
         final ArtistDataStruct artistDataStruct = downloadedSongInfo.getArtist();
         final AlbumDataStruct albumDataStruct = downloadedSongInfo.getAlbum();
-        final String fileName = String.format("%s_%s.mp3", artistDataStruct.getName(), downloadedSongInfo.getSongName());
+        final String fileName = SongFileNameHelper.generateSongFileName(downloadedSongInfo);
         final String songLocation = MediaFileManagerService.getInstance().getFilePath(fileName);
 
         String trackReleaseDate = "";
@@ -49,7 +53,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
             trackReleaseDate = DATE_FORMAT.format(downloadedSongInfo.getRelease_date());
         }
 
-        TrackEntity track = new TrackEntity(
+        final TrackEntity track = new TrackEntity(
                 downloadedSongInfo.getId(),
                 downloadedSongInfo.getSongName(),
                 downloadedSongInfo.getDisk_number(),
@@ -59,7 +63,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
                 albumDataStruct.getId()
         );
 
-        ArtistEntity artist = new ArtistEntity(
+        final ArtistEntity artist = new ArtistEntity(
                 artistDataStruct.getId(),
                 artistDataStruct.getName(),
                 artistDataStruct.getPicture_big()
@@ -70,7 +74,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
             albumReleaseDate = DATE_FORMAT.format(albumDataStruct.getRelease_date());
         }
 
-        AlbumEntity album = new AlbumEntity(
+        final AlbumEntity album = new AlbumEntity(
                 albumDataStruct.getId(),
                 albumDataStruct.getTitle(),
                 albumDataStruct.getCover_big(),
@@ -82,18 +86,21 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         ALBUM_DAO.insert(album);
         TRACK_DAO.insert(track);
 
-        final MusicLibraryService libraryService = MusicLibraryService.getInstance();
+        final IMusicLibraryService libraryService = MusicLibraryService.getInstance();
+        final IMediaBroadCastService mediaBroadcastReceiver = MediaBroadCastService.getInstance();
 
         final AlbumArtistEntity albumArtist = new AlbumArtistEntity(
                 albumDataStruct.getId(),
                 albumDataStruct.getTitle(),
                 albumDataStruct.getCover_big(),
+                artist.getId(),
                 artist.getName()
         );
 
         final TrackArtistAlbumEntity trackArtistAlbum = new TrackArtistAlbumEntity(
                 track.getId(),
                 track.getTitle(),
+                track.getDisk_number(),
                 track.getLocation(),
                 artist.getName(),
                 artist.getId(),
