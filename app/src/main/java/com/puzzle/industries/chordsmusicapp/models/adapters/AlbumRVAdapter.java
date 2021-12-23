@@ -52,16 +52,7 @@ public class AlbumRVAdapter extends BaseMediaRVAdapter<ItemAlbumBinding, AlbumAr
                 ? R.color.secondaryLightColor:
                 R.color.primaryTextColor);
 
-        Glide.with(ctx).load(album.getCover_url()).into(holder.mBinding.ivAlbumPic);
-
-        if (album.getCover_url() != null){
-            Glide.with(ctx).load(album.getCover_url()).into(holder.mBinding.ivAlbumPic);
-        }
-        else{
-            //TODO: attempt to get album cover from deezer
-            Glide.with(ctx).load(ContextCompat.getDrawable(ctx, R.drawable.bg_album)).into(holder.mBinding.ivAlbumPic);
-        }
-
+        Glide.with(ctx).load(album.getCover_url()).fallback(R.drawable.bg_album).into(holder.mBinding.ivAlbumPic);
         holder.mBinding.tvAlbumName.setText(album.getTitle());
         holder.mBinding.tvArtistName.setText(album.getName());
         holder.mBinding.tvAlbumName.setTextColor(txtColor);

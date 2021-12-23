@@ -59,13 +59,7 @@ public class ArtistRVAdapter extends BaseMediaRVAdapter<ItemArtistBinding, Artis
             flexboxLp.setFlexGrow(1.0f);
         }
 
-        if (artist.getPicture_url() != null){
-            Glide.with(ctx).load(artist.getPicture_url()).into(holder.mBinding.ivArtistArt);
-        }
-        else{
-            //TODO: attempt to get artistImage from deezer
-            Glide.with(ctx).load(ContextCompat.getDrawable(ctx, R.drawable.bg_artist)).into(holder.mBinding.ivArtistArt);
-        }
+        Glide.with(ctx).load(artist.getPicture_url()).fallback(R.drawable.bg_artist).into(holder.mBinding.ivArtistArt);
 
         holder.mBinding.tvArtist.setText(artist.getName());
         holder.mBinding.tvArtist.setTextColor(txtColor);
