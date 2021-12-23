@@ -14,8 +14,10 @@ import com.puzzle.industries.chordsmusicapp.callbacks.DownloadProgressCallback;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IDownloadService;
 import com.puzzle.industries.chordsmusicapp.services.impl.DatabaseManagerService;
+import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
+import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
 public class DownloadSongWorker extends Worker implements DownloadProgressCallback {
 
@@ -48,6 +50,17 @@ public class DownloadSongWorker extends Worker implements DownloadProgressCallba
         i.putExtra(Constants.KEY_DOWNLOAD_PROGRESS, currentProgress);
 
         Chords.getAppContext().sendBroadcast(i);
+    }
+
+    @Override
+    public void downloadComplete(SongDataStruct song) {
+        DownloadManagerService.getInstance().updateSongState(song, DownloadState.COMPLETE);
+        DatabaseManagerService.getInstance().saveSongToDb(song);
+    }
+
+    @Override
+    public void downloadFailed() {
+        DownloadManagerService.getInstance().updateSongState(song, DownloadState.FAILED);
     }
 
 }
