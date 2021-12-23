@@ -13,6 +13,7 @@
         android:src="@drawable/bg_artist"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
+        android:transitionName="@string/trans_artist_pic"
         app:shapeAppearance="@style/ShapeAppearance.Radius5dp"/>
 
     <TextView
@@ -21,9 +22,10 @@
         android:gravity="center"
         android:layout_height="wrap_content"
         tools:text="Artist name"
-        android:scrollHorizontally="true"
         android:layout_marginTop="@dimen/mp_8dp"
+        android:scrollHorizontally="true"
         android:ellipsize="end"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        android:transitionName="@string/trans_artist_name"/>
 
 </LinearLayout>
