@@ -104,5 +104,9 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         libraryService.addArtist(artist);
         libraryService.addAlbum(albumArtist);
         libraryService.addSong(trackArtistAlbum);
+
+        mediaBroadcastReceiver.songAdded(trackArtistAlbum);
+        mediaBroadcastReceiver.albumAdded(albumArtist);
+        mediaBroadcastReceiver.artistAdded(artist);
     }
 }
