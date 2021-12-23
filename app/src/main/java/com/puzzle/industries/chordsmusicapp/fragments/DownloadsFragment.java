@@ -45,6 +45,7 @@ public class DownloadsFragment extends BaseFragment {
         mSongsDownloadQueue = DownloadManagerService.getInstance().getDownloadsQueue();
         mAdapter = new DownloadsRVAdapter(mSongsDownloadQueue);
         mBinding.rv.setAdapter(mAdapter);
+        initReceivers();
     }
 
     private void initReceivers(){
