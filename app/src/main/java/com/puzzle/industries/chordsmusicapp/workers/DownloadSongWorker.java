@@ -43,7 +43,7 @@ public class DownloadSongWorker extends Worker implements DownloadProgressCallba
 
     @Override
     public void updateProgress(int currentProgress) {
-        final Intent i = new Intent(Constants.ACTION_IF);
+        final Intent i = new Intent(Constants.ACTION_DOWNLOAD_PROGRESS);
         i.putExtra(Constants.KEY_SONG, song);
         i.putExtra(Constants.KEY_DOWNLOAD_PROGRESS, currentProgress);
 
