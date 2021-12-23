@@ -47,22 +47,25 @@ public class DownloadsFragment extends BaseFragment {
         mBinding.rv.setAdapter(mAdapter);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void initReceivers(){
+        mDownloadProgressReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final SongDataStruct song = intent.getParcelableExtra(Constants.KEY_SONG);
+                final int currentProgress = intent.getIntExtra(Constants.KEY_DOWNLOAD_PROGRESS, 0);
+                mAdapter.updateProgress(song, currentProgress);
+            }
+        };
 
-        if (mDownloadReceiver == null){
-            mDownloadReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-
-                    final SongDataStruct song = intent.getParcelableExtra(Constants.KEY_SONG);
-                    final int currentProgress = intent.getIntExtra(Constants.KEY_DOWNLOAD_PROGRESS, 0);
-
-                    mAdapter.updateProgress(song, currentProgress);
-                }
-            };
-        }
+        mDownloadItemStateChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final SongDataStruct song = intent.getParcelableExtra(Constants.KEY_SONG);
+                final DownloadState downloadState = (DownloadState) intent.getSerializableExtra(Constants.KEY_DOWNLOAD_STATE);
+                mAdapter.updateState(song, downloadState);
+            }
+        };
+    }
 
         requireActivity().registerReceiver(mDownloadReceiver, mDownloadFilter);
 
