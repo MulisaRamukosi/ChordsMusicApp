@@ -38,8 +38,6 @@ public class DownloadSongWorker extends Worker implements DownloadProgressCallba
 
         mDownloadService = new DownloadService();
         mDownloadService.downloadSong(song, songUrl, this);
-        DatabaseManagerService.getInstance().saveSongToDb(song);
-
         return Result.success();
     }
 
