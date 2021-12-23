@@ -5,10 +5,10 @@ import android.widget.Toast;
 
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.callbacks.DownloadProgressCallback;
+import com.puzzle.industries.chordsmusicapp.helpers.SongFileNameHelper;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IDownloadService;
 import com.puzzle.industries.chordsmusicapp.services.IMediaFileManagerService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MediaFileManagerService;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,8 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import lombok.Getter;
 
 public class DownloadService implements IDownloadService {
 
@@ -31,13 +29,14 @@ public class DownloadService implements IDownloadService {
 
     @Override
     public void downloadSong(SongDataStruct song, String fileUrl, DownloadProgressCallback callback){
-        final String fileName = String.format("%s_%s.mp3", song.getArtist().getName(), song.getSongName());
+        final String fileName = SongFileNameHelper.generateSongFileName(song);
+
+        if(MEDIA_FILE_MANAGER.fileExists(fileName) && !MusicLibraryService.getInstance().containsSong(song.getId())){
+            //song file exists but was not saved to db due to some error
+            MEDIA_FILE_MANAGER.deleteFile(fileName);
+        }
 
         if (!MEDIA_FILE_MANAGER.fileExists(fileName) && MEDIA_FILE_MANAGER.createFile(fileName)){
-
-            Chords.applicationHandler.post(() -> Toast.makeText(Chords.getAppContext(),
-                    String.format("Downloading %s", fileName), Toast.LENGTH_SHORT).show());
-
             EXECUTOR_SERVICE.execute(() -> {
                 int count;
 
