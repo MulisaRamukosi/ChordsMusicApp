@@ -10,10 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.puzzle.industries.chordsmusicapp.BaseFragment;
+import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadBinding;
-import com.puzzle.industries.chordsmusicapp.models.adapters.BaseVPAdapter;
+import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
