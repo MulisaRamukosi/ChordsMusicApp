@@ -68,9 +68,15 @@ public class DownloadsFragment extends BaseFragment {
         };
     }
 
-        requireActivity().registerReceiver(mDownloadReceiver, mDownloadFilter);
-
-        mAdapter.updateDownloadQueue(DownloadManagerService.getInstance().getDownloadsQueue());
+    @Override
+    public void onResume() {
+        super.onResume();
+        final Map<Integer, DownloadItemDataStruct> downloadQueue = DownloadManagerService.getInstance().getDownloadsQueue();
+        if (downloadQueue.size() != mAdapter.getItemCount()){
+            mAdapter.updateDownloadItems(downloadQueue);
+        }
+        requireActivity().registerReceiver(mDownloadProgressReceiver, new IntentFilter(Constants.ACTION_DOWNLOAD_PROGRESS));
+        requireActivity().registerReceiver(mDownloadItemStateChangeReceiver, new IntentFilter(Constants.ACTION_DOWNLOAD_STATE));
     }
 
     public void onPause(){
