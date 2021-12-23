@@ -1,88 +1,146 @@
 package com.puzzle.industries.chordsmusicapp.models.adapters;
 
+import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseViewHolder;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemDownloadMusicBinding;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.AlbumDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.ArtistDataStruct;
+import com.puzzle.industries.chordsmusicapp.models.dataModels.DownloadItemDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
+import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
+import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 
-public class DownloadsRVAdapter extends RecyclerView.Adapter<DownloadsRVAdapter.ViewHolder>{
+public class DownloadsRVAdapter extends RecyclerView.Adapter<BaseViewHolder<ItemDownloadMusicBinding>>{
 
-    private final List<SongDataStruct> mSongs;
-    private final Map<Integer, Integer> mDownloadProgress;
+    private final List<DownloadItemDataStruct> mSongDownloadItems;
 
-    public DownloadsRVAdapter(List<SongDataStruct> mSongs) {
-        this.mSongs = mSongs;
-        this.mDownloadProgress = new HashMap<>();
+    public DownloadsRVAdapter(Map<Integer, DownloadItemDataStruct> songDownloadItems) {
+        this.mSongDownloadItems = new ArrayList<>(songDownloadItems.values());
+        Collections.sort(this.mSongDownloadItems, Comparator.comparing(DownloadItemDataStruct::getDownloadState));
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BaseViewHolder<ItemDownloadMusicBinding> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final ItemDownloadMusicBinding binding = ItemDownloadMusicBinding
                 .inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(binding);
+        return new BaseViewHolder<>(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final SongDataStruct song = mSongs.get(position);
+    public void onBindViewHolder(@NonNull BaseViewHolder<ItemDownloadMusicBinding> holder, int position) {
+        final Context ctx = holder.itemView.getContext();
+        final DownloadItemDataStruct songDownload = mSongDownloadItems.get(position);
+        final SongDataStruct song = songDownload.getSong();
         final ArtistDataStruct artist = song.getArtist();
         final AlbumDataStruct album = song.getAlbum();
 
         holder.mBinding.tvName.setText(song.getSongName());
         holder.mBinding.tvDetails.setText(String.format("%s • %s", artist.getName(), album == null ? "" : album.getTitle()));
+        holder.mBinding.lpi.setVisibility(View.VISIBLE);
+        holder.mBinding.ivDownloadComplete.setVisibility(View.GONE);
+        holder.mBinding.ivRetry.setVisibility(View.GONE);
+        holder.mBinding.lpi.setIndeterminateAnimationType(LinearProgressIndicator.INDETERMINATE_ANIMATION_TYPE_DISJOINT);
+        holder.mBinding.lpi.setIndicatorColor(ContextCompat.getColor(ctx, R.color.secondaryColor));
 
-        final Integer progress = mDownloadProgress.get(song.getId());
-        if (progress != null) holder.mBinding.lpi.setProgress(progress);
+        switch (songDownload.getDownloadState()){
+            case IN_QUEUE:
+                holder.mBinding.lpi.setIndicatorColor(
+                        ContextCompat.getColor(ctx, R.color.secondaryColor),
+                        ContextCompat.getColor(ctx, R.color.red),
+                        ContextCompat.getColor(ctx, R.color.blue)
+                );
+                holder.mBinding.lpi.setIndeterminateAnimationType(LinearProgressIndicator.INDETERMINATE_ANIMATION_TYPE_CONTIGUOUS);
+                holder.mBinding.lpi.setIndeterminate(true);
+                break;
+
+            case PENDING:
+                holder.mBinding.lpi.setIndeterminate(true);
+                break;
+
+            case COMPLETE:
+                holder.setIsRecyclable(true);
+                holder.mBinding.ivDownloadComplete.setVisibility(View.VISIBLE);
+                holder.mBinding.lpi.setVisibility(View.GONE);
+                break;
+
+            case DOWNLOADING:
+                holder.setIsRecyclable(false);
+                holder.mBinding.lpi.setIndeterminate(false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    holder.mBinding.lpi.setProgress(songDownload.getDownloadProgress(), true);
+                }
+                else{
+                    holder.mBinding.lpi.setProgress(songDownload.getDownloadProgress());
+                }
+                break;
+
+            case FAILED:
+                holder.mBinding.lpi.setVisibility(View.GONE);
+                holder.mBinding.ivRetry.setVisibility(View.VISIBLE);
+                holder.mBinding.ivRetry.setOnClickListener(v -> DownloadManagerService.getInstance().retryDownload(song));
+                break;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mSongs.size();
+        return mSongDownloadItems.size();
     }
 
-    public void addSongToQueue(SongDataStruct song){
-        if (!mSongs.contains(song)){
-            mSongs.add(song);
-            notifyItemInserted(mSongs.size() - 1);
-        }
-    }
-
-    public void updateProgress(SongDataStruct song, int progress){
-        mDownloadProgress.put(song.getId(), progress);
-        int i = mSongs.indexOf(song);
-        notifyItemChanged(i);
-    }
-
-    public void updateDownloadQueue(List<SongDataStruct> downloadsQueue) {
-        int startPos = mSongs.size();
-
-        for (SongDataStruct s : downloadsQueue){
-            if (!mSongs.contains(s)){
-                mSongs.add(s);
+    public void updateState(SongDataStruct song, DownloadState downloadState){
+        for (int i = 0; i < mSongDownloadItems.size(); i++){
+            if (song.getId() == mSongDownloadItems.get(i).getDownloadId()){
+                final DownloadItemDataStruct songInQueue = mSongDownloadItems.get(i);
+                songInQueue.setDownloadState(downloadState);
+                mSongDownloadItems.set(i, songInQueue);
+                notifyItemChanged(i);
+                break;
             }
         }
-
-        notifyItemRangeInserted(startPos, mSongs.size());
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-        private final ItemDownloadMusicBinding mBinding;
-
-        public ViewHolder(@NonNull ItemDownloadMusicBinding itemView) {
-            super(itemView.getRoot());
-            mBinding = itemView;
+    public synchronized void updateProgress(SongDataStruct song, int progress){
+        for (int i = 0; i < mSongDownloadItems.size(); i++){
+            if (song.getId() == mSongDownloadItems.get(i).getDownloadId()){
+                final DownloadItemDataStruct songInQueue = mSongDownloadItems.get(i);
+                songInQueue.setDownloadState(DownloadState.DOWNLOADING);
+                songInQueue.setDownloadProgress(progress);
+                mSongDownloadItems.set(i, songInQueue);
+                notifyItemChanged(i);
+                break;
+            }
         }
+    }
+
+
+    public void updateDownloadItems(Map<Integer, DownloadItemDataStruct> downloadQueue) {
+        int lastKnownPos = getItemCount() - 1;
+        for (DownloadItemDataStruct item : downloadQueue.values()){
+            if (!mSongDownloadItems.contains(item)){
+                mSongDownloadItems.add(item);
+            }
+        }
+        notifyItemRangeChanged(lastKnownPos, getItemCount());
     }
 }
