@@ -18,6 +18,8 @@ import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivitySplashBinding;
 import com.puzzle.industries.chordsmusicapp.workers.FetchAlbumsWorker;
 import com.puzzle.industries.chordsmusicapp.workers.FetchArtistsWorker;
+import com.puzzle.industries.chordsmusicapp.workers.FetchPlaylistsTracksWorker;
+import com.puzzle.industries.chordsmusicapp.workers.FetchPlaylistsWorker;
 import com.puzzle.industries.chordsmusicapp.workers.FetchSongsWorker;
 
 import java.util.Arrays;
@@ -51,9 +53,12 @@ public class SplashActivity extends BaseActivity {
         final WorkRequest songsRequest = new OneTimeWorkRequest.Builder(FetchSongsWorker.class).build();
         final WorkRequest artistsRequest = new OneTimeWorkRequest.Builder(FetchArtistsWorker.class).build();
         final WorkRequest albumRequest = new OneTimeWorkRequest.Builder(FetchAlbumsWorker.class).build();
+        final WorkRequest playlistRequest = new OneTimeWorkRequest.Builder(FetchPlaylistsWorker.class).build();
+        final WorkRequest playlistTracksRequest = new OneTimeWorkRequest.Builder(FetchPlaylistsTracksWorker.class).build();
 
         final ListenableFuture<Operation.State.SUCCESS> result = WorkManager.getInstance(this)
-                .enqueue(Arrays.asList(songsRequest, artistsRequest, albumRequest)).getResult();
+                .enqueue(Arrays.asList(songsRequest, artistsRequest, albumRequest, playlistRequest, playlistTracksRequest))
+                .getResult();
 
         result.addListener(() -> {
             if (result.isDone()){
