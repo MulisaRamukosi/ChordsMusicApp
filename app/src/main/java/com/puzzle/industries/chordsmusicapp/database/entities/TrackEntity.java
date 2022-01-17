@@ -16,7 +16,7 @@ public class TrackEntity {
     @PrimaryKey
     private final int id;
     private final String title;
-    private final int disk_number;
+    private final int track_number;
     private final String release_date;
     private final String location;
     private final int artist_id;

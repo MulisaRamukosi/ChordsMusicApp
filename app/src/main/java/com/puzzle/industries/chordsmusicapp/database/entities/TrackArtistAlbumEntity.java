@@ -14,7 +14,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
 
     private final int id;
     private final String title;
-    private final int disk_number;
+    private final int track_number;
     private final String location;
     private final String name;
     private final int artist_id;
@@ -25,7 +25,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
     protected TrackArtistAlbumEntity(Parcel in) {
         id = in.readInt();
         title = in.readString();
-        disk_number = in.readInt();
+        track_number = in.readInt();
         location = in.readString();
         name = in.readString();
         artist_id = in.readInt();
@@ -65,7 +65,7 @@ public class TrackArtistAlbumEntity implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
-        dest.writeInt(disk_number);
+        dest.writeInt(track_number);
         dest.writeString(location);
         dest.writeString(name);
         dest.writeInt(artist_id);
