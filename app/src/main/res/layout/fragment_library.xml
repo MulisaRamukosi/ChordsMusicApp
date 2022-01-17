@@ -29,6 +29,17 @@
         app:layout_constraintRight_toRightOf="@id/iv_album"
         app:layout_constraintTop_toTopOf="@id/iv_album" />
 
+    <ImageButton
+        android:id="@+id/ib_current_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_margin="@dimen/mp_16dp"
+        android:contentDescription="@string/desc_current_playlist"
+        app:srcCompat="@drawable/ic_round_queue_music_24"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_artist_info"
         android:layout_width="match_parent"
