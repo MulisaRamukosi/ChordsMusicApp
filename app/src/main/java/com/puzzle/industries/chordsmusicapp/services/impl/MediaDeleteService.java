@@ -4,6 +4,8 @@ import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.database.ChordsMusicDB;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.services.IMediaBroadCastService;
 import com.puzzle.industries.chordsmusicapp.services.IMediaDeleteService;
@@ -47,6 +49,35 @@ public class MediaDeleteService implements IMediaDeleteService {
         return false;
     }
 
+    private boolean deletePlaylistTrack(int playlistId, int playlistTrackId) {
+        final PlaylistTrackEntity playlistTrack = MUSIC_LIBRARY.getPlaylistTrackByIds(playlistId, playlistTrackId);
+        final int affectedRows = DATABASE.playlistTrackDao().delete(playlistTrack);
+        if (affectedRows > 0){
+            if (MUSIC_LIBRARY.removePlaylistTrack(playlistTrack)){
+                MEDIA_BROADCAST.playlistTrackRemoved(playlistTrack);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean deletePlaylistTracksFromDb(List<PlaylistTrackEntity> playlistTracks){
+        if (playlistTracks.isEmpty()) {
+            MEDIA_BROADCAST.playlistTracksRemoved();
+            return true;
+        }
+
+        final int affectedRows = DATABASE.playlistTrackDao().deleteMany(playlistTracks);
+        if (affectedRows > 0){
+            for (final PlaylistTrackEntity playlistTrack : playlistTracks){
+                if (!MUSIC_LIBRARY.removePlaylistTrack(playlistTrack)) return false;
+            }
+            MEDIA_BROADCAST.playlistTracksRemoved();
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean deleteAlbum(int albumId) {
         final AlbumArtistEntity album = MUSIC_LIBRARY.getAlbumById(albumId);
@@ -64,6 +95,26 @@ public class MediaDeleteService implements IMediaDeleteService {
     }
 
     @Override
+    public boolean deletePlaylist(int playlistId) {
+        final PlaylistEntity playlist = MUSIC_LIBRARY.getPlaylistById(playlistId);
+        final List<PlaylistTrackEntity> playlistSongs = MUSIC_LIBRARY.getPlaylistTrackEntityList(playlist.getId());
+        for (final PlaylistTrackEntity playlistSong : playlistSongs){
+            if (!deletePlaylistTrack(playlistId, playlistSong.getId())) return false;
+        }
+        final int affectedRows = DATABASE.playlistDao().delete(playlist);
+        if (affectedRows > 0 && MUSIC_LIBRARY.removePlaylist(playlist)){
+            MEDIA_BROADCAST.playlistRemoved(playlist);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deletePlaylistTracks(List<PlaylistTrackEntity> playlistTracks) {
+        return deletePlaylistTracksFromDb(playlistTracks);
+    }
+
+    @Override
     public boolean deleteArtist(int artistId) {
         final ArtistEntity artist = MUSIC_LIBRARY.getArtistById(artistId);
         final List<AlbumArtistEntity> albums = MUSIC_LIBRARY.getArtistAlbums(artist.getId());
@@ -77,4 +128,6 @@ public class MediaDeleteService implements IMediaDeleteService {
         }
         return false;
     }
+
+
 }
