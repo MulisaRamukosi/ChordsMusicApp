@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityMainBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.concurrent.Executors;
@@ -40,11 +42,10 @@ public class MainActivity extends BaseMediaActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
-        init();
 
+        init();
     }
 
     private void init(){
@@ -59,6 +60,7 @@ public class MainActivity extends BaseMediaActivity {
     }
 
     private void initPlayer() {
+        getMusicPlayerService().initMiniPlayer(mBinding.ivPlayPause, mBinding.sbSongProgress);
         mBinding.llPlayer.setOnClickListener(v -> {
             final Intent i = new Intent(this, PlayerActivity.class);
             i.putExtra(Constants.KEY_SONG, mSongInfo);
@@ -76,7 +78,6 @@ public class MainActivity extends BaseMediaActivity {
             startActivity(i, optionsCompat.toBundle());
         });
 
-       getMusicPlayerService().initMiniPlayer(mBinding.ivPlayPause, mBinding.sbSongProgress);
     }
 
     private void initNavigation(){
@@ -121,7 +122,7 @@ public class MainActivity extends BaseMediaActivity {
         final AlbumArtistEntity album = songInfo.getCurrentAlbum();
         mSongInfo = songInfo;
 
-        Glide.with(this).load(album.getCover_url()).into(mBinding.ivAlbum);
+        ArtHelper.displayAlbumArtFromUrl(album.getCover_url(), mBinding.ivAlbum);
         mBinding.tvSongName.setText(track.getTitle());
         mBinding.tvSongArtist.setText(track.getName());
         mBinding.sbSongProgress.setMax(songInfo.getSongDurationInMilis());
