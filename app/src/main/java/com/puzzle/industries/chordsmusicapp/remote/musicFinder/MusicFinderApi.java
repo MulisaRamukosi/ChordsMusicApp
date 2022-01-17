@@ -30,18 +30,50 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     private final ApiCallBack<String> mCallBack;
     private final SongDataStruct mSong;
     private final IRetryPolicy mRetryPolicy;
+    private final boolean overrideAlreadyDownloadedSong;
 
-    public static final String TAG = "MUSIC_FINDER_API";
     private final int[] STATE_TRACK = new int[]{0};
 
+    public static class MusicFinderApiBuilder{
+
+        private SongDataStruct songDataStruct;
+        private ApiCallBack<String> callBack;
+        private WebView webView;
+        private boolean override;
+
+        public MusicFinderApiBuilder setSongDataStruct(SongDataStruct songDataStruct){
+            this.songDataStruct = songDataStruct;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setApiCallBack(ApiCallBack<String> callBack){
+            this.callBack = callBack;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setWebView(WebView webView){
+            this.webView = webView;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setAsOverride(boolean override){
+            this.override = override;
+            return this;
+        }
+
+        public MusicFinderApi build(){
+            return new MusicFinderApi(this);
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
-    public MusicFinderApi(SongDataStruct songDataStruct, ApiCallBack<String> callBack) {
-        Log.d(TAG, "about to init");
+    private MusicFinderApi(MusicFinderApiBuilder builder) {
         mOffensiveWords = Chords.getAppContext().getResources().getStringArray(R.array.badWords);
-        mCallBack = callBack;
-        mWebView = new WebView(Chords.getAppContext());
+        mCallBack = builder.callBack;
+        mWebView = builder.webView == null ? new WebView(Chords.getAppContext()) : builder.webView;
         mScriptLoader = ScriptLoaderUtils.getInstance();
-        mSong = songDataStruct;
+        mSong = builder.songDataStruct;
+        overrideAlreadyDownloadedSong = builder.override;
         mRetryPolicy = new RetryPolicy(30, 3, this);
 
         mWebView.setWebViewClient(this);
@@ -53,12 +85,12 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             mRetryPolicy.stopRetryPolicy();
-            callBack.onSuccess(url);
+            this.mCallBack.onSuccess(url);
         });
 
-        mRetryPolicy.startRetryPolicy();
-        Log.d(TAG, "init complete");
-
+        if (!overrideAlreadyDownloadedSong){
+            mRetryPolicy.startRetryPolicy();
+        }
     }
 
     private String applyBadWordsFix(String query){
@@ -72,30 +104,25 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     }
 
     private void sendSearchQuery() throws IOException {
-        String query = String.format(Locale.US, "%s %s audio", mSong.getArtist().getName(), mSong.getSongName());
+        String query = String.format(Locale.US, "%s %s", mSong.getArtist().getName(), mSong.getSongName());
         query = applyBadWordsFix(query);
         String searchScript = mScriptLoader.getScript(Constants.SCRIPT_SEND_QUERY);
         searchScript = String.format(searchScript, query);
-        mWebView.evaluateJavascript(searchScript, null);
-        STATE_TRACK[0] += 1;
-        Log.d(TAG, searchScript);
+        mWebView.evaluateJavascript(searchScript, value -> STATE_TRACK[0] += 1);
     }
 
-    private void openSongLink() throws IOException{
+    private void openSongLink() throws IOException {
         final String openLinkScript = mScriptLoader.getScript(Constants.SCRIPT_OPEN_SONG_LINK);
-        Log.d(TAG, openLinkScript);
         mWebView.evaluateJavascript(openLinkScript, value -> STATE_TRACK[0] += 1);
     }
 
-    private void attemptToDownloadSong() throws IOException{
+    private void attemptToDownloadSong() throws IOException {
         final String attemptDownload = mScriptLoader.getScript(Constants.SCRIPT_ATTEMPT_DOWNLOAD);
-        Log.d(TAG, attemptDownload);
         mWebView.evaluateJavascript(attemptDownload, value -> STATE_TRACK[0] += 1);
     }
 
     private void downloadSong() throws IOException{
         String downloadSongScript = mScriptLoader.getScript(Constants.SCRIPT_DOWNLOAD);
-        Log.d(TAG, downloadSongScript);
         mWebView.evaluateJavascript(downloadSongScript, value -> STATE_TRACK[0] += 1);
 
     }
@@ -103,21 +130,18 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     @Override
     public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
         super.onReceivedHttpError(view, request, errorResponse);
-        Log.d(TAG, "on Received http error");
         stopRetryAttemptsIfFinished();
     }
 
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
         super.onReceivedSslError(view, handler, error);
-        Log.d(TAG, "on Received ssl error");
         stopRetryAttemptsIfFinished();
     }
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
         super.onReceivedError(view, request, error);
-        Log.d(TAG, "on Received error");
         stopRetryAttemptsIfFinished();
     }
 
@@ -126,21 +150,21 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
-        Log.d(TAG, "Current URL: " + url);
-        final int currentState = STATE_TRACK[0];
+        if (!overrideAlreadyDownloadedSong){
+            final int currentState = STATE_TRACK[0];
 
-        try {
-            switch (currentState){
-                case Constants.STATE_FIRST_PAGE_LOADED: sendSearchQuery(); break;
-                case Constants.STATE_RESULTS_PAGE: openSongLink(); break;
-                case Constants.STATE_SONG_PAGE: attemptToDownloadSong(); break;
-                case Constants.STATE_PRIOR_DOWNLOAD: downloadSong(); break;
+            try {
+                switch (currentState){
+                    case Constants.STATE_FIRST_PAGE_LOADED: sendSearchQuery(); break;
+                    case Constants.STATE_RESULTS_PAGE: openSongLink(); break;
+                    case Constants.STATE_SONG_PAGE: attemptToDownloadSong(); break;
+                    case Constants.STATE_PRIOR_DOWNLOAD: downloadSong(); break;
+                }
+            }catch (IOException e){
+                mRetryPolicy.stopRetryPolicy();
+                mCallBack.onFailure(e);
             }
-        }catch (IOException e){
-            mRetryPolicy.stopRetryPolicy();
-            mCallBack.onFailure(e);
         }
-
     }
 
     private void stopRetryAttemptsIfFinished(){
@@ -152,9 +176,12 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
 
     @Override
     public void onRetryPolicy() {
+        mWebView.setWebViewClient(null);
+        mWebView.stopLoading();
         STATE_TRACK[0] = 0;
         mRetryPolicy.stopRetryPolicy();
         mRetryPolicy.startRetryPolicy();
+        mWebView.setWebViewClient(this);
         mWebView.loadUrl(Constants.WEB_SITE_BASE_URL);
     }
 
