@@ -23,6 +23,7 @@ import com.puzzle.industries.chordsmusicapp.base.BaseViewHolder;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemAlbumBinding;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
@@ -52,7 +53,8 @@ public class AlbumRVAdapter extends BaseMediaRVAdapter<ItemAlbumBinding, AlbumAr
                 ? R.color.secondaryLightColor:
                 R.color.primaryTextColor);
 
-        Glide.with(ctx).load(album.getCover_url()).fallback(R.drawable.bg_album).into(holder.mBinding.ivAlbumPic);
+        ArtHelper.displayAlbumArtFromUrl(album.getCover_url(), holder.mBinding.ivAlbumPic);
+
         holder.mBinding.tvAlbumName.setText(album.getTitle());
         holder.mBinding.tvArtistName.setText(album.getName());
         holder.mBinding.tvAlbumName.setTextColor(txtColor);

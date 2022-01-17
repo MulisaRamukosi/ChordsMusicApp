@@ -24,6 +24,7 @@ import com.puzzle.industries.chordsmusicapp.base.BaseViewHolder;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemArtistBinding;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
@@ -47,19 +48,19 @@ public class ArtistRVAdapter extends BaseMediaRVAdapter<ItemArtistBinding, Artis
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemArtistBinding> holder, int position) {
         final Context ctx = holder.itemView.getContext();
-        final ViewGroup.LayoutParams lp = holder.mBinding.getRoot().getLayoutParams();
         final ArtistEntity artist = mediaList.get(position);
         final boolean isCurrentlyPlaying = currentMediaItem != null && currentMediaItem.getId() == artist.getId();
         final int txtColor = ContextCompat.getColor(ctx, isCurrentlyPlaying
                 ? R.color.secondaryLightColor:
                 R.color.primaryTextColor);
 
+        final ViewGroup.LayoutParams lp = holder.mBinding.getRoot().getLayoutParams();
         if (lp instanceof FlexboxLayoutManager.LayoutParams) {
             FlexboxLayoutManager.LayoutParams flexboxLp = (FlexboxLayoutManager.LayoutParams) lp;
-            flexboxLp.setFlexGrow(1.0f);
+            flexboxLp.setFlexGrow(1.5f);
         }
 
-        Glide.with(ctx).load(artist.getPicture_url()).fallback(R.drawable.bg_artist).into(holder.mBinding.ivArtistArt);
+        ArtHelper.displayArtistArtFromUrl(artist.getPicture_url(), holder.mBinding.ivArtistArt);
 
         holder.mBinding.tvArtist.setText(artist.getName());
         holder.mBinding.tvArtist.setTextColor(txtColor);

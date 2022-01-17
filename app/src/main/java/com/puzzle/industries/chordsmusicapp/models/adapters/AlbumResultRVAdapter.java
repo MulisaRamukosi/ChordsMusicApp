@@ -7,25 +7,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.puzzle.industries.chordsmusicapp.base.BaseResultsRVAdapter;
 import com.puzzle.industries.chordsmusicapp.base.BaseViewHolder;
 import com.puzzle.industries.chordsmusicapp.databinding.ItemResultsAlbumBinding;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.AlbumDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.api.DeezerApiCall;
-import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerAlbumDataModel;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerAlbumSongsDataModel;
-import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerTrackDataModel;
+import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerSongResultDataModel;
 import com.puzzle.industries.chordsmusicapp.remote.interfaces.ApiCallBack;
-import com.puzzle.industries.chordsmusicapp.remote.musicFinder.MusicFinderApi;
 import com.puzzle.industries.chordsmusicapp.services.IDownloadManagerService;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AlbumResultRVAdapter extends BaseResultsRVAdapter<AlbumDataStruct, ItemResultsAlbumBinding> {
 
@@ -41,7 +35,7 @@ public class AlbumResultRVAdapter extends BaseResultsRVAdapter<AlbumDataStruct, 
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemResultsAlbumBinding> holder, int position) {
         final Context ctx = holder.itemView.getContext();
         final AlbumDataStruct album = mResults.get(position);
-        Glide.with(holder.itemView.getContext()).load(album.getCover_big()).into(holder.mBinding.ivAlbumPic);
+        ArtHelper.displayAlbumArtFromUrl(album.getCover_big(), holder.mBinding.ivAlbumPic);
         holder.mBinding.tvName.setText(album.getTitle());
         holder.mBinding.tvDetails.setText(String.format("%s", album.getArtist().getName()));
 
@@ -52,14 +46,15 @@ public class AlbumResultRVAdapter extends BaseResultsRVAdapter<AlbumDataStruct, 
                 @Override
                 public void onSuccess(DeezerAlbumSongsDataModel deezerAlbumSongsDataModel) {
                     setAsLoading(false, holder);
-                    final DeezerTrackDataModel songs = deezerAlbumSongsDataModel.getTracks();
+                    final DeezerSongResultDataModel songs = deezerAlbumSongsDataModel.getTracks();
                     final IDownloadManagerService downloadManagerService = DownloadManagerService.getInstance();
 
-                    for (SongDataStruct song : songs.getData()){
+                    for (final SongDataStruct song : songs.getData()){
                         if (song.getAlbum() == null) song.setAlbum(album);
                         if (song.getArtist() == null || song.getArtist().getPicture_big() == null) song.setArtist(album.getArtist());
-                        downloadManagerService.downloadSong(song);
+                        downloadManagerService.downloadSong(song, null);
                     }
+
                 }
 
                 @Override

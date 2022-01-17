@@ -1,8 +1,6 @@
 package com.puzzle.industries.chordsmusicapp.base;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewbinding.ViewBinding;
 
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.callbacks.MediaItemLongClickCallback;
@@ -11,28 +9,28 @@ import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 
 import java.util.List;
 
-public abstract class BaseMediaRVAdapter<G extends ViewBinding, F> extends RecyclerView.Adapter<BaseViewHolder<G>> {
+public abstract class BaseMediaRVAdapter<ViewBinding extends androidx.viewbinding.ViewBinding, MediaModel> extends RecyclerView.Adapter<BaseViewHolder<ViewBinding>> {
 
     protected final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
-    protected MediaItemLongClickCallback<F> callback;
-    protected List<F> mediaList;
-    protected F currentMediaItem;
+    protected MediaItemLongClickCallback<MediaModel> callback;
+    protected List<MediaModel> mediaList;
+    protected MediaModel currentMediaItem;
 
-    public void itemRemoved(F f){
+    public void itemRemoved(MediaModel f){
         int posOfItemToBeRemoved = mediaList.indexOf(f);
         if (mediaList.remove(posOfItemToBeRemoved) != null){
             notifyItemRemoved(posOfItemToBeRemoved);
         }
     }
 
-    public void itemAdded(F f){
+    public void itemAdded(MediaModel f){
         if (!mediaList.contains(f)){
             mediaList.add(f);
             notifyItemInserted(mediaList.size() - 1);
         }
     }
 
-    public void itemChanged(F itemInfo){
+    public void itemChanged(MediaModel itemInfo){
         if (currentMediaItem == null){
             currentMediaItem = itemInfo;
             final int index = mediaList.indexOf(itemInfo);
@@ -48,9 +46,9 @@ public abstract class BaseMediaRVAdapter<G extends ViewBinding, F> extends Recyc
     }
 
     public abstract void showSearchResults(String word);
-    protected abstract boolean meetsFilterRequirements(F f, String word);
+    protected abstract boolean meetsFilterRequirements(MediaModel f, String word);
 
-    public void setItemLongClickCallback(MediaItemLongClickCallback<F> itemLongClickCallback){
+    public void setItemLongClickCallback(MediaItemLongClickCallback<MediaModel> itemLongClickCallback){
         this.callback = itemLongClickCallback;
     }
 
