@@ -6,4 +6,6 @@ public interface Constants {
     String ENTITY_TRACK = "Track";
     String ENTITY_ARTIST = "Artist";
     String ENTITY_ALBUM = "Album";
+    String ENTITY_PLAYLIST = "Playlist";
+    String ENTITY_PLAYLIST_TRACK = "PlaylistTrack";
 }
