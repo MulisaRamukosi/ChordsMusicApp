@@ -53,6 +53,16 @@ public class PlayerActivity extends BaseActivity {
             }
         }), 0, 100, TimeUnit.MILLISECONDS);
 
+        mBinding.tvNotCorrect.setOnClickListener(view -> {
+            final Intent i = new Intent(PlayerActivity.this, OverrideSongActivity.class);
+            i.putExtra(Constants.KEY_SONG, mSongInfo.getCurrentSong());
+            startActivity(i);
+        });
+
+        mBinding.ibCurrentPlaylist.setOnClickListener(view -> {
+            final CurrentPlaylistBottomSheet currentPlaylistBottomSheet = new CurrentPlaylistBottomSheet();
+            currentPlaylistBottomSheet.show(getSupportFragmentManager(), "");
+        });
     }
 
     private void initSongDetails(){
