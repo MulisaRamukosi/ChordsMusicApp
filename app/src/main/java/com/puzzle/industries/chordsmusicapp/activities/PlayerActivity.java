@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -14,10 +15,13 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
+import com.puzzle.industries.chordsmusicapp.bottom_sheets.CurrentPlaylistBottomSheet;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityPlayerBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.helpers.DurationHelper;
 import com.puzzle.industries.chordsmusicapp.services.IMusicPlayerService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
@@ -27,7 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerActivity extends BaseActivity {
+public class PlayerActivity extends BaseMediaActivity {
 
     private ActivityPlayerBinding mBinding;
     private BroadcastReceiver mMusicUpdatedReceiver;
@@ -77,7 +81,7 @@ public class PlayerActivity extends BaseActivity {
             mBinding.sbSongProgress.setMax(event.getSongDurationInMilis());
             mBinding.sbSongProgress.setProgress(event.getCurrProgressInMilis());
             setPlayPauseButtonState(event.isPlaying());
-            Glide.with(this).load(event.getCurrentAlbum().getCover_url()).into(mBinding.ivAlbum);
+            ArtHelper.displayAlbumArtFromUrl(event.getCurrentAlbum().getCover_url(), mBinding.ivAlbum);
             scheduleStartPostponedTransition(mBinding.ivAlbum);
         }
     }
@@ -168,7 +172,7 @@ public class PlayerActivity extends BaseActivity {
         final AlbumArtistEntity album = songInfo.getCurrentAlbum();
         mSongInfo = songInfo;
 
-        displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, true);
+        displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, R.drawable.bg_album,true);
         mBinding.tvSongName.setText(track.getTitle());
         mBinding.tvSongArtist.setText(track.getName());
         mBinding.sbSongProgress.setMax(songInfo.getSongDurationInMilis());
