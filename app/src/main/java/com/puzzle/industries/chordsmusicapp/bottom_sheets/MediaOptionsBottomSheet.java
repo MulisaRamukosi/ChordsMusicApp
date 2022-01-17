@@ -1,56 +1,88 @@
 package com.puzzle.industries.chordsmusicapp.bottom_sheets;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.Operation;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.activities.OverrideSongActivity;
+import com.puzzle.industries.chordsmusicapp.activities.PlayerActivity;
+import com.puzzle.industries.chordsmusicapp.activities.SelectPlaylistActivity;
 import com.puzzle.industries.chordsmusicapp.base.BaseBottomSheetDialogFragment;
+import com.puzzle.industries.chordsmusicapp.callbacks.PlaylistCallback;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.BottomSheetMediaOptionsBinding;
 import com.puzzle.industries.chordsmusicapp.events.PlaySongEvent;
+import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
+import com.puzzle.industries.chordsmusicapp.services.IPlaylistService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
+import com.puzzle.industries.chordsmusicapp.services.impl.PlaylistService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 import com.puzzle.industries.chordsmusicapp.workers.DeleteAlbumWorker;
 import com.puzzle.industries.chordsmusicapp.workers.DeleteArtistWorker;
+import com.puzzle.industries.chordsmusicapp.workers.DeletePlaylistWorker;
 import com.puzzle.industries.chordsmusicapp.workers.DeleteSongWorker;
-import com.puzzle.industries.chordsmusicapp.workers.FetchSongsWorker;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
+public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment implements ActivityResultCallback<PlaylistEntity>, PlaylistCallback {
+
+    private interface DeleteMediaCallback{
+        void deleteSuccess();
+        void deleteFailed();
+    }
 
     private final T mMediaItem;
     private final List<Integer> mSongIds;
+    private final IPlaylistService PLAYLIST_SERVICE = PlaylistService.getInstance(this, this);
     private BottomSheetMediaOptionsBinding mBinding;
     private IMusicLibraryService mMusicLibrary;
 
+    private final ActivityResultContract<Void, PlaylistEntity> SELECT_PLAYLIST_CONTRACT = new ActivityResultContract<Void, PlaylistEntity>() {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Void input) {
+            return new Intent(context, SelectPlaylistActivity.class);
+        }
+
+        @Override
+        public PlaylistEntity parseResult(int resultCode, @Nullable Intent intent) {
+            if (resultCode == Activity.RESULT_OK && intent != null){
+                return intent.getParcelableExtra(Constants.KEY_PLAYLIST);
+            }
+            return null;
+        }
+    };
+
+    private ActivityResultLauncher<Void> mSelectPlaylistLauncher;
 
     public MediaOptionsBottomSheet(T mediaItem, List<Integer> songIds){
         this.mMediaItem = mediaItem;
@@ -63,6 +95,8 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
         Objects.requireNonNull(getDialog()).setCanceledOnTouchOutside(false);
         mBinding = BottomSheetMediaOptionsBinding.inflate(inflater, container, false);
         mMusicLibrary = MusicLibraryService.getInstance();
+        mSelectPlaylistLauncher = registerForActivityResult(SELECT_PLAYLIST_CONTRACT, this);
+
         return mBinding.getRoot();
     }
 
@@ -87,21 +121,43 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
         else if (mMediaItem instanceof ArtistEntity){
             mBinding.tvTitle.setText(String.format("Artist: %s", ((ArtistEntity) mMediaItem).getName()));
         }
+        else if (mMediaItem instanceof PlaylistEntity){
+            mBinding.tvTitle.setText(String.format("Playlist: %s", ((PlaylistEntity) mMediaItem).getName()));
+        }
     }
 
     private void initOptions(){
         mBinding.btnPlay.setOnClickListener(v -> play());
         mBinding.btnAddToQueue.setOnClickListener(v -> addToQueue());
         mBinding.btnDelete.setOnClickListener(v -> delete());
+        mBinding.btnAddToPlaylist.setOnClickListener(v -> addToPlaylist());
+
+        if (mMediaItem instanceof TrackArtistAlbumEntity){
+            mBinding.btnOverride.setVisibility(View.VISIBLE);
+            mBinding.btnOverride.setOnClickListener(v -> overrideTrack());
+        }
+    }
+
+    private void overrideTrack() {
+        final TrackArtistAlbumEntity track = (TrackArtistAlbumEntity) mMediaItem;
+        showAlert(getString(R.string.desc_override), true, getString(R.string.txt_continue), v -> {
+            final Intent i = new Intent(v.getContext(), OverrideSongActivity.class);
+            i.putExtra(Constants.KEY_SONG, track);
+            startActivity(i);
+            dismiss();
+        });
     }
 
     private void addToQueue(){
         if (mMediaItem instanceof TrackArtistAlbumEntity){
             final TrackArtistAlbumEntity track = (TrackArtistAlbumEntity) mMediaItem;
             addSongToQueue(track.getId());
-
         }
         else addSongsToQueue(mSongIds);
+    }
+
+    private void addToPlaylist(){
+        mSelectPlaylistLauncher.launch(null);
     }
 
     private void play(){
@@ -131,10 +187,30 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
             final ArtistEntity artist = (ArtistEntity) mMediaItem;
             showAlert(getString(R.string.warning_delete_artist, artist.getName()), true, getString(R.string.action_yes_delete), v -> deleteArtist(artist));
         }
+        else if (mMediaItem instanceof PlaylistEntity){
+            final PlaylistEntity playlist = (PlaylistEntity) mMediaItem;
+            showAlert(getString(R.string.warning_delete_playlist, playlist.getName()), true, getString(R.string.action_yes_delete), v -> deletePlaylist(playlist));
+        }
+    }
+
+    private void deletePlaylist(PlaylistEntity playlist) {
+        setAsActiveDeleting(false);
+        executeDeleteRequest(DeletePlaylistWorker.class, playlist.getId(), new DeleteMediaCallback() {
+            @Override
+            public void deleteSuccess() {
+                dismiss();
+            }
+
+            @Override
+            public void deleteFailed() {
+                setAsActive(true);
+                showAlert(getString(R.string.error_delete_playlist), true, getString(R.string.okay), null);
+            }
+        });
     }
 
     private void deleteSong(TrackArtistAlbumEntity track){
-        setAsActive(false);
+        setAsActiveDeleting(false);
         executeDeleteRequest(DeleteSongWorker.class, track.getId(), new DeleteMediaCallback() {
             @Override
             public void deleteSuccess() {
@@ -150,14 +226,14 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
 
             @Override
             public void deleteFailed() {
-                setAsActive(true);
+                setAsActiveDeleting(true);
                 showAlert(getString(R.string.error_delete_song), true, getString(R.string.okay), null);
             }
         });
     }
 
     private void deleteAlbum(AlbumArtistEntity album){
-        setAsActive(false);
+        setAsActiveDeleting(false);
         executeDeleteRequest(DeleteAlbumWorker.class, album.getId(), new DeleteMediaCallback() {
             @Override
             public void deleteSuccess() {
@@ -173,14 +249,14 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
 
             @Override
             public void deleteFailed() {
-                setAsActive(true);
+                setAsActiveDeleting(true);
                 showAlert(getString(R.string.error_delete_album), true, getString(R.string.okay), null);
             }
         });
     }
 
     private void deleteArtist(ArtistEntity artist){
-        setAsActive(false);
+        setAsActiveDeleting(false);
         executeDeleteRequest(DeleteArtistWorker.class, artist.getId(), new DeleteMediaCallback() {
             @Override
             public void deleteSuccess() {
@@ -189,7 +265,7 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
 
             @Override
             public void deleteFailed() {
-                setAsActive(true);
+                setAsActiveDeleting(true);
                 showAlert(getString(R.string.error_delete_artist), true, getString(R.string.okay), null);
             }
         });
@@ -230,16 +306,68 @@ public class MediaOptionsBottomSheet<T> extends BaseBottomSheetDialogFragment {
         dismiss();
     }
 
-    private interface DeleteMediaCallback{
-        void deleteSuccess();
-        void deleteFailed();
+    @Override
+    public void onActivityResult(PlaylistEntity playlistEntity) {
+        if (playlistEntity != null){
+            if (mMediaItem instanceof TrackArtistAlbumEntity){
+                final TrackArtistAlbumEntity track = (TrackArtistAlbumEntity) mMediaItem;
+                addSongToPlaylist(playlistEntity, track.getId());
+
+            }
+            else addSongsToPlaylist(playlistEntity, mSongIds);
+        }
+    }
+
+    private void addSongToPlaylist(PlaylistEntity playlistEntity, int songId){
+        setAsActiveAddToPlaylist(false);
+        PLAYLIST_SERVICE.addSongToPlaylist(playlistEntity.getId(), songId);
+    }
+
+    private void addSongsToPlaylist(PlaylistEntity playlist, List<Integer> songIds){
+        PLAYLIST_SERVICE.addSongsToPlaylist(playlist.getId(), songIds.stream().map(songId -> new PlaylistTrackEntity(0, playlist.getId(), songId))
+                .collect(Collectors.toList()));
+    }
+
+    private void setAsActiveDeleting(boolean isActive){
+        setAsActive(isActive);
+        mBinding.btnDelete.setText(getString(!isActive ? R.string.deleting : R.string.delete));
+        mBinding.lpiDelete.setVisibility(isActive ? View.GONE : View.VISIBLE);
+    }
+
+    private void setAsActiveAddToPlaylist(boolean isActive){
+        setAsActive(isActive);
+        mBinding.btnAddToPlaylist.setText(getString(!isActive ? R.string.adding_to_playlist : R.string.add_to_playlist));
+        mBinding.lpiAddToPlaylist.setVisibility(isActive ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void playlistCreated(PlaylistEntity playlistEntity) {
+
+    }
+
+    @Override
+    public void playlistUpdated() {
+
+    }
+
+    @Override
+    public void operationFailed() {
+
+    }
+
+    @Override
+    public void songsAddedToPlaylist() {
+        requireActivity().runOnUiThread(() -> {
+            setAsActiveAddToPlaylist(true);
+            dismiss();
+            showAlert("Song(s) successfully added to playlist", false, getString(R.string.okay), null);
+        });
     }
 
     private void setAsActive(boolean isActive){
         mBinding.btnPlay.setEnabled(isActive);
         mBinding.btnAddToQueue.setEnabled(isActive);
+        mBinding.btnAddToPlaylist.setEnabled(isActive);
         mBinding.btnDelete.setEnabled(isActive);
-        mBinding.btnDelete.setText(getString(!isActive ? R.string.deleting : R.string.delete));
-        mBinding.lpiDelete.setVisibility(isActive ? View.GONE : View.VISIBLE);
     }
 }
