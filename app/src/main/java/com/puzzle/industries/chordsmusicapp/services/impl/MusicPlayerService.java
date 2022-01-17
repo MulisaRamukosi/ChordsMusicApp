@@ -74,6 +74,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
                     resumeOnFocusGain = false;
                 }
                 mMediaPlayer.pause();
+                displayNotification();
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -82,6 +83,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
                     playbackDelayed = false;
                 }
                 mMediaPlayer.pause();
+                displayNotification();
                 break;
         }
     }
