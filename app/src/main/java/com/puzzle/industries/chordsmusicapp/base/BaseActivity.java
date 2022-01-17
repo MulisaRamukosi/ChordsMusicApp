@@ -122,15 +122,17 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
         mMusicPlayerService = null;
     }
 
-    protected void displayImageFromLink(String link, ImageView iv, boolean scheduleTrans){
+    protected void displayImageFromLink(String link, ImageView iv, int fallbackId, boolean scheduleTrans){
         Glide.with(this).load(link)
+                .fallback(fallbackId)
                 .apply(new RequestOptions().dontAnimate())
                 .listener(getRequestListener(iv, scheduleTrans))
                 .into(iv);
     }
 
-    protected void displayImageFromDrawable(int drawableId, ImageView iv, boolean scheduleTrans) {
+    protected void displayImageFromDrawable(int drawableId, ImageView iv, int fallbackId, boolean scheduleTrans) {
         Glide.with(this).load(ContextCompat.getDrawable(this, drawableId))
+                .fallback(fallbackId)
                 .apply(new RequestOptions().dontAnimate())
                 .listener(getRequestListener(iv, scheduleTrans))
                 .into(iv);
