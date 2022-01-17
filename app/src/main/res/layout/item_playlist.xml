@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/mp_16dp"
+    android:paddingVertical="@dimen/mp_8dp"
+    android:gravity="center_vertical">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_playlist_pic"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/bg_album"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/trans_playlist_pic"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Radius5dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tv_playlist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="playlist name"
+            android:textStyle="bold"
+            android:transitionName="@string/trans_playlist_name"
+            style="@style/TextAppearance.SubTitle.Bold"/>
+
+        <TextView
+            android:id="@+id/tv_artist_names"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:transitionName="@string/trans_artist_name"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            tools:text="artist name"
+            style="@style/TextAppearance.Caption.Regular"/>
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/mp_16dp"
+    android:paddingVertical="@dimen/mp_8dp"
+    android:gravity="center_vertical"
+    app:icon="@drawable/ic_round_playlist_add_24"
+    android:text="@string/add_playlist"
+    style="@style/ButtonStyle.Transparent"/>
