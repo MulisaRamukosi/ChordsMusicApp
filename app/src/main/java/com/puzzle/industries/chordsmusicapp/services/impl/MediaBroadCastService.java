@@ -5,6 +5,8 @@ import android.content.Intent;
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IMediaBroadCastService;
@@ -69,10 +71,22 @@ public class MediaBroadCastService implements IMediaBroadCastService {
     }
 
     @Override
-    public void mediaDownloadStateChanged(SongDataStruct song, DownloadState downloadState) {
-        final Intent i = new Intent(Constants.ACTION_DOWNLOAD_STATE);
-        i.putExtra(Constants.KEY_SONG, song);
-        i.putExtra(Constants.KEY_DOWNLOAD_STATE, downloadState);
+    public void playlistRemoved(PlaylistEntity playlist) {
+        final Intent i = new Intent(Constants.ACTION_PLAYLIST_DELETED);
+        i.putExtra(Constants.KEY_PLAYLIST, playlist);
         Chords.getAppContext().sendBroadcast(i);
     }
+
+    @Override
+    public void playlistTrackRemoved(PlaylistTrackEntity playlistTrack) {
+        final Intent i = new Intent(Constants.ACTION_PLAYLIST_TRACK_DELETED);
+        i.putExtra(Constants.KEY_PLAYLIST_TRACK, playlistTrack);
+        Chords.getAppContext().sendBroadcast(i);
+    }
+
+    @Override
+    public void playlistTracksRemoved() {
+        Chords.getAppContext().sendBroadcast(new Intent(Constants.ACTION_PLAYLIST_TRACKS_DELETED));
+    }
+
 }
