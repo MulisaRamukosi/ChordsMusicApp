@@ -28,9 +28,11 @@ import com.puzzle.industries.chordsmusicapp.activities.ArtistViewActivity;
 import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaFragment;
 import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
+import com.puzzle.industries.chordsmusicapp.bottom_sheets.CurrentPlaylistBottomSheet;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryBinding;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryTabBinding;
+import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
@@ -67,12 +69,12 @@ public class LibraryFragment extends BaseFragment {
         mMediaViewModel.getObservableSong().observe(getViewLifecycleOwner(), song -> mBinding.tvSongName.setText(song.getTitle()));
 
         mMediaViewModel.getObservableAlbum().observe(getViewLifecycleOwner(), album -> {
-            Glide.with(requireContext()).load(album.getCover_url()).fallback(R.drawable.bg_album).into(mBinding.ivAlbum);
+            ArtHelper.displayAlbumArtFromUrl(album.getCover_url(), mBinding.ivAlbum);
             mBinding.tvAlbumName.setText(album.getTitle());
         });
 
         mMediaViewModel.getObservableArtist().observe(getViewLifecycleOwner(), artist -> {
-            Glide.with(requireContext()).load(artist.getPicture_url()).fallback(R.drawable.bg_artist).into(mBinding.ivArtistArt);
+            ArtHelper.displayArtistArtFromUrl(artist.getPicture_url(), mBinding.ivArtistArt);
             mBinding.tvArtistName.setText(artist.getName());
         });
     }
@@ -113,7 +115,10 @@ public class LibraryFragment extends BaseFragment {
         mBinding.tvArtistName.setOnClickListener(artistClickListener);
         mBinding.ivAlbum.setOnClickListener(albumClickListener);
         mBinding.tvAlbumName.setOnClickListener(albumClickListener);
-
+        mBinding.ibCurrentPlaylist.setOnClickListener(view -> {
+            final CurrentPlaylistBottomSheet currentPlaylistBottomSheet = new CurrentPlaylistBottomSheet();
+            currentPlaylistBottomSheet.show(getChildFragmentManager(), "");
+        });
     }
     private void initTabs(){
         final List<String> fragmentTitles = new ArrayList<>(Arrays.asList(
