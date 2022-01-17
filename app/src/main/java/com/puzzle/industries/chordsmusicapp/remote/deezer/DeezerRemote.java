@@ -23,8 +23,8 @@ public class DeezerRemote {
     public static <T> T getClient(Class<T> cls){
         if (sRetrofit == null){
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.readTimeout(10, TimeUnit.SECONDS);
-            builder.connectTimeout(5, TimeUnit.SECONDS);
+            builder.readTimeout(30, TimeUnit.SECONDS);
+            builder.connectTimeout(30, TimeUnit.SECONDS);
 
             builder.addInterceptor(chain -> {
                 Request request = chain.request().newBuilder()
