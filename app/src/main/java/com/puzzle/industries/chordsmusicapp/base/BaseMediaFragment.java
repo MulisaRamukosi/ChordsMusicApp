@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.puzzle.industries.chordsmusicapp.Chords;
-import com.puzzle.industries.chordsmusicapp.bottom_sheets.MediaOptionsBottomSheet;
 import com.puzzle.industries.chordsmusicapp.callbacks.MediaItemLongClickCallback;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryTabBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
+import com.puzzle.industries.chordsmusicapp.services.IMediaOptionsService;
+import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
+import com.puzzle.industries.chordsmusicapp.services.impl.MediaOptionsService;
+import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
@@ -39,11 +40,15 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
 
     protected MediaVM mMediaViewModel;
     protected FragmentLibraryTabBinding mBinding;
+    protected IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
+
+    private IMediaOptionsService<T> mMediaOptionsService;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMediaViewModel = new ViewModelProvider(requireActivity()).get(MediaVM.class);
+        mMediaOptionsService = new MediaOptionsService<>(getChildFragmentManager());
         initReceivers();
         initReceiverIntentFilters();
     }
@@ -52,7 +57,6 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = FragmentLibraryTabBinding.inflate(inflater, container, false);
-
         return mBinding.getRoot();
     }
 
@@ -70,14 +74,7 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
 
     @Override
     public void mediaItemLongClicked(T t, List<Integer> songIds){
-        final Vibrator vibrator = (Vibrator) Chords.getAppContext().getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(30);
-        showMediaOptions(t, songIds);
-    }
-
-    private void showMediaOptions(T t, List<Integer> songIds){
-        final MediaOptionsBottomSheet<T> mediaOptions = new MediaOptionsBottomSheet<>(t, songIds);
-        mediaOptions.show(getChildFragmentManager(), mediaOptions.getTag());
+        mMediaOptionsService.showMediaOptionBottomSheet(t, songIds);
     }
 
     private void initReceivers(){
