@@ -18,23 +18,17 @@ import lombok.Getter;
 public class AlbumDataStruct implements Parcelable {
 
     private final int id;
-    private final String artistName;
     private final String title;
     private final String cover_big;
     private final ArtistDataStruct artist;
-    private Date release_date;
+    private final String release_date;
 
     protected AlbumDataStruct(Parcel in) {
         id = in.readInt();
-        artistName = in.readString();
         title = in.readString();
         cover_big = in.readString();
         artist = in.readParcelable(ArtistDataStruct.class.getClassLoader());
-        try {
-            release_date = new SimpleDateFormat(Constants.FORMAT_DATE, Locale.getDefault()).parse(in.readString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        release_date = in.readString();
     }
 
     public static final Creator<AlbumDataStruct> CREATOR = new Creator<AlbumDataStruct>() {
@@ -57,10 +51,9 @@ public class AlbumDataStruct implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeString(artistName);
         dest.writeString(title);
         dest.writeString(cover_big);
         dest.writeParcelable(artist, flags);
-        dest.writeString(release_date == null ? new Date().toString() : release_date.toString());
+        dest.writeString(release_date);
     }
 }
