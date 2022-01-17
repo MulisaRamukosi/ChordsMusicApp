@@ -29,6 +29,9 @@ public interface Constants {
     String ACTION_MUSIC_DELETED = "AMD";
     String ACTION_ALBUM_DELETED = "AAD";
     String ACTION_ARTIST_DELETED = "AARD";
+    String ACTION_PLAYLIST_DELETED = "APD";
+    String ACTION_PLAYLIST_TRACK_DELETED = "APTD";
+    String ACTION_PLAYLIST_TRACKS_DELETED = "APTSD";
     String ACTION_DOWNLOAD_STATE = "ADS";
 
     String KEY_DOWNLOAD_PROGRESS = "KDP";
@@ -39,5 +42,17 @@ public interface Constants {
     String KEY_ARTIST = "KAR";
     String KEY_ARTIST_ID = "KAI";
     String KEY_MEDIA_ID = "KSID";
+    String KEY_PLAYLIST = "KPL";
+    String KEY_PLAYLIST_TRACKS = "KPLT";
     String KEY_DOWNLOAD_STATE = "KDS";
+    String KEY_PLAYLIST_STATE = "KPS";
+    String KEY_DISPLAY_CURRENT_PLAYLIST = "KDCP";
+    String KEY_PLAYLIST_ID = "KPID";
+    String KEY_PLAYLIST_TRACK_ID = "KPTID";
+    String KEY_PLAYLIST_NAME = "KPN";
+    String KEY_SELECT_REQUEST = "KSR";
+    String KEY_ALBUMS = "KAS";
+    String KEY_PLAYLIST_TRACK = "KPT";
+
+    String KEY_WAS_UPDATED = "KWU";
 }
