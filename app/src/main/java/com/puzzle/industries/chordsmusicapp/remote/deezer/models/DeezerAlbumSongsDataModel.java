@@ -15,6 +15,6 @@ public class DeezerAlbumSongsDataModel {
     private String cover_big;
     private ArtistDataStruct artist;
     private Date release_date;
-    private DeezerTrackDataModel tracks;
+    private DeezerSongResultDataModel tracks;
 
 }
