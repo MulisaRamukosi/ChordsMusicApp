@@ -9,7 +9,7 @@
         motion:duration="1000">
 
         <OnSwipe
-            motion:touchAnchorId="@+id/rv_song_list"
+            motion:touchAnchorId="@+id/fcv"
             motion:dragDirection="dragUp"/>
 
     </Transition>
@@ -32,7 +32,7 @@
             motion:layout_constraintTop_toTopOf="parent"/>
 
         <Constraint
-            android:id="@+id/rv_song_list"
+            android:id="@+id/fcv"
             motion:layout_constraintLeft_toLeftOf="parent"
             motion:layout_constraintRight_toRightOf="parent"
             motion:layout_constraintTop_toTopOf="parent"

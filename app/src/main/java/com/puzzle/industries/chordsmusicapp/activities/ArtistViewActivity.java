@@ -3,19 +3,20 @@ package com.puzzle.industries.chordsmusicapp.activities;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
+import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityArtistViewBinding;
+import com.puzzle.industries.chordsmusicapp.fragments.AlbumFragment;
 import com.puzzle.industries.chordsmusicapp.fragments.ArtistAlbumFragment;
-import com.puzzle.industries.chordsmusicapp.fragments.ArtistMusicFragment;
 import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
+import com.puzzle.industries.chordsmusicapp.fragments.MusicFragment;
+import com.puzzle.industries.chordsmusicapp.helpers.MediaFragHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.ArrayList;
@@ -44,14 +45,12 @@ public class ArtistViewActivity extends BaseMediaActivity {
     }
 
     private void initArtistSongsSection() {
-        final Bundle bundle = new Bundle();
-        bundle.putInt(Constants.KEY_ARTIST_ID, mArtist.getId());
+        final List<TrackArtistAlbumEntity> artistSongs = MUSIC_LIBRARY.getArtistSongs(mArtist.getId());
+        final List<AlbumArtistEntity> artistAlbums = MUSIC_LIBRARY.getArtistAlbums(mArtist.getId());
 
-        final ArtistMusicFragment artistMusicFragment = new ArtistMusicFragment();
-        final ArtistAlbumFragment artistAlbumFragment = new ArtistAlbumFragment();
+        final MusicFragment musicFragment = MediaFragHelper.getMusicFragWithAttachedSongBundle(artistSongs);
+        final AlbumFragment albumFragment = MediaFragHelper.getAlbumFragWithAttachedAlbumBundle(artistAlbums);
 
-        artistMusicFragment.setArguments(bundle);
-        artistAlbumFragment.setArguments(bundle);
 
         final List<String> fragmentTitles = new ArrayList<>(Arrays.asList(
                 getString(R.string.songs),
@@ -59,8 +58,8 @@ public class ArtistViewActivity extends BaseMediaActivity {
         ));
 
         final List<Fragment> fragmentList = new ArrayList<>(Arrays.asList(
-                artistMusicFragment,
-                artistAlbumFragment
+                musicFragment,
+                albumFragment
         ));
 
         mBinding.vp.setAdapter(new BaseVPAdapter(this, fragmentList));
@@ -79,10 +78,10 @@ public class ArtistViewActivity extends BaseMediaActivity {
 
     private void initArtistInfo(){
         if (mArtist.getPicture_url() != null){
-            displayImageFromLink(mArtist.getPicture_url(), mBinding.ivArtist, true);
+            displayImageFromLink(mArtist.getPicture_url(), mBinding.ivArtist, R.drawable.bg_artist, true);
         }
         else{
-            displayImageFromDrawable(R.drawable.bg_artist, mBinding.ivArtist, true);
+            displayImageFromDrawable(R.drawable.bg_artist, mBinding.ivArtist, R.drawable.bg_artist, true);
         }
 
         mBinding.tvArtistName.setText(mArtist.getName());
