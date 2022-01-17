@@ -24,12 +24,36 @@
         style="@style/ButtonStyle.Transparent"/>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_override"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/override"
+        android:visibility="gone"
+        app:icon="@drawable/ic_round_find_replace_24"
+        style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_add_to_queue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/add_to_queue"
         app:icon="@drawable/ic_round_add_to_queue_24"
         style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add_to_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_to_playlist"
+        app:icon="@drawable/ic_round_playlist_add_24"
+        style="@style/ButtonStyle.Transparent"/>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/lpi_add_to_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_delete"
