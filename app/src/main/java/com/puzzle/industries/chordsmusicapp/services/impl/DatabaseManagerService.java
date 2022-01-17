@@ -16,14 +16,9 @@ import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IDatabaseManagerService;
 import com.puzzle.industries.chordsmusicapp.services.IMediaBroadCastService;
 import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class DatabaseManagerService implements IDatabaseManagerService {
 
-    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
     private final TrackDao TRACK_DAO = Chords.getDatabase().trackDao();
     private final ArtistDao ARTIST_DAO = Chords.getDatabase().artistDao();
     private final AlbumDao ALBUM_DAO = Chords.getDatabase().albumDao();
@@ -48,16 +43,11 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         final String fileName = SongFileNameHelper.generateSongFileName(downloadedSongInfo);
         final String songLocation = MediaFileManagerService.getInstance().getFilePath(fileName);
 
-        String trackReleaseDate = "";
-        if (downloadedSongInfo.getRelease_date() != null){
-            trackReleaseDate = DATE_FORMAT.format(downloadedSongInfo.getRelease_date());
-        }
-
         final TrackEntity track = new TrackEntity(
                 downloadedSongInfo.getId(),
                 downloadedSongInfo.getSongName(),
-                downloadedSongInfo.getDisk_number(),
-                trackReleaseDate,
+                downloadedSongInfo.getTrack_position(),
+                downloadedSongInfo.getRelease_date(),
                 songLocation,
                 artistDataStruct.getId(),
                 albumDataStruct.getId()
@@ -69,16 +59,11 @@ public class DatabaseManagerService implements IDatabaseManagerService {
                 artistDataStruct.getPicture_big()
         );
 
-        String albumReleaseDate = "";
-        if (albumDataStruct.getRelease_date() != null){
-            albumReleaseDate = DATE_FORMAT.format(albumDataStruct.getRelease_date());
-        }
-
         final AlbumEntity album = new AlbumEntity(
                 albumDataStruct.getId(),
                 albumDataStruct.getTitle(),
                 albumDataStruct.getCover_big(),
-                albumReleaseDate,
+                albumDataStruct.getRelease_date(),
                 artistDataStruct.getId()
         );
 
@@ -100,7 +85,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         final TrackArtistAlbumEntity trackArtistAlbum = new TrackArtistAlbumEntity(
                 track.getId(),
                 track.getTitle(),
-                track.getDisk_number(),
+                track.getTrack_number(),
                 track.getLocation(),
                 artist.getName(),
                 artist.getId(),
