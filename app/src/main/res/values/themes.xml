@@ -10,6 +10,7 @@
         <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
         <item name="colorOnSecondary">@color/secondaryTextColor</item>
 
+        <!--material-->
         <item name="bottomNavigationStyle">@style/BottomNavigationStyle</item>
         <item name="android:textViewStyle">@style/TextAppearance.Regular</item>
         <item name="textInputStyle">@style/OutlinedTextInputLayout</item>
@@ -18,6 +19,7 @@
         <item name="linearProgressIndicatorStyle">@style/LinearProgressIndicatorStyle</item>
         <item name="tabStyle">@style/TabLayoutStyle</item>
         <item name="materialButtonStyle">@style/ButtonStyle</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
 
         <!--system-->
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
@@ -147,5 +149,15 @@
     <style name="ButtonShapeAppearance">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="CardView.Transparent" parent="Widget.Material3.CardView.Filled">
+        <item name="borderWidth">0dp</item>
+        <item name="cardCornerRadius">0dp</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.Material3.Toolbar">
+        <item name="font">@style/TextAppearance.Bold</item>
     </style>
 </resources>
