@@ -2,32 +2,24 @@ package com.puzzle.industries.chordsmusicapp.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaFragment;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
-import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryBinding;
-import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryTabBinding;
-import com.puzzle.industries.chordsmusicapp.databinding.FragmentMusicBinding;
-import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.models.adapters.MusicRVAdapter;
-import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
+
+import java.util.List;
 
 public class MusicFragment extends BaseMediaFragment<TrackArtistAlbumEntity> {
 
     private MusicRVAdapter mAdapter;
-
+    private List<TrackArtistAlbumEntity> mTracks;
+    private boolean mDisplayCurrentPlaylist;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -36,8 +28,17 @@ public class MusicFragment extends BaseMediaFragment<TrackArtistAlbumEntity> {
     }
 
     private void init(){
+        initExtras();
         initAdapter();
         initObservables();
+    }
+
+    private void initExtras(){
+        final Bundle bundle = getArguments();
+        if (bundle != null){
+            mDisplayCurrentPlaylist = bundle.getBoolean(Constants.KEY_DISPLAY_CURRENT_PLAYLIST, false);
+            mTracks = bundle.getParcelableArrayList(Constants.KEY_PLAYLIST_TRACKS);
+        }
     }
 
     private void initObservables() {
@@ -45,7 +46,7 @@ public class MusicFragment extends BaseMediaFragment<TrackArtistAlbumEntity> {
     }
 
     private void initAdapter() {
-        mAdapter = new MusicRVAdapter(MusicLibraryService.getInstance().getSongs());
+        mAdapter = new MusicRVAdapter(getPlaylist());
         mBinding.getRoot().setAdapter(mAdapter);
         mAdapter.setItemLongClickCallback(this);
     }
