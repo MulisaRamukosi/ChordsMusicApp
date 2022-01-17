@@ -32,6 +32,11 @@
         <activity android:name=".activities.PlayerActivity"/>
         <activity android:name=".activities.AlbumViewActivity"/>
         <activity android:name=".activities.ArtistViewActivity"/>
+        <activity android:name=".activities.OverrideSongActivity"/>
+        <activity android:name=".activities.CreateEditPlaylistActivity"/>
+        <activity android:name=".activities.SelectMusicActivity"/>
+        <activity android:name=".activities.ViewPlaylistActivity"/>
+        <activity android:name=".activities.SelectPlaylistActivity"/>
 
         <service android:name=".services.impl.MusicPlayerService"/>
         <service android:name=".services.impl.MusicLibraryService"/>
