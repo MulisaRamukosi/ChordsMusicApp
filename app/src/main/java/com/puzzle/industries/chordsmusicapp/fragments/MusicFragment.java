@@ -50,6 +50,14 @@ public class MusicFragment extends BaseMediaFragment<TrackArtistAlbumEntity> {
         mAdapter.setItemLongClickCallback(this);
     }
 
+    private List<TrackArtistAlbumEntity> getPlaylist(){
+        return mDisplayCurrentPlaylist
+                ? MUSIC_LIBRARY.getCurrentPlaylistSongs()
+                : mTracks == null
+                ? MUSIC_LIBRARY.getSongs()
+                : mTracks;
+    }
+
     @Override
     public void initReceiverIntentFilters() {
         setItemAddedIntentFilterAction(Constants.ACTION_MUSIC_ADDED_TO_LIST);
