@@ -25,9 +25,12 @@ import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
+import java.util.List;
+
 public class AlbumFragment extends BaseMediaFragment<AlbumArtistEntity> {
 
     private AlbumRVAdapter mAdapter;
+    private List<AlbumArtistEntity> mAlbums;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -36,8 +39,16 @@ public class AlbumFragment extends BaseMediaFragment<AlbumArtistEntity> {
     }
 
     private void init(){
+        initExtras();
         initAdapters();
         initObservables();
+    }
+
+    private void initExtras(){
+        final Bundle bundle = getArguments();
+        if (bundle != null){
+            mAlbums = bundle.getParcelableArrayList(Constants.KEY_ALBUMS);
+        }
     }
 
     private void initAdapters(){
