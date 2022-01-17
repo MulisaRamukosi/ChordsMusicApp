@@ -2,6 +2,7 @@ package com.puzzle.industries.chordsmusicapp.workers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -43,11 +44,7 @@ public class DownloadSongWorker extends Worker implements DownloadProgressCallba
 
     @Override
     public void updateProgress(int currentProgress) {
-        final Intent i = new Intent(Constants.ACTION_DOWNLOAD_PROGRESS);
-        i.putExtra(Constants.KEY_SONG, song);
-        i.putExtra(Constants.KEY_DOWNLOAD_PROGRESS, currentProgress);
-
-        Chords.getAppContext().sendBroadcast(i);
+        setProgressAsync(new Data.Builder().putInt(Constants.KEY_DOWNLOAD_PROGRESS, currentProgress).build());
     }
 
     @Override
