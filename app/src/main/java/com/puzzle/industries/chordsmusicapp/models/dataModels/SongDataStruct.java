@@ -21,7 +21,6 @@ import lombok.Setter;
 public class SongDataStruct implements Parcelable {
 
     private final int id;
-    private final long duration;
 
     @SerializedName("title")
     private final String songName;
@@ -29,28 +28,25 @@ public class SongDataStruct implements Parcelable {
     @Setter private ArtistDataStruct artist;
     @Setter private AlbumDataStruct album;
 
-    private final String songGenre;
-    private final String songYear;
-    private final int disk_number;
-    private Date release_date;
+    @Setter private int track_position;
+    private final String release_date;
 
-    private final long downloadId;
+    public SongDataStruct(int id, String songName, ArtistDataStruct artist, AlbumDataStruct album, int track_position, String release_date){
+        this.id = id;
+        this.songName = songName;
+        this.artist = artist;
+        this.album = album;
+        this.track_position = track_position;
+        this.release_date = release_date;
+    }
 
     protected SongDataStruct(Parcel in) {
         id = in.readInt();
-        duration = in.readLong();
         songName = in.readString();
         artist = in.readParcelable(ArtistDataStruct.class.getClassLoader());
         album = in.readParcelable(AlbumDataStruct.class.getClassLoader());
-        songGenre = in.readString();
-        songYear = in.readString();
-        disk_number = in.readInt();
-        try {
-            release_date = new SimpleDateFormat(Constants.FORMAT_DATE, Locale.getDefault()).parse(in.readString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        downloadId = in.readLong();
+        track_position = in.readInt();
+        release_date = in.readString();
     }
 
     public static final Creator<SongDataStruct> CREATOR = new Creator<SongDataStruct>() {
@@ -78,14 +74,10 @@ public class SongDataStruct implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeLong(duration);
         dest.writeString(songName);
         dest.writeParcelable(artist, flags);
         dest.writeParcelable(album, flags);
-        dest.writeString(songGenre);
-        dest.writeString(songYear);
-        dest.writeInt(disk_number);
-        dest.writeString(release_date == null ? new Date().toString() : release_date.toString());
-        dest.writeLong(downloadId);
+        dest.writeInt(track_position);
+        dest.writeString(release_date);
     }
 }
