@@ -41,7 +41,7 @@ public class AlbumFragment extends BaseMediaFragment<AlbumArtistEntity> {
     }
 
     private void initAdapters(){
-        mAdapter = new AlbumRVAdapter(MusicLibraryService.getInstance().getAlbums());
+        mAdapter = new AlbumRVAdapter(mAlbums == null ? MUSIC_LIBRARY.getAlbums() : mAlbums);
         mBinding.getRoot().setAdapter(mAdapter);
         mAdapter.setItemLongClickCallback(this);
     }

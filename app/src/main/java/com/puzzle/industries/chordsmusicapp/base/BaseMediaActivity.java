@@ -5,6 +5,8 @@ import android.content.Intent;
 import com.puzzle.industries.chordsmusicapp.activities.PlayerActivity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.events.PlaySongEvent;
+import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
+import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import org.greenrobot.eventbus.EventBus;
@@ -18,8 +20,7 @@ import lombok.Setter;
 
 public abstract class BaseMediaActivity extends BaseActivity{
 
-    @Setter @Getter
-    private List<TrackArtistAlbumEntity> tracks;
+    protected final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
 
     @Override
     public void onStart() {

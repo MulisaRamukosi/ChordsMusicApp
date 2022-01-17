@@ -29,7 +29,7 @@ public class ArtistFragment extends BaseMediaFragment<ArtistEntity> {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAdapter = new ArtistRVAdapter(MusicLibraryService.getInstance().getArtists());
+        mAdapter = new ArtistRVAdapter(MUSIC_LIBRARY.getArtists());
         mAdapter.setItemLongClickCallback(this);
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(requireContext());
         layoutManager.setFlexDirection(FlexDirection.ROW);
