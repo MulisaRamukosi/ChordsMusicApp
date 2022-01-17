@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/mp_16dp"
+        android:layout_marginHorizontal="@dimen/mp_16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/create_playlist"
+            style="@style/TextAppearance.Title.Bold"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:gravity="center"
+            android:textColor="?colorSecondary"
+            style="@style/ButtonStyle.Transparent"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            android:gravity="center"
+            android:textColor="?colorSecondary"
+            style="@style/ButtonStyle.Transparent"/>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/cpi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mp_16dp"
+        android:layout_marginHorizontal="@dimen/mp_16dp"
+        android:hint="@string/enter_playlist_name"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            style="@style/TextInputEditTextStyle"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tv_add_songs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mp_16dp"
+        android:layout_marginHorizontal="@dimen/mp_16dp"
+        android:text="@string/playlist_songs"
+        android:gravity="center_vertical"
+        app:drawableTint="?colorSecondary"
+        app:drawableRightCompat="@drawable/ic_round_edit_24" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_songs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginVertical="@dimen/mp_8dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+</LinearLayout>
