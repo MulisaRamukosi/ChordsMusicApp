@@ -2,7 +2,6 @@ package com.puzzle.industries.chordsmusicapp.remote.musicFinder;
 
 import android.annotation.SuppressLint;
 import android.net.http.SslError;
-import android.util.Log;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -22,7 +21,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 
-public class MusicFinderApi extends WebViewClient implements RetryPolicyListener{
+public class MusicFinderApi extends WebViewClient implements RetryPolicyListener {
 
     private final String[] mOffensiveWords;
     private final WebView mWebView;
@@ -33,38 +32,6 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     private final boolean overrideAlreadyDownloadedSong;
 
     private final int[] STATE_TRACK = new int[]{0};
-
-    public static class MusicFinderApiBuilder{
-
-        private SongDataStruct songDataStruct;
-        private ApiCallBack<String> callBack;
-        private WebView webView;
-        private boolean override;
-
-        public MusicFinderApiBuilder setSongDataStruct(SongDataStruct songDataStruct){
-            this.songDataStruct = songDataStruct;
-            return this;
-        }
-
-        public MusicFinderApiBuilder setApiCallBack(ApiCallBack<String> callBack){
-            this.callBack = callBack;
-            return this;
-        }
-
-        public MusicFinderApiBuilder setWebView(WebView webView){
-            this.webView = webView;
-            return this;
-        }
-
-        public MusicFinderApiBuilder setAsOverride(boolean override){
-            this.override = override;
-            return this;
-        }
-
-        public MusicFinderApi build(){
-            return new MusicFinderApi(this);
-        }
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
     private MusicFinderApi(MusicFinderApiBuilder builder) {
@@ -88,14 +55,14 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
             this.mCallBack.onSuccess(url);
         });
 
-        if (!overrideAlreadyDownloadedSong){
+        if (!overrideAlreadyDownloadedSong) {
             mRetryPolicy.startRetryPolicy();
         }
     }
 
-    private String applyBadWordsFix(String query){
-        for (String badWord : mOffensiveWords){
-            if (query.toLowerCase().contains(badWord)){
+    private String applyBadWordsFix(String query) {
+        for (String badWord : mOffensiveWords) {
+            if (query.toLowerCase().contains(badWord)) {
                 query = query.toLowerCase();
                 query = query.replace(badWord, badWord.substring(0, badWord.length() - 1));
             }
@@ -121,7 +88,7 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
         mWebView.evaluateJavascript(attemptDownload, value -> STATE_TRACK[0] += 1);
     }
 
-    private void downloadSong() throws IOException{
+    private void downloadSong() throws IOException {
         String downloadSongScript = mScriptLoader.getScript(Constants.SCRIPT_DOWNLOAD);
         mWebView.evaluateJavascript(downloadSongScript, value -> STATE_TRACK[0] += 1);
 
@@ -145,30 +112,37 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
         stopRetryAttemptsIfFinished();
     }
 
-
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
-        if (!overrideAlreadyDownloadedSong){
+        if (!overrideAlreadyDownloadedSong) {
             final int currentState = STATE_TRACK[0];
 
             try {
-                switch (currentState){
-                    case Constants.STATE_FIRST_PAGE_LOADED: sendSearchQuery(); break;
-                    case Constants.STATE_RESULTS_PAGE: openSongLink(); break;
-                    case Constants.STATE_SONG_PAGE: attemptToDownloadSong(); break;
-                    case Constants.STATE_PRIOR_DOWNLOAD: downloadSong(); break;
+                switch (currentState) {
+                    case Constants.STATE_FIRST_PAGE_LOADED:
+                        sendSearchQuery();
+                        break;
+                    case Constants.STATE_RESULTS_PAGE:
+                        openSongLink();
+                        break;
+                    case Constants.STATE_SONG_PAGE:
+                        attemptToDownloadSong();
+                        break;
+                    case Constants.STATE_PRIOR_DOWNLOAD:
+                        downloadSong();
+                        break;
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 mRetryPolicy.stopRetryPolicy();
                 mCallBack.onFailure(e);
             }
         }
     }
 
-    private void stopRetryAttemptsIfFinished(){
-        if (mRetryPolicy.allAttemptsUsed()){
+    private void stopRetryAttemptsIfFinished() {
+        if (mRetryPolicy.allAttemptsUsed()) {
             mRetryPolicy.stopRetryPolicy();
             mCallBack.onFailure(new Throwable(String.format("Failed to get the url of %s", mSong.getSongName())));
         }
@@ -188,5 +162,37 @@ public class MusicFinderApi extends WebViewClient implements RetryPolicyListener
     @Override
     public void retryAttemptsFinished() {
         mCallBack.onFailure(new Throwable(String.format("Failed to get the url of %s", mSong.getSongName())));
+    }
+
+    public static class MusicFinderApiBuilder {
+
+        private SongDataStruct songDataStruct;
+        private ApiCallBack<String> callBack;
+        private WebView webView;
+        private boolean override;
+
+        public MusicFinderApiBuilder setSongDataStruct(SongDataStruct songDataStruct) {
+            this.songDataStruct = songDataStruct;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setApiCallBack(ApiCallBack<String> callBack) {
+            this.callBack = callBack;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setWebView(WebView webView) {
+            this.webView = webView;
+            return this;
+        }
+
+        public MusicFinderApiBuilder setAsOverride(boolean override) {
+            this.override = override;
+            return this;
+        }
+
+        public void build() {
+            new MusicFinderApi(this);
+        }
     }
 }

@@ -21,7 +21,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -31,7 +30,9 @@ import lombok.Setter;
 public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackArtistAlbumEntity> {
 
     @Setter private boolean isSelectionRequest;
-    @Getter @Setter private List<Integer> selectedSongs = new ArrayList<>();
+    @Getter
+    @Setter
+    private List<Integer> selectedSongs = new ArrayList<>();
 
     public MusicRVAdapter(List<TrackArtistAlbumEntity> mediaList) {
         this.mediaList = mediaList;
@@ -46,7 +47,7 @@ public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackAr
 
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemMusicBinding> holder, int position) {
-        if (isSelectionRequest){
+        if (isSelectionRequest) {
             holder.mBinding.getRoot().setClickable(true);
             holder.mBinding.getRoot().setFocusable(true);
             holder.mBinding.getRoot().setCheckable(true);
@@ -59,7 +60,7 @@ public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackAr
         final boolean isCurrentlyPlaying = currentMediaItem != null && song.getId() == currentMediaItem.getId();
         final boolean[] isSelected = {selectedSongs.contains(song.getId())};
         final int txtColor = ContextCompat.getColor(ctx, isCurrentlyPlaying
-                ? R.color.secondaryLightColor:
+                ? R.color.secondaryLightColor :
                 R.color.primaryTextColor);
 
         holder.mBinding.getRoot().setChecked(isSelected[0]);
@@ -69,7 +70,8 @@ public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackAr
         holder.mBinding.tvDetails.setText(String.format("%s • %s", artist.getName(), album.getTitle()));
 
         holder.mBinding.getRoot().setOnLongClickListener(view -> {
-            if (callback != null) callback.mediaItemLongClicked(song, mediaList.stream().mapToInt(TrackArtistAlbumEntity::getId).boxed().collect(Collectors.toList()));
+            if (callback != null)
+                callback.mediaItemLongClicked(song, mediaList.stream().mapToInt(TrackArtistAlbumEntity::getId).boxed().collect(Collectors.toList()));
             return true;
         });
 
@@ -77,19 +79,17 @@ public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackAr
          * Event subscriber = BaseMediaActivity
          * */
         holder.mBinding.getRoot().setOnClickListener(v -> {
-            if (isSelectionRequest){
-                if (isSelected[0]){
+            if (isSelectionRequest) {
+                if (isSelected[0]) {
                     selectedSongs.remove(Integer.valueOf(song.getId()));
                     isSelected[0] = false;
-                }
-                else{
+                } else {
                     selectedSongs.add(song.getId());
                     isSelected[0] = true;
                 }
 
                 holder.mBinding.getRoot().setChecked(isSelected[0]);
-            }
-            else{
+            } else {
                 EventBus
                         .getDefault()
                         .post(new PlaySongEvent(song.getId(), this.mediaList.stream()
@@ -113,7 +113,7 @@ public class MusicRVAdapter extends BaseMediaRVAdapter<ItemMusicBinding, TrackAr
         notifyDataSetChanged();
     }
 
-    public void reset(){
+    public void reset() {
         this.mediaList.clear();
         this.mediaList.addAll(MUSIC_LIBRARY.getSongs());
         notifyDataSetChanged();

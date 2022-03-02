@@ -1,6 +1,5 @@
 package com.puzzle.industries.chordsmusicapp.remote.deezer.api;
 
-import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerAlbumDataModel;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerAlbumSongsDataModel;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.models.DeezerArtistsDataModel;

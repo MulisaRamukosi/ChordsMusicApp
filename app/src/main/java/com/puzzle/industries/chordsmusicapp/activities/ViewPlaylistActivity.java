@@ -22,21 +22,13 @@ import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityViewPlaylistBinding;
 import com.puzzle.industries.chordsmusicapp.helpers.MediaFragHelper;
-import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityResultCallback<Boolean> {
-
-    private List<TrackArtistAlbumEntity> mPlaylistTracks;
-    private ActivityViewPlaylistBinding mBinding;
-    private PlaylistEntity mPlaylist;
-    private boolean mChangesOccurred;
 
     private final ActivityResultContract<PlaylistEntity, Boolean> EDIT_PLAYLIST_CONTRACT = new ActivityResultContract<PlaylistEntity, Boolean>() {
         @NonNull
@@ -50,13 +42,16 @@ public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityR
 
         @Override
         public Boolean parseResult(int resultCode, @Nullable Intent intent) {
-            if (resultCode == Activity.RESULT_OK && intent != null){
+            if (resultCode == Activity.RESULT_OK && intent != null) {
                 return intent.getBooleanExtra(Constants.KEY_WAS_UPDATED, false);
             }
             return false;
         }
     };
-
+    private List<TrackArtistAlbumEntity> mPlaylistTracks;
+    private ActivityViewPlaylistBinding mBinding;
+    private PlaylistEntity mPlaylist;
+    private boolean mChangesOccurred;
     private ActivityResultLauncher<PlaylistEntity> mPlaylistResultLauncher;
 
     @Override
@@ -68,8 +63,8 @@ public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityR
         init();
     }
 
-    private void init(){
-        if (initPlaylist()){
+    private void init() {
+        if (initPlaylist()) {
             registerContracts();
             initPlaylistTracks();
             initPlaylistView();
@@ -77,24 +72,24 @@ public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityR
         }
     }
 
-    private void registerContracts(){
+    private void registerContracts() {
         mPlaylistResultLauncher = registerForActivityResult(EDIT_PLAYLIST_CONTRACT, this);
     }
 
-    private boolean initPlaylist(){
+    private boolean initPlaylist() {
         final Bundle bundle = getIntent().getExtras();
-        if (bundle != null){
+        if (bundle != null) {
             mPlaylist = bundle.getParcelable(Constants.KEY_PLAYLIST);
             return mPlaylist != null;
         }
         return false;
     }
 
-    private void initPlaylistView(){
+    private void initPlaylistView() {
         Objects.requireNonNull(getSupportActionBar()).setTitle(mPlaylist.getName());
     }
 
-    private void initPlaylistTracks(){
+    private void initPlaylistTracks() {
         mPlaylistTracks = MUSIC_LIBRARY.getPlaylistTracks(mPlaylist.getId());
     }
 
@@ -108,7 +103,7 @@ public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityR
 
     @Override
     public void onActivityResult(Boolean wasUpdated) {
-        if (wasUpdated){
+        if (wasUpdated) {
             mChangesOccurred = true;
             Chords.applicationHandler.postDelayed(() -> {
                 mPlaylist = MUSIC_LIBRARY.getPlaylistById(mPlaylist.getId());
@@ -122,7 +117,7 @@ public class ViewPlaylistActivity extends BaseMediaActivity implements ActivityR
 
     @Override
     public void onBackPressed() {
-        if (mChangesOccurred){
+        if (mChangesOccurred) {
             final Intent i = new Intent();
             i.putExtra(Constants.KEY_PLAYLIST, mPlaylist);
             setResult(Activity.RESULT_OK, i);

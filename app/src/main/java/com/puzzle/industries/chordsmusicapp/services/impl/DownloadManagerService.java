@@ -5,14 +5,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.Operation;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.callbacks.SongAddedToDownloadQueueCallback;
@@ -30,19 +27,10 @@ import com.puzzle.industries.chordsmusicapp.workers.DownloadSongWorker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import lombok.Getter;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class DownloadManagerService implements IDownloadManagerService {
@@ -50,23 +38,11 @@ public class DownloadManagerService implements IDownloadManagerService {
     private static DownloadManagerService instance;
     private final WorkManager mWorkManager;
 
-    private volatile Map<Integer, MutableLiveData<DownloadItemDataStruct>> mDownloadQueue;
-    private volatile List<Integer> mQueueTrack;
+    private final Map<Integer, MutableLiveData<DownloadItemDataStruct>> mDownloadQueue;
+    private final List<Integer> mQueueTrack;
 
     private final int MAX_ALLOWED_DOWNLOADS = 5;
-    private int currDownloads = 0;
-
-    public static DownloadManagerService getInstance() {
-        if (instance == null){
-            synchronized (DownloadManagerService.class){
-                if (instance == null){
-                    instance = new DownloadManagerService();
-                }
-            }
-        }
-        return instance;
-    }
-
+    private final AtomicInteger currDownloads = new AtomicInteger(0);
 
     private DownloadManagerService() {
         this.mWorkManager = WorkManager.getInstance(Chords.getAppContext());
@@ -74,27 +50,37 @@ public class DownloadManagerService implements IDownloadManagerService {
         mQueueTrack = new ArrayList<>();
     }
 
+    public static DownloadManagerService getInstance() {
+        if (instance == null) {
+            synchronized (DownloadManagerService.class) {
+                if (instance == null) {
+                    instance = new DownloadManagerService();
+                }
+            }
+        }
+        return instance;
+    }
+
     @Override
     public void downloadSong(SongDataStruct song, @Nullable SongAddedToDownloadQueueCallback callback) {
-        if (mDownloadQueue.containsKey(song.getId())){
+        if (mDownloadQueue.containsKey(song.getId())) {
             showToastNotification(String.format("%s is already in the download queue", song.getSongName()));
-        }
-        else if (MusicLibraryService.getInstance().containsSong(song.getId())){
+        } else if (MusicLibraryService.getInstance().containsSong(song.getId())) {
             showToastNotification(String.format("%s already exists", song.getSongName()));
-        }
-        else{
-            retrieveSongInfoAndAttemptDownload(song, maxDownloadNotExceeded(), callback);
+        } else {
+            retrieveSongInfoAndAttemptDownload(song, callback);
         }
 
     }
 
-    private void retrieveSongInfoAndAttemptDownload(SongDataStruct song, boolean maxDownloadNotExceeded, @Nullable SongAddedToDownloadQueueCallback callback){
-        currDownloads++;
+    private void retrieveSongInfoAndAttemptDownload(SongDataStruct song, @Nullable SongAddedToDownloadQueueCallback callback) {
+
         final int songId = song.getId();
 
         getTrackInfo(song.getId(), new ApiCallBack<DeezerTrackDataModel>() {
             @Override
             public void onSuccess(DeezerTrackDataModel track) {
+                incrementDownloads();
                 if (callback != null) callback.success();
                 final SongDataStruct song = MapperHelper.mapTrackToSongDataStruct(track);
                 final DownloadItemDataStruct downloadItemDataStruct = new DownloadItemDataStruct(songId, song, DownloadState.IN_QUEUE, true);
@@ -104,10 +90,10 @@ public class DownloadManagerService implements IDownloadManagerService {
                 mDownloadQueue.put(songId, liveData);
                 showToastNotification(String.format("%s added to download queue", song.getSongName()));
 
-                if (maxDownloadNotExceeded){
+                boolean maxDownloadNotExceeded = maxDownloadNotExceeded();
+                if (maxDownloadNotExceeded) {
                     attemptToDownloadSong(song);
-                }
-                else{
+                } else {
                     mQueueTrack.add(songId);
                 }
             }
@@ -119,7 +105,7 @@ public class DownloadManagerService implements IDownloadManagerService {
                 showToastNotification(String.format("Failed to get info of Track %s", song.getSongName()));
 
                 final MutableLiveData<DownloadItemDataStruct> downloadItem = mDownloadQueue.get(songId);
-                if (downloadItem != null){
+                if (downloadItem != null) {
                     downloadItem.postValue(new DownloadItemDataStruct(songId, song, DownloadState.FAILED, false));
                 }
                 mDownloadQueue.put(songId, downloadItem);
@@ -127,20 +113,20 @@ public class DownloadManagerService implements IDownloadManagerService {
         });
     }
 
-    private void getTrackInfo(int trackId, ApiCallBack<DeezerTrackDataModel> callBack){
+    private void getTrackInfo(int trackId, ApiCallBack<DeezerTrackDataModel> callBack) {
         DeezerApiCall.getInstance().getTrackInfoById(trackId, callBack);
     }
 
-    private synchronized boolean maxDownloadNotExceeded(){
+    private synchronized boolean maxDownloadNotExceeded() {
         return /*mDownloadQueue.values().stream()
                 .filter(downloadItemDataStruct ->
                         Objects.requireNonNull(downloadItemDataStruct.getValue()).getDownloadState() == DownloadState.PENDING
                                 || downloadItemDataStruct.getValue().getDownloadState() == DownloadState.IN_QUEUE
                                 || downloadItemDataStruct.getValue().getDownloadState() == DownloadState.DOWNLOADING)
-                .count() < MAX_ALLOWED_DOWNLOADS ||*/ currDownloads < MAX_ALLOWED_DOWNLOADS;
+                .count() < MAX_ALLOWED_DOWNLOADS ||*/ currDownloads.get() < MAX_ALLOWED_DOWNLOADS;
     }
 
-    private void attemptToDownloadSong(SongDataStruct song){
+    private void attemptToDownloadSong(SongDataStruct song) {
         updateSongState(song, DownloadState.PENDING);
 
         Chords.applicationHandler.post(() -> new MusicFinderApi.MusicFinderApiBuilder()
@@ -174,21 +160,22 @@ public class DownloadManagerService implements IDownloadManagerService {
                 }).build());
     }
 
-    private void initDownloadWorkerStateListener(UUID workerId){
-        final ListenableFuture<WorkInfo> result = mWorkManager.getWorkInfoById(workerId);
-        result.addListener(() -> {
-            if (result.isDone()){
+    private void initDownloadWorkerStateListener(UUID workerId) {
+        mWorkManager.getWorkInfoByIdLiveData(workerId).observeForever(workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                decreaseDownloads();
                 downloadNextInQueueIfAvailable();
             }
-        }, Executors.newSingleThreadExecutor());
+        });
+
     }
 
-    private void initDownloadProgressObserver(int songId, UUID downloadId){
+    private void initDownloadProgressObserver(int songId, UUID downloadId) {
         final LiveData<WorkInfo> workObserver = mWorkManager.getWorkInfoByIdLiveData(downloadId);
         workObserver.observeForever(workInfo -> {
             final int progress = workInfo.getProgress().getInt(Constants.KEY_DOWNLOAD_PROGRESS, 0);
             final MutableLiveData<DownloadItemDataStruct> downloadItemObserver = mDownloadQueue.get(songId);
-            if (downloadItemObserver != null){
+            if (downloadItemObserver != null) {
                 final DownloadItemDataStruct downloadItem = downloadItemObserver.getValue();
                 assert downloadItem != null;
                 downloadItem.setDownloadProgress(progress);
@@ -198,14 +185,13 @@ public class DownloadManagerService implements IDownloadManagerService {
         });
     }
 
-    private synchronized void downloadNextInQueueIfAvailable(){
-        decreaseDownloads();
-        if (!mQueueTrack.isEmpty()){
+    private synchronized void downloadNextInQueueIfAvailable() {
+        if (!mQueueTrack.isEmpty()) {
             final int id = mQueueTrack.remove(0);
             final MutableLiveData<DownloadItemDataStruct> observableDownload = mDownloadQueue.get(id);
-            if (observableDownload != null){
+            if (observableDownload != null) {
                 final DownloadItemDataStruct downloadItem = observableDownload.getValue();
-                if (downloadItem != null){
+                if (downloadItem != null) {
                     attemptToDownloadSong(downloadItem.getSong());
                 }
             }
@@ -223,15 +209,14 @@ public class DownloadManagerService implements IDownloadManagerService {
     }
 
     @Override
-    public void retryDownload(SongDataStruct song){
+    public void retryDownload(SongDataStruct song) {
         final MutableLiveData<DownloadItemDataStruct> downloadItem = mDownloadQueue.get(song.getId());
-        if (downloadItem != null){
+        if (downloadItem != null) {
             final DownloadItemDataStruct downloadInfo = downloadItem.getValue();
             assert downloadInfo != null;
-            if (!downloadInfo.isInfoSuccessfullyRetrieved()){
-                retrieveSongInfoAndAttemptDownload(song, maxDownloadNotExceeded(),null);
-            }
-            else{
+            if (!downloadInfo.isInfoSuccessfullyRetrieved()) {
+                retrieveSongInfoAndAttemptDownload(song, null);
+            } else {
                 attemptToDownloadSong(downloadInfo.getSong());
             }
         }
@@ -240,9 +225,9 @@ public class DownloadManagerService implements IDownloadManagerService {
     @Override
     public void updateSongState(SongDataStruct song, DownloadState state) {
         final MutableLiveData<DownloadItemDataStruct> downloadItem = mDownloadQueue.get(song.getId());
-        if (downloadItem != null){
+        if (downloadItem != null) {
             final DownloadItemDataStruct item = downloadItem.getValue();
-            if (item != null){
+            if (item != null) {
                 item.setDownloadState(state);
                 downloadItem.postValue(item);
             }
@@ -254,11 +239,17 @@ public class DownloadManagerService implements IDownloadManagerService {
         return this.mDownloadQueue.get(songId);
     }
 
-    private void showToastNotification(String message){
+    private void showToastNotification(String message) {
         Chords.applicationHandler.post(() -> Toast.makeText(Chords.getAppContext(), message, Toast.LENGTH_SHORT).show());
     }
 
-    private void decreaseDownloads(){
-        if (currDownloads > 0) currDownloads--;
+    private void incrementDownloads() {
+        if (currDownloads.get() < MAX_ALLOWED_DOWNLOADS) {
+            currDownloads.incrementAndGet();
+        }
+    }
+
+    private void decreaseDownloads() {
+        if (currDownloads.get() > 0) currDownloads.decrementAndGet();
     }
 }

@@ -30,18 +30,15 @@ import lombok.Setter;
 
 public abstract class BaseMediaFragment<T> extends BaseFragment implements MediaItemLongClickCallback<T> {
 
+    protected final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
+    protected MediaVM mMediaViewModel;
+    protected FragmentLibraryTabBinding mBinding;
     private BroadcastReceiver itemAddedReceiver;
     private BroadcastReceiver itemRemovedReceiver;
     private BroadcastReceiver itemUpdatedReceiver;
-
     @Setter private String itemAddedIntentFilterAction;
     @Setter private String itemRemovedIntentFilterAction;
     @Setter private String itemUpdatedIntentFilterAction;
-
-    protected MediaVM mMediaViewModel;
-    protected FragmentLibraryTabBinding mBinding;
-    protected IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
-
     private IMediaOptionsService<T> mMediaOptionsService;
 
     @Override
@@ -73,11 +70,11 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
     }
 
     @Override
-    public void mediaItemLongClicked(T t, List<Integer> songIds){
+    public void mediaItemLongClicked(T t, List<Integer> songIds) {
         mMediaOptionsService.showMediaOptionBottomSheet(t, songIds);
     }
 
-    private void initReceivers(){
+    private void initReceivers() {
         itemAddedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -100,18 +97,18 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
         };
     }
 
-    private void registerReceivers(){
+    private void registerReceivers() {
         final FragmentActivity activity = getActivity();
-        if (activity != null){
+        if (activity != null) {
             activity.registerReceiver(itemAddedReceiver, new IntentFilter(itemAddedIntentFilterAction));
             activity.registerReceiver(itemRemovedReceiver, new IntentFilter(itemRemovedIntentFilterAction));
             activity.registerReceiver(itemUpdatedReceiver, new IntentFilter(itemUpdatedIntentFilterAction));
         }
     }
 
-    private void unregisterReceivers(){
+    private void unregisterReceivers() {
         final FragmentActivity activity = getActivity();
-        if (activity != null){
+        if (activity != null) {
             activity.unregisterReceiver(itemAddedReceiver);
             activity.unregisterReceiver(itemRemovedReceiver);
             activity.unregisterReceiver(itemUpdatedReceiver);
@@ -120,7 +117,9 @@ public abstract class BaseMediaFragment<T> extends BaseFragment implements Media
     }
 
     public abstract void initReceiverIntentFilters();
+
     public abstract void onReceivedItemAddedBroadCast(Intent intent);
+
     public abstract void onReceivedItemRemovedBroadCast(Intent intent);
 
 

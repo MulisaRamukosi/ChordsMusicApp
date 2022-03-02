@@ -9,8 +9,8 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadSearchBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.MusicResultRVAdapter;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.api.DeezerApiCall;
@@ -36,12 +36,11 @@ public class MusicDownloadFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         Objects.requireNonNull(mBinding.tilSearch.getEditText()).setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 final String searchText = mBinding.tilSearch.getEditText().getText().toString().trim();
-                if (searchText.isEmpty()){
+                if (searchText.isEmpty()) {
                     mBinding.tilSearch.setError(getString(R.string.error_search_input_required));
-                }
-                else{
+                } else {
                     searchForMusic(searchText);
                 }
             }
@@ -50,7 +49,7 @@ public class MusicDownloadFragment extends BaseFragment {
     }
 
     private void displayResults(DeezerSongResultDataModel results) {
-        if (mAdapter == null){
+        if (mAdapter == null) {
             mAdapter = new MusicResultRVAdapter();
             mBinding.rvResults.setAdapter(mAdapter);
         }
@@ -59,7 +58,6 @@ public class MusicDownloadFragment extends BaseFragment {
 
     private void searchForMusic(String songName) {
         setAsLoading(true);
-
         DeezerApiCall.getInstance().searchTracks(songName, new ApiCallBack<DeezerSongResultDataModel>() {
             @Override
             public void onSuccess(DeezerSongResultDataModel deezerTrackDataModel) {
@@ -75,7 +73,7 @@ public class MusicDownloadFragment extends BaseFragment {
         });
     }
 
-    private void setAsLoading(boolean isLoading){
+    private void setAsLoading(boolean isLoading) {
         mBinding.li.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         mBinding.tilSearch.setEnabled(!isLoading);
     }

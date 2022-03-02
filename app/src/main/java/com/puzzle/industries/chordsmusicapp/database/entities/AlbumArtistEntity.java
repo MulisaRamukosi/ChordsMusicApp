@@ -11,6 +11,17 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class AlbumArtistEntity implements Parcelable {
+    public static final Creator<AlbumArtistEntity> CREATOR = new Creator<AlbumArtistEntity>() {
+        @Override
+        public AlbumArtistEntity createFromParcel(Parcel in) {
+            return new AlbumArtistEntity(in);
+        }
+
+        @Override
+        public AlbumArtistEntity[] newArray(int size) {
+            return new AlbumArtistEntity[size];
+        }
+    };
     private final int id;
     private final String title;
     private final String cover_url;
@@ -24,18 +35,6 @@ public class AlbumArtistEntity implements Parcelable {
         artist_id = in.readInt();
         name = in.readString();
     }
-
-    public static final Creator<AlbumArtistEntity> CREATOR = new Creator<AlbumArtistEntity>() {
-        @Override
-        public AlbumArtistEntity createFromParcel(Parcel in) {
-            return new AlbumArtistEntity(in);
-        }
-
-        @Override
-        public AlbumArtistEntity[] newArray(int size) {
-            return new AlbumArtistEntity[size];
-        }
-    };
 
     @Override
     public boolean equals(@Nullable Object obj) {

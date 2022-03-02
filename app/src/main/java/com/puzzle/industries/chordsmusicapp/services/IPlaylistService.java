@@ -9,9 +9,13 @@ import java.util.Set;
 public interface IPlaylistService {
 
     void addPlaylist(PlaylistEntity playlist);
+
     void addSongsToPlaylist(int playlistId, List<PlaylistTrackEntity> playlistTracks);
+
     void addSongToPlaylist(int playlistId, int songId);
+
     void updatePlaylistName(int playlistId, String playlistNewName);
+
     void removeSongsFromPlaylist(int playlistId, Set<PlaylistTrackEntity> mRemovedSongs);
 
 }

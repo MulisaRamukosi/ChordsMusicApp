@@ -3,22 +3,10 @@ package com.puzzle.industries.chordsmusicapp.models.dataModels;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class ArtistDataStruct implements Parcelable {
-
-    private final int id;
-    private final String name;
-    private final String picture_big;
-
-    protected ArtistDataStruct(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        picture_big = in.readString();
-    }
 
     public static final Creator<ArtistDataStruct> CREATOR = new Creator<ArtistDataStruct>() {
         @Override
@@ -31,6 +19,15 @@ public class ArtistDataStruct implements Parcelable {
             return new ArtistDataStruct[size];
         }
     };
+    private final int id;
+    private final String name;
+    private final String picture_xl;
+
+    protected ArtistDataStruct(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        picture_xl = in.readString();
+    }
 
     @Override
     public int describeContents() {
@@ -41,6 +38,6 @@ public class ArtistDataStruct implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
-        dest.writeString(picture_big);
+        dest.writeString(picture_xl);
     }
 }

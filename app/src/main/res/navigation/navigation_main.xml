@@ -15,7 +15,7 @@
         android:id="@+id/mi_playlist"
         android:name="com.puzzle.industries.chordsmusicapp.fragments.PlaylistFragment"
         android:label="@string/playlist"
-        tools:layout="@layout/fragment_playlists"/>
+        tools:layout="@layout/fragment_library_tab"/>
 
     <fragment
         android:id="@+id/mi_search"

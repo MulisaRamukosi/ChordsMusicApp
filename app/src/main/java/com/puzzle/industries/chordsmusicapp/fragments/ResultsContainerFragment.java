@@ -11,15 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
-import com.bumptech.glide.Glide;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaFragment;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaRVAdapter;
-import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentSearchResultsContainerBinding;
-import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.models.adapters.AlbumRVAdapter;
 import com.puzzle.industries.chordsmusicapp.models.adapters.ArtistRVAdapter;
 import com.puzzle.industries.chordsmusicapp.models.adapters.MusicRVAdapter;
@@ -59,20 +56,20 @@ public class ResultsContainerFragment<T> extends BaseMediaFragment<T> {
         init();
     }
 
-    private void init(){
+    private void init() {
         initAdapter();
         initObservables();
     }
 
-    private void initMediaType(){
+    private void initMediaType() {
         final Bundle bundle = getArguments();
-        if (bundle != null){
+        if (bundle != null) {
             mType = (MediaType) bundle.getSerializable(Constants.KEY_MEDIA_TYPE);
         }
     }
 
-    private void initAdapter(){
-        switch (mType){
+    private void initAdapter() {
+        switch (mType) {
             case SONG:
                 mAdapter = (BaseMediaRVAdapter<? extends ViewBinding, T>) new MusicRVAdapter(new ArrayList<>());
                 break;
@@ -94,18 +91,24 @@ public class ResultsContainerFragment<T> extends BaseMediaFragment<T> {
         mBinding.rv.setAdapter(mAdapter);
     }
 
-    private void initObservables(){
+    private void initObservables() {
         mSearchViewModel.getObservableSearchWord().observe(getViewLifecycleOwner(), word -> mAdapter.showSearchResults(word));
-        switch (mType){
-            case SONG: mMediaViewModel.getObservableSong().observe(getViewLifecycleOwner(), song -> mAdapter.itemChanged((T) song)); break;
-            case ARTIST: mMediaViewModel.getObservableArtist().observe(getViewLifecycleOwner(), artist -> mAdapter.itemChanged((T) artist)); break;
-            case ALBUM: mMediaViewModel.getObservableAlbum().observe(getViewLifecycleOwner(), album -> mAdapter.itemChanged((T) album)); break;
+        switch (mType) {
+            case SONG:
+                mMediaViewModel.getObservableSong().observe(getViewLifecycleOwner(), song -> mAdapter.itemChanged((T) song));
+                break;
+            case ARTIST:
+                mMediaViewModel.getObservableArtist().observe(getViewLifecycleOwner(), artist -> mAdapter.itemChanged((T) artist));
+                break;
+            case ALBUM:
+                mMediaViewModel.getObservableAlbum().observe(getViewLifecycleOwner(), album -> mAdapter.itemChanged((T) album));
+                break;
         }
     }
 
     @Override
     public void initReceiverIntentFilters() {
-        switch (mType){
+        switch (mType) {
             case SONG:
                 setItemAddedIntentFilterAction(Constants.ACTION_MUSIC_ADDED_TO_LIST);
                 setItemRemovedIntentFilterAction(Constants.ACTION_MUSIC_DELETED);
@@ -137,32 +140,14 @@ public class ResultsContainerFragment<T> extends BaseMediaFragment<T> {
         mAdapter.itemRemoved(item);
     }
 
-    /*@Override
-    public void onReceivedItemChangedBroadCast(Intent intent) {
-        final SongInfoProgressEvent songInfo = intent.getParcelableExtra(Constants.KEY_MUSIC_PROGRESS);
-        if (songInfo == null) return;
-        switch (mType){
+    private String getKey() {
+        switch (mType) {
             case SONG:
-
-                mMediaViewModel.updateSong(songInfo.getCurrentSong());
-                mMediaViewModel.updateArtist(songInfo.getCurrentArtist());
-                break;
-
+                return Constants.KEY_SONG;
             case ALBUM:
-                mMediaViewModel.updateAlbum(songInfo.getCurrentAlbum());
-                break;
-
+                return Constants.KEY_ALBUM;
             case ARTIST:
-                mMediaViewModel.updateArtist(songInfo.getCurrentArtist());
-                break;
-        }
-    }*/
-
-    private String getKey(){
-        switch (mType){
-            case SONG: return Constants.KEY_SONG;
-            case ALBUM: return Constants.KEY_ALBUM;
-            case ARTIST: return Constants.KEY_ARTIST;
+                return Constants.KEY_ARTIST;
         }
         return "";
     }

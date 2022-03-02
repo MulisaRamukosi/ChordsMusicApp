@@ -6,14 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.puzzle.industries.chordsmusicapp.Chords;
-import com.puzzle.industries.chordsmusicapp.database.ChordsMusicDB;
 import com.puzzle.industries.chordsmusicapp.services.IMediaDeleteService;
-import com.puzzle.industries.chordsmusicapp.services.IMediaFileManagerService;
-import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MediaDeleteService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MediaFileManagerService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 public abstract class BaseMediaDeleteWorker extends Worker {

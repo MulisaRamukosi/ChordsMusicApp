@@ -1,4 +1,4 @@
-package com.puzzle.industries.chordsmusicapp.remote.deezer.api;
+package com.puzzle.industries.chordsmusicapp.remote;
 
 import androidx.annotation.NonNull;
 
@@ -16,10 +16,9 @@ public class BaseApiCallback<T> implements Callback<T> {
 
     @Override
     public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
-        if (response.isSuccessful() && response.body() != null){
+        if (response.isSuccessful() && response.body() != null) {
             callBack.onSuccess(response.body());
-        }
-        else{
+        } else {
             callBack.onFailure(new Throwable("Failed to get results"));
         }
     }

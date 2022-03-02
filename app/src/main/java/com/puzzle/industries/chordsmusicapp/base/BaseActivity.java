@@ -8,7 +8,6 @@ import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -24,7 +23,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.bottom_sheets.AlertBottomSheet;
 import com.puzzle.industries.chordsmusicapp.services.IMusicPlayerService;
@@ -34,18 +32,18 @@ import com.puzzle.industries.chordsmusicapp.services.impl.PermissionService;
 
 public abstract class BaseActivity extends AppCompatActivity implements IPermissionService, ServiceConnection {
 
-    private IMusicPlayerService mMusicPlayerService;
     private final PermissionService PERMISSION_UTIL = PermissionService.getInstance();
+    private IMusicPlayerService mMusicPlayerService;
 
-    protected void showAlert(String message, boolean cancelable, String actionText, View.OnClickListener onClickListener){
+    protected void showAlert(String message, String actionText, View.OnClickListener onClickListener) {
         new AlertBottomSheet.AlertBottomSheetBuilder(getSupportFragmentManager())
                 .setMessage(message)
-                .setCancelable(cancelable)
+                .setCancelable(true)
                 .setAction(actionText, onClickListener)
                 .build().show();
     }
 
-    protected IMusicPlayerService getMusicPlayerService(){
+    protected IMusicPlayerService getMusicPlayerService() {
         return mMusicPlayerService;
     }
 
@@ -61,13 +59,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
                 });
     }
 
-    private void bindToMusicService(){
+    private void bindToMusicService() {
         final Intent intent = new Intent(this, MusicPlayerService.class);
         bindService(intent, this, Context.BIND_AUTO_CREATE);
     }
 
-    private void unbindMusicService(){
-        if (mMusicPlayerService != null){
+    private void unbindMusicService() {
+        if (mMusicPlayerService != null) {
             unbindService(this);
         }
     }
@@ -77,25 +75,25 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (!PERMISSION_UTIL.isAllRequestedPermissionsGranted(requestCode, grantResults)){
+        if (!PERMISSION_UTIL.isAllRequestedPermissionsGranted(requestCode, grantResults)) {
             showAlert(getString(R.string.error_permission_reject),
-                    true, getString(R.string.request_again),
+                    getString(R.string.request_again),
                     v -> PERMISSION_UTIL.requestPermissions(this));
         }
     }
 
     @Override
-    public void requestPermissions(Activity activity){
+    public void requestPermissions(Activity activity) {
         PERMISSION_UTIL.requestPermissions(activity);
     }
 
     @Override
-    public boolean isPermissionsGranted(Activity activity){
+    public boolean isPermissionsGranted(Activity activity) {
         return PERMISSION_UTIL.isPermissionsGranted(activity);
     }
 
     @Override
-    public boolean isAllRequestedPermissionsGranted(int requestCode, int[] grantResults){
+    public boolean isAllRequestedPermissionsGranted(int requestCode, int[] grantResults) {
         return PERMISSION_UTIL.isAllRequestedPermissionsGranted(requestCode, grantResults);
     }
 
@@ -115,6 +113,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
     public void onServiceConnected(ComponentName name, IBinder service) {
         final MusicPlayerService.MusicPlayerBinder binder = (MusicPlayerService.MusicPlayerBinder) service;
         mMusicPlayerService = binder.getService();
+        serviceConnected();
     }
 
     @Override
@@ -122,7 +121,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
         mMusicPlayerService = null;
     }
 
-    protected void displayImageFromLink(String link, ImageView iv, int fallbackId, boolean scheduleTrans){
+    protected void serviceConnected() {
+
+    }
+
+    protected void displayImageFromLink(String link, ImageView iv, int fallbackId, boolean scheduleTrans) {
         Glide.with(this).load(link)
                 .fallback(fallbackId)
                 .apply(new RequestOptions().dontAnimate())
@@ -138,7 +141,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IPermiss
                 .into(iv);
     }
 
-    private RequestListener<Drawable> getRequestListener(ImageView iv, boolean scheduleTrans){
+    private RequestListener<Drawable> getRequestListener(ImageView iv, boolean scheduleTrans) {
         return new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

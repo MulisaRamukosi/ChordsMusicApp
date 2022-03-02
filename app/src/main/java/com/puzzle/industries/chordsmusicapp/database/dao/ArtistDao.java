@@ -5,7 +5,6 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public interface ArtistDao {
     List<ArtistEntity> getAllArtists();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insert(ArtistEntity artist);
+    void insert(ArtistEntity artist);
 
     @Query("Delete from Artist where Artist.id = :id")
     int delete(int id);

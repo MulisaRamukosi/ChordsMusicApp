@@ -25,7 +25,7 @@ public class MediaOptionsService<T> implements IMediaOptionsService<T> {
         showMediaOptions(t, songIds);
     }
 
-    private void showMediaOptions(T t, List<Integer> songIds){
+    private void showMediaOptions(T t, List<Integer> songIds) {
         final MediaOptionsBottomSheet<T> mediaOptions = new MediaOptionsBottomSheet<>(t, songIds);
         mediaOptions.show(mFragManager, mediaOptions.getTag());
     }

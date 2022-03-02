@@ -18,6 +18,29 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:id="@+id/ib_song_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_margin="@dimen/mp_16dp"
+        android:contentDescription="@string/desc_song_info"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_round_info_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/cpi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_margin="@dimen/mp_4dp"
+        android:visibility="gone"
+        app:indicatorColor="@color/secondaryColor"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <ImageButton
         android:id="@+id/ib_current_playlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

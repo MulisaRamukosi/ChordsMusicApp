@@ -29,23 +29,13 @@ import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MediaOptionsService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
-import com.puzzle.industries.chordsmusicapp.utils.PlaylistState;
 
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class PlaylistFragment extends BaseFragment implements RVAdapterItemClickCallback<PlaylistEntity>,
         ActivityResultCallback<PlaylistEntity> {
 
-    private FragmentLibraryTabBinding mBinding;
-    private PlaylistRVAdapter mAdapter;
-    private IMediaOptionsService<PlaylistEntity> mMediaOptionsService;
-    private BroadcastReceiver mPlaylistRemovedReceiver;
-
-    private boolean mIsSelectRequest;
-
     private final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
-
     private final ActivityResultContract<Void, PlaylistEntity> CREATE_PLAYLIST_CONTRACT = new ActivityResultContract<Void, PlaylistEntity>() {
         @NonNull
         @Override
@@ -55,13 +45,12 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
 
         @Override
         public PlaylistEntity parseResult(int resultCode, @Nullable Intent intent) {
-            if (resultCode == Activity.RESULT_OK && intent != null){
+            if (resultCode == Activity.RESULT_OK && intent != null) {
                 return intent.getParcelableExtra(Constants.KEY_PLAYLIST);
             }
             return null;
         }
     };
-
     private final ActivityResultContract<PlaylistEntity, PlaylistEntity> VIEW_PLAYLIST_CONTRACT = new ActivityResultContract<PlaylistEntity, PlaylistEntity>() {
         @NonNull
         @Override
@@ -73,13 +62,17 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
 
         @Override
         public PlaylistEntity parseResult(int resultCode, @Nullable Intent intent) {
-            if (resultCode == Activity.RESULT_OK && intent != null){
+            if (resultCode == Activity.RESULT_OK && intent != null) {
                 return intent.getParcelableExtra(Constants.KEY_PLAYLIST);
             }
             return null;
         }
     };
-
+    private FragmentLibraryTabBinding mBinding;
+    private PlaylistRVAdapter mAdapter;
+    private IMediaOptionsService<PlaylistEntity> mMediaOptionsService;
+    private BroadcastReceiver mPlaylistRemovedReceiver;
+    private boolean mIsSelectRequest;
     private ActivityResultLauncher<Void> createPlaylistResultLauncher;
     private ActivityResultLauncher<PlaylistEntity> viewPlaylistResultLauncher;
 
@@ -108,7 +101,7 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
         init();
     }
 
-    private void init(){
+    private void init() {
         initExtras();
         registerContracts();
 
@@ -117,17 +110,17 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
         mBinding.getRoot().setAdapter(mAdapter);
     }
 
-    private void initExtras(){
+    private void initExtras() {
         final Bundle bundle = getArguments();
-        if (bundle != null){
+        if (bundle != null) {
             mIsSelectRequest = bundle.getBoolean(Constants.KEY_SELECT_REQUEST, false);
         }
     }
 
-    private void registerContracts(){
+    private void registerContracts() {
         createPlaylistResultLauncher = registerForActivityResult(CREATE_PLAYLIST_CONTRACT, this);
         viewPlaylistResultLauncher = registerForActivityResult(VIEW_PLAYLIST_CONTRACT, playlistEntity -> {
-            if (playlistEntity != null){
+            if (playlistEntity != null) {
                 mAdapter.updatePlaylist(playlistEntity);
             }
         });
@@ -135,12 +128,11 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
 
     @Override
     public void itemClicked(PlaylistEntity playlistEntity) {
-        if (mIsSelectRequest){
+        if (mIsSelectRequest) {
             Bundle result = new Bundle();
             result.putParcelable(Constants.KEY_PLAYLIST, playlistEntity);
             getParentFragmentManager().setFragmentResult(Constants.KEY_SELECT_REQUEST, result);
-        }
-        else{
+        } else {
             viewPlaylistResultLauncher.launch(playlistEntity);
         }
     }
@@ -160,7 +152,7 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
 
     @Override
     public void onActivityResult(PlaylistEntity playlist) {
-        if (playlist != null){
+        if (playlist != null) {
             mAdapter.addPlaylist(playlist);
         }
     }
@@ -181,13 +173,13 @@ public class PlaylistFragment extends BaseFragment implements RVAdapterItemClick
         requireActivity().unregisterReceiver(mPlaylistRemovedReceiver);
     }
 
-    private void registerReceivers(){
+    private void registerReceivers() {
         requireActivity().registerReceiver(mPlaylistRemovedReceiver, new IntentFilter(Constants.ACTION_PLAYLIST_DELETED));
     }
 
-    private void onReceivedItemRemovedBroadCast(Intent intent){
+    private void onReceivedItemRemovedBroadCast(Intent intent) {
         final PlaylistEntity playlist = intent.getParcelableExtra(Constants.KEY_PLAYLIST);
-        if (playlist != null){
+        if (playlist != null) {
             mAdapter.removePlaylist(playlist);
         }
     }

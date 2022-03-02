@@ -29,9 +29,9 @@ public class PermissionService implements IPermissionService {
 
     @Override
     public boolean isPermissionsGranted(Activity activity) {
-        for (String permission : PERMISSIONS){
+        for (String permission : PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(activity, permission)
-                    != PackageManager.PERMISSION_GRANTED){
+                    != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -40,9 +40,9 @@ public class PermissionService implements IPermissionService {
 
     @Override
     public boolean isAllRequestedPermissionsGranted(int requestCode, int[] grantResults) {
-        if(requestCode == REQUEST_CODE){
-            for (int result : grantResults){
-                if (result != PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_CODE) {
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }
             }

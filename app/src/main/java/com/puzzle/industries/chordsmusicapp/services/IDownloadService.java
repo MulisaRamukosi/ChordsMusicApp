@@ -7,5 +7,6 @@ import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 public interface IDownloadService {
 
     void downloadSong(SongDataStruct song, String fileUrl, DownloadProgressCallback callback);
+
     void downloadSong(String fileName, String fileUrl, OverrideDownloadProgressCallback callback);
 }

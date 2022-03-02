@@ -2,13 +2,12 @@ package com.puzzle.industries.chordsmusicapp.remote.musicFinder;
 
 import android.os.CountDownTimer;
 
-public class RetryPolicy implements IRetryPolicy{
-
-    private int retryAttempts = 0;
+public class RetryPolicy implements IRetryPolicy {
 
     private final int waitDuration;
     private final int maxRetryAttempts;
     private final CountDownTimer countDownTimer;
+    private int retryAttempts = 0;
 
     public RetryPolicy(int waitDuration, int maxRetryAttempts, RetryPolicyListener listener) {
         this.waitDuration = waitDuration * 1000;
@@ -23,10 +22,9 @@ public class RetryPolicy implements IRetryPolicy{
             @Override
             public void onFinish() {
                 retryAttempts++;
-                if (retryAttempts >= maxRetryAttempts){
+                if (retryAttempts >= maxRetryAttempts) {
                     listener.retryAttemptsFinished();
-                }
-                else{
+                } else {
                     listener.onRetryPolicy();
                 }
             }

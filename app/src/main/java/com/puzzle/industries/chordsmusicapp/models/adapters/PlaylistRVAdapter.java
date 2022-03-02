@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-
 public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final List<PlaylistEntity> mPlaylist;
@@ -32,13 +30,13 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private RVAdapterItemClickCallback<PlaylistEntity> mCallback;
 
-    public PlaylistRVAdapter(List<PlaylistEntity> playlist){
+    public PlaylistRVAdapter(List<PlaylistEntity> playlist) {
         this.mPlaylist = playlist;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == mPlaylist.size()){
+        if (position == mPlaylist.size()) {
             return VIEW_TYPE_ADD_PLAYLIST;
         }
         return 0;
@@ -47,7 +45,7 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_ADD_PLAYLIST){
+        if (viewType == VIEW_TYPE_ADD_PLAYLIST) {
             final ItemPlaylistAddBinding binding = ItemPlaylistAddBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
             return new BaseViewHolder<>(binding);
         }
@@ -57,30 +55,28 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (position == mPlaylist.size()){
+        if (position == mPlaylist.size()) {
             holder.itemView.setOnClickListener(v -> {
-                if (mCallback != null){
+                if (mCallback != null) {
                     mCallback.neutralItemClick();
                 }
             });
-        }
-        else{
+        } else {
             initPlaylistViewHolder((BaseViewHolder<ItemPlaylistBinding>) holder, position);
         }
     }
 
-    private void initPlaylistViewHolder(BaseViewHolder<ItemPlaylistBinding> holder, int position){
+    private void initPlaylistViewHolder(BaseViewHolder<ItemPlaylistBinding> holder, int position) {
         final PlaylistEntity playlist = this.mPlaylist.get(position);
         final List<TrackArtistAlbumEntity> playlistTracks = MusicLibraryService.getInstance().getPlaylistTracks(playlist.getId());
 
-        if (!playlistTracks.isEmpty()){
+        if (!playlistTracks.isEmpty()) {
             final Random random = new Random();
             final int randPos = random.nextInt(playlistTracks.size());
             final TrackArtistAlbumEntity randomTrack = playlistTracks.get(randPos);
             final ArtistEntity randomArtist = MUSIC_LIBRARY.getArtistById(randomTrack.getArtist_id());
             ArtHelper.displayArtistArtFromUrl(randomArtist.getPicture_url(), holder.mBinding.ivPlaylistPic);
-        }
-        else{
+        } else {
             ArtHelper.displayDefaultAlbumArt(holder.mBinding.ivPlaylistPic);
         }
 
@@ -94,13 +90,13 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.mBinding.tvPlaylistName.setText(playlist.getName());
 
         holder.itemView.setOnClickListener(v -> {
-            if (mCallback != null){
+            if (mCallback != null) {
                 mCallback.itemClicked(playlist);
             }
         });
 
         holder.itemView.setOnLongClickListener(v -> {
-            if (mCallback != null){
+            if (mCallback != null) {
                 mCallback.itemLongClicked(playlist);
             }
             return true;
@@ -112,7 +108,7 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return mPlaylist.size() + 1;
     }
 
-    public void setItemSelectionCallback(RVAdapterItemClickCallback<PlaylistEntity> callback){
+    public void setItemSelectionCallback(RVAdapterItemClickCallback<PlaylistEntity> callback) {
         this.mCallback = callback;
     }
 
@@ -123,14 +119,14 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void removePlaylist(PlaylistEntity playlist) {
         final int removedPos = this.mPlaylist.indexOf(playlist);
-        if (this.mPlaylist.remove(playlist)){
+        if (this.mPlaylist.remove(playlist)) {
             notifyItemRemoved(removedPos);
         }
     }
 
     public void updatePlaylist(PlaylistEntity playlistEntity) {
         int targetPos = -1;
-        for (int i = 0; i < mPlaylist.size(); i++){
+        for (int i = 0; i < mPlaylist.size(); i++) {
             final PlaylistEntity playlist = mPlaylist.get(i);
             if (playlist.getId() == playlistEntity.getId()) {
                 targetPos = i;
@@ -138,7 +134,7 @@ public class PlaylistRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
 
-        if (targetPos != -1){
+        if (targetPos != -1) {
             this.mPlaylist.set(targetPos, playlistEntity);
             notifyItemChanged(targetPos);
         }

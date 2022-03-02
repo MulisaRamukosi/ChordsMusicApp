@@ -12,6 +12,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TrackArtistAlbumEntity implements Parcelable {
 
+    public static final Creator<TrackArtistAlbumEntity> CREATOR = new Creator<TrackArtistAlbumEntity>() {
+        @Override
+        public TrackArtistAlbumEntity createFromParcel(Parcel in) {
+            return new TrackArtistAlbumEntity(in);
+        }
+
+        @Override
+        public TrackArtistAlbumEntity[] newArray(int size) {
+            return new TrackArtistAlbumEntity[size];
+        }
+    };
     private final int id;
     private final String title;
     private final int track_number;
@@ -34,22 +45,10 @@ public class TrackArtistAlbumEntity implements Parcelable {
         picture_url = in.readString();
     }
 
-    public String getFileName(){
+    public String getFileName() {
         final String[] path = location.split("/");
         return path[path.length - 1];
     }
-
-    public static final Creator<TrackArtistAlbumEntity> CREATOR = new Creator<TrackArtistAlbumEntity>() {
-        @Override
-        public TrackArtistAlbumEntity createFromParcel(Parcel in) {
-            return new TrackArtistAlbumEntity(in);
-        }
-
-        @Override
-        public TrackArtistAlbumEntity[] newArray(int size) {
-            return new TrackArtistAlbumEntity[size];
-        }
-    };
 
     @Override
     public boolean equals(@Nullable Object obj) {

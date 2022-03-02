@@ -35,7 +35,7 @@ public class UpdatePlaylistNameWorker extends Worker {
         return Result.success();
     }
 
-    private void updatePlaylist(){
+    private void updatePlaylist() {
         PLAYLIST_DAO.updateName(mPlaylistId, mPlaylistName);
     }
 }

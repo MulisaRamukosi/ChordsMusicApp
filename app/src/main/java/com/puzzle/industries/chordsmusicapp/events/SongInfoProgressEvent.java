@@ -15,6 +15,17 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SongInfoProgressEvent implements Parcelable {
 
+    public static final Creator<SongInfoProgressEvent> CREATOR = new Creator<SongInfoProgressEvent>() {
+        @Override
+        public SongInfoProgressEvent createFromParcel(Parcel in) {
+            return new SongInfoProgressEvent(in);
+        }
+
+        @Override
+        public SongInfoProgressEvent[] newArray(int size) {
+            return new SongInfoProgressEvent[size];
+        }
+    };
     private final TrackArtistAlbumEntity currentSong;
     private final ArtistEntity currentArtist;
     private final AlbumArtistEntity currentAlbum;
@@ -30,18 +41,6 @@ public class SongInfoProgressEvent implements Parcelable {
         songDurationInMilis = in.readInt();
         isPlaying = in.readByte() == 1;
     }
-
-    public static final Creator<SongInfoProgressEvent> CREATOR = new Creator<SongInfoProgressEvent>() {
-        @Override
-        public SongInfoProgressEvent createFromParcel(Parcel in) {
-            return new SongInfoProgressEvent(in);
-        }
-
-        @Override
-        public SongInfoProgressEvent[] newArray(int size) {
-            return new SongInfoProgressEvent[size];
-        }
-    };
 
     @Override
     public int describeContents() {

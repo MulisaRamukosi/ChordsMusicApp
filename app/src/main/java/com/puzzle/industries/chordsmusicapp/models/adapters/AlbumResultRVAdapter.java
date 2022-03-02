@@ -35,7 +35,7 @@ public class AlbumResultRVAdapter extends BaseResultsRVAdapter<AlbumDataStruct, 
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemResultsAlbumBinding> holder, int position) {
         final Context ctx = holder.itemView.getContext();
         final AlbumDataStruct album = mResults.get(position);
-        ArtHelper.displayAlbumArtFromUrl(album.getCover_big(), holder.mBinding.ivAlbumPic);
+        ArtHelper.displayAlbumArtFromUrl(album.getCover_xl(), holder.mBinding.ivAlbumPic);
         holder.mBinding.tvName.setText(album.getTitle());
         holder.mBinding.tvDetails.setText(String.format("%s", album.getArtist().getName()));
 
@@ -49,9 +49,10 @@ public class AlbumResultRVAdapter extends BaseResultsRVAdapter<AlbumDataStruct, 
                     final DeezerSongResultDataModel songs = deezerAlbumSongsDataModel.getTracks();
                     final IDownloadManagerService downloadManagerService = DownloadManagerService.getInstance();
 
-                    for (final SongDataStruct song : songs.getData()){
+                    for (final SongDataStruct song : songs.getData()) {
                         if (song.getAlbum() == null) song.setAlbum(album);
-                        if (song.getArtist() == null || song.getArtist().getPicture_big() == null) song.setArtist(album.getArtist());
+                        if (song.getArtist() == null || song.getArtist().getPicture_xl() == null)
+                            song.setArtist(album.getArtist());
                         downloadManagerService.downloadSong(song, null);
                     }
 

@@ -10,11 +10,8 @@ import androidx.work.WorkerParameters;
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.database.dao.PlaylistDao;
 import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
-import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntity;
 import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.services.IPlaylistService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.services.impl.PlaylistService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 public class InsertPlaylistWorker extends Worker {
@@ -36,7 +33,7 @@ public class InsertPlaylistWorker extends Worker {
         return Result.success(data);
     }
 
-    private PlaylistEntity addPlaylist(){
+    private PlaylistEntity addPlaylist() {
         final PlaylistEntity playlist = new PlaylistEntity(0, playlistName);
         final long playlistId = PLAYLIST_DAO.insert(playlist);
         playlist.setId((int) playlistId);

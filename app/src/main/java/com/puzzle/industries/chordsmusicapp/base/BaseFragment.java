@@ -4,15 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
-import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.puzzle.industries.chordsmusicapp.bottom_sheets.AlertBottomSheet;
@@ -23,11 +19,11 @@ public abstract class BaseFragment extends Fragment implements ServiceConnection
 
     private IMusicPlayerService mMusicPlayerService;
 
-    protected IMusicPlayerService getMusicPlayerService(){
+    protected IMusicPlayerService getMusicPlayerService() {
         return mMusicPlayerService;
     }
 
-    protected void showAlert(String message, boolean cancelable, String actionText, View.OnClickListener onClickListener){
+    protected void showAlert(String message, boolean cancelable, String actionText, View.OnClickListener onClickListener) {
         new AlertBottomSheet.AlertBottomSheetBuilder(getParentFragmentManager())
                 .setMessage(message)
                 .setCancelable(cancelable)
@@ -35,17 +31,16 @@ public abstract class BaseFragment extends Fragment implements ServiceConnection
                 .build().show();
     }
 
-    private void bindToMusicService(){
+    private void bindToMusicService() {
         final Intent intent = new Intent(requireContext(), MusicPlayerService.class);
         requireContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
     }
 
-    private void unbindMusicService(){
-        if (mMusicPlayerService != null){
+    private void unbindMusicService() {
+        if (mMusicPlayerService != null) {
             try {
                 requireContext().unbindService(this);
-            }
-            catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
         }

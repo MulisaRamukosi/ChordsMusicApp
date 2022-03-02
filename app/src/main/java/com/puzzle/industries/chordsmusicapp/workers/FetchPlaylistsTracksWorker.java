@@ -25,7 +25,7 @@ public class FetchPlaylistsTracksWorker extends Worker {
         return Result.success();
     }
 
-    private void loadPlaylistTracks(){
+    private void loadPlaylistTracks() {
         final List<PlaylistTrackEntity> playlistTracks = Chords.getDatabase().playlistTrackDao().getAll();
         MusicLibraryService.getInstance().addPlaylistsTracks(playlistTracks);
     }

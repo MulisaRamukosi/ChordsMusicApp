@@ -22,7 +22,7 @@ public class FetchAlbumsWorker extends Worker {
         return Result.success();
     }
 
-    private void loadAlbums(){
+    private void loadAlbums() {
         MusicLibraryService.getInstance().setAlbumList(Chords.getDatabase().albumDao().getAllAlbums());
     }
 }

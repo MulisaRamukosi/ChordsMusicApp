@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primaryColor">#fafafa</color>
-    <color name="primaryLightColor">#ffffff</color>
     <color name="primaryDarkColor">#c7c7c7</color>
     <color name="secondaryColor">#2e7d32</color>
     <color name="secondaryLightColor">#60ad5e</color>
     <color name="secondaryDarkColor">#005005</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#FFFFFF</color>
+    <color name="lyricsExplanationBgColor">#000000</color>
 
     <color name="track">#484848</color>
-    <color name="light_grey">#CFCFCF</color>
     <color name="red">#D32F2F</color>
     <color name="blue">#303F9F</color>
     <color name="white">#FFFFFF</color>

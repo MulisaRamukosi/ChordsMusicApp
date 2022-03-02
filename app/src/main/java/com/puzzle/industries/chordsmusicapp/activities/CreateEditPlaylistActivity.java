@@ -21,6 +21,7 @@ import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntit
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityCreatePlaylistBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.PlaylistTracksRVAdapter;
 import com.puzzle.industries.chordsmusicapp.services.IPlaylistService;
+import com.puzzle.industries.chordsmusicapp.services.impl.ExecutorServiceManager;
 import com.puzzle.industries.chordsmusicapp.services.impl.PlaylistService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
@@ -30,24 +31,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CreateEditPlaylistActivity extends BaseActivity implements PlaylistCallback {
 
-    private IPlaylistService mPlaylistService;
-
-    private ActivityCreatePlaylistBinding mBinding;
-    private PlaylistEntity mPlaylist;
-    private PlaylistTracksRVAdapter mAdapter;
-    private BroadcastReceiver mSongsRemovedBroadcastReceiver;
-    private List<PlaylistTrackEntity> mPlaylistTracks = new ArrayList<>();
     private final Set<PlaylistTrackEntity> mRemovedSongs = new HashSet<>();
-
-    private boolean isUpdate;
-    private boolean wasUpdated;
-
     private final ActivityResultContract<List<Integer>, List<Integer>> SELECT_SONGS_CONTRACT = new ActivityResultContract<List<Integer>, List<Integer>>() {
         @NonNull
         @Override
@@ -60,13 +48,20 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         @Override
         public List<Integer> parseResult(int resultCode, @Nullable Intent intent) {
             if (resultCode == RESULT_OK)
-            return Objects.requireNonNull(intent).getIntegerArrayListExtra(Constants.KEY_PLAYLIST_TRACKS);
-            else{
+                return Objects.requireNonNull(intent).getIntegerArrayListExtra(Constants.KEY_PLAYLIST_TRACKS);
+            else {
                 return null;
             }
         }
     };
-
+    private IPlaylistService mPlaylistService;
+    private ActivityCreatePlaylistBinding mBinding;
+    private PlaylistEntity mPlaylist;
+    private PlaylistTracksRVAdapter mAdapter;
+    private BroadcastReceiver mSongsRemovedBroadcastReceiver;
+    private List<PlaylistTrackEntity> mPlaylistTracks = new ArrayList<>();
+    private boolean isUpdate;
+    private boolean wasUpdated;
     private ActivityResultLauncher<List<Integer>> selectSongsResultLauncher;
 
     @Override
@@ -90,25 +85,24 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         unregisterReceiver(mSongsRemovedBroadcastReceiver);
     }
 
-    private void init(){
+    private void init() {
         initBroadcastReceivers();
         registerContracts();
 
         final Bundle extras = getIntent().getExtras();
 
-        if (extras != null){
+        if (extras != null) {
             mPlaylist = extras.getParcelable(Constants.KEY_PLAYLIST);
             mPlaylistTracks = extras.getParcelableArrayList(Constants.KEY_PLAYLIST_TRACKS);
             mAdapter = new PlaylistTracksRVAdapter(mPlaylistTracks);
             isUpdate = mPlaylist != null;
-        }
-        else{
+        } else {
             mAdapter = new PlaylistTracksRVAdapter(new ArrayList<>());
         }
 
         setSaveUpdateButtonText();
 
-        if(isUpdate){
+        if (isUpdate) {
             Objects.requireNonNull(mBinding.tilPlaylist.getEditText()).setText(mPlaylist.getName());
         }
 
@@ -127,7 +121,7 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         };
     }
 
-    private void registerContracts(){
+    private void registerContracts() {
         selectSongsResultLauncher = registerForActivityResult(SELECT_SONGS_CONTRACT, result -> {
             if (result != null) {
                 mRemovedSongs.addAll(getRemovedSongs(result));
@@ -137,11 +131,11 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         });
     }
 
-    private List<PlaylistTrackEntity> getRemovedSongs(List<Integer> returnedList){
+    private List<PlaylistTrackEntity> getRemovedSongs(List<Integer> returnedList) {
         return this.mPlaylistTracks.stream().filter(playlistTrackEntity -> !returnedList.contains(playlistTrackEntity.getTrackId())).collect(Collectors.toList());
     }
 
-    private void launchSelectSongsActivity(){
+    private void launchSelectSongsActivity() {
         final List<Integer> songIds = mAdapter.getPlaylistTracks()
                 .stream()
                 .mapToInt(PlaylistTrackEntity::getTrackId)
@@ -150,18 +144,16 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         selectSongsResultLauncher.launch(songIds);
     }
 
-    private void savePlaylistAndTracks(){
+    private void savePlaylistAndTracks() {
         final String playlistName = mBinding.tilPlaylist.getEditText().getText().toString().trim();
-        if (playlistName.isEmpty()){
+        if (playlistName.isEmpty()) {
             mBinding.tilPlaylist.setError(getString(R.string.error_playlist_name_required));
-        }
-        else{
+        } else {
             setActivityAsEnabled(false);
             if (isUpdate) {
                 wasUpdated = true;
                 updatePlaylist(playlistName);
-            }
-            else {
+            } else {
                 mPlaylistService.addPlaylist(new PlaylistEntity(0, playlistName));
             }
         }
@@ -169,21 +161,20 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
 
     private void updatePlaylist(String playlistName) {
         setActivityAsEnabled(false);
-        if (!playlistName.equals(mPlaylist.getName())){
+        if (!playlistName.equals(mPlaylist.getName())) {
             mPlaylistService.updatePlaylistName(mPlaylist.getId(), playlistName);
-        }
-        else{
+        } else {
             updatePlaylistSongs();
         }
     }
 
-    private void setSaveUpdateButtonText(){
-        if (isUpdate){
+    private void setSaveUpdateButtonText() {
+        if (isUpdate) {
             mBinding.btnSave.setText(getString(R.string.update));
         }
     }
 
-    private void setActivityAsEnabled(boolean enabled){
+    private void setActivityAsEnabled(boolean enabled) {
         mBinding.cpi.setVisibility(enabled ? View.GONE : View.VISIBLE);
         mBinding.btnSave.setEnabled(enabled);
         mBinding.btnCancel.setEnabled(enabled);
@@ -204,7 +195,7 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
         runOnUiThread(() -> {
             final Intent i = new Intent();
             i.putExtra(Constants.KEY_PLAYLIST, mPlaylist);
-            if (wasUpdated){
+            if (wasUpdated) {
                 i.putExtra(Constants.KEY_WAS_UPDATED, true);
             }
             setResult(RESULT_OK, i);
@@ -222,12 +213,14 @@ public class CreateEditPlaylistActivity extends BaseActivity implements Playlist
     public void operationFailed() {
         runOnUiThread(() -> {
             setActivityAsEnabled(true);
-            showAlert("The operation failed.", true, getString(R.string.okay), null);
+            showAlert("The operation failed.", getString(R.string.okay), null);
         });
 
     }
 
-    private void updatePlaylistSongs(){
-        Executors.newSingleThreadExecutor().execute(() -> mPlaylistService.removeSongsFromPlaylist(mPlaylist.getId(), mRemovedSongs));
+    private void updatePlaylistSongs() {
+        ExecutorServiceManager
+                .getInstance()
+                .executeRunnableOnSingeThread(() -> mPlaylistService.removeSongsFromPlaylist(mPlaylist.getId(), mRemovedSongs));
     }
 }

@@ -11,9 +11,13 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
 import com.puzzle.industries.chordsmusicapp.bottom_sheets.CurrentPlaylistBottomSheet;
@@ -23,7 +27,11 @@ import com.puzzle.industries.chordsmusicapp.databinding.ActivityPlayerBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.helpers.DurationHelper;
+import com.puzzle.industries.chordsmusicapp.models.dataModels.SongInfoStruct;
+import com.puzzle.industries.chordsmusicapp.models.viewModels.SongInfoVM;
+import com.puzzle.industries.chordsmusicapp.remote.interfaces.ApiCallBack;
 import com.puzzle.industries.chordsmusicapp.services.IMusicPlayerService;
+import com.puzzle.industries.chordsmusicapp.services.impl.SongInfoService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 import com.puzzle.industries.chordsmusicapp.utils.RepeatMode;
 
@@ -34,24 +42,47 @@ import java.util.concurrent.TimeUnit;
 public class PlayerActivity extends BaseMediaActivity {
 
     private ActivityPlayerBinding mBinding;
+    private SongInfoVM mSongInfoVM;
     private BroadcastReceiver mMusicUpdatedReceiver;
     private SongInfoProgressEvent mSongInfo;
+    private BroadcastReceiver songInfoChangedReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivityPlayerBinding.inflate(getLayoutInflater());
+        mSongInfoVM = new ViewModelProvider(this).get(SongInfoVM.class);
         setContentView(mBinding.getRoot());
         init();
     }
 
-    private void init(){
+    private void init() {
         initSongDetails();
+        initPlayerControls();
+        registerReceivers();
+    }
 
+    private void registerReceivers() {
+        if (songInfoChangedReceiver == null){
+            songInfoChangedReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    final SongInfoStruct songInfo = intent.getParcelableExtra(Constants.KEY_SONG_INFO);
+                    if (songInfo != null){
+                        mSongInfoVM.setSongInfo(songInfo);
+                    }
+                }
+            };
+        }
+
+        registerReceiver(songInfoChangedReceiver, new IntentFilter(Constants.ACTION_SONG_INFO_STRUCT_CHANGED));
+    }
+
+    private void initPlayerControls(){
         //wait for music service to connect
         final ScheduledExecutorService stp = Executors.newScheduledThreadPool(1);
         stp.scheduleAtFixedRate(() -> runOnUiThread(() -> {
-            if (getMusicPlayerService() != null){
+            if (getMusicPlayerService() != null) {
                 initPlayer();
                 stp.shutdown();
             }
@@ -69,15 +100,16 @@ public class PlayerActivity extends BaseMediaActivity {
         });
     }
 
-    private void initSongDetails(){
+    private void initSongDetails() {
         final Bundle bundle = getIntent().getExtras();
 
-        if (bundle != null){
+        if (bundle != null) {
             postponeEnterTransition();
             final SongInfoProgressEvent event = bundle.getParcelable(Constants.KEY_SONG);
+            final TrackArtistAlbumEntity track = event.getCurrentSong();
 
-            mBinding.tvSongName.setText(event.getCurrentSong().getTitle());
-            mBinding.tvSongArtist.setText(event.getCurrentSong().getName());
+            mBinding.tvSongName.setText(track.getTitle());
+            mBinding.tvSongArtist.setText(track.getName());
             mBinding.sbSongProgress.setMax(event.getSongDurationInMilis());
             mBinding.sbSongProgress.setProgress(event.getCurrProgressInMilis());
             setPlayPauseButtonState(event.isPlaying());
@@ -86,7 +118,63 @@ public class PlayerActivity extends BaseMediaActivity {
         }
     }
 
-    private void initPlayer(){
+    private void initSongInfo(TrackArtistAlbumEntity track) {
+        setSongInfoAsLoading(true);
+        mSongInfoVM.getSongInfo(track).observe(this, songInfo -> {
+            setSongInfoAsLoading(false);
+            if (songInfo != null){
+                mBinding.ibSongInfo.setOnClickListener(v -> attemptToStartSongInfoActivity(songInfo));
+            }
+            else{
+                mBinding.ibSongInfo.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void attemptToStartSongInfoActivity(SongInfoStruct songInfoStruct){
+        setSongInfoAsLoading(true);
+        Glide.with(PlayerActivity.this).load(songInfoStruct.getSearchResult()
+                .getResponse()
+                .getHits()
+                .get(0)
+                .getResult()
+                .getSong_art_image_url())
+                .addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        startSongInfoActivity(songInfoStruct);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        startSongInfoActivity(songInfoStruct);
+                        return false;
+                    }
+                })
+                .submit();
+    }
+
+
+    private void startSongInfoActivity(SongInfoStruct songInfoStruct){
+        runOnUiThread(() -> {
+            setSongInfoAsLoading(false);
+            final Intent intent = new Intent(PlayerActivity.this, SongInfoActivity.class);
+            intent.putExtra(Constants.KEY_SONG_INFO, songInfoStruct);
+            intent.putExtra(Constants.KEY_SONG, mSongInfo.getCurrentSong());
+            startActivity(intent);
+        });
+    }
+
+    private void setSongInfoAsLoading(boolean isLoading){
+        runOnUiThread(() -> {
+            mBinding.cpi.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            mBinding.ibSongInfo.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        });
+
+    }
+
+    private void initPlayer() {
         getMusicPlayerService().initPlayer(mBinding.ivPlayPause,
                 mBinding.sbSongProgress,
                 mBinding.ivNext,
@@ -96,7 +184,7 @@ public class PlayerActivity extends BaseMediaActivity {
 
     }
 
-    private void initShuffleButton(){
+    private void initShuffleButton() {
         setShuffleButtonState();
         mBinding.ivShuffle.setOnClickListener(v -> {
             final IMusicPlayerService playerService = getMusicPlayerService();
@@ -105,12 +193,11 @@ public class PlayerActivity extends BaseMediaActivity {
         });
     }
 
-    private void setShuffleButtonState(){
-        if (getMusicPlayerService().isShuffleModeEnabled()){
+    private void setShuffleButtonState() {
+        if (getMusicPlayerService().isShuffleModeEnabled()) {
             mBinding.ivShuffle.setColorFilter(ContextCompat.getColor(this, R.color.secondaryDarkColor),
                     android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-        else{
+        } else {
             mBinding.ivShuffle.clearColorFilter();
         }
     }
@@ -119,14 +206,16 @@ public class PlayerActivity extends BaseMediaActivity {
         setRepeatButtonState();
         mBinding.ivRepeat.setOnClickListener(v -> {
             final RepeatMode repeatMode = getMusicPlayerService().getRepeatMode();
-            if (repeatMode == RepeatMode.REPEAT_OFF) getMusicPlayerService().setRepeatMode(RepeatMode.REPEAT_LIST);
-            else if (repeatMode == RepeatMode.REPEAT_LIST) getMusicPlayerService().setRepeatMode(RepeatMode.REPEAT_SONG);
+            if (repeatMode == RepeatMode.REPEAT_OFF)
+                getMusicPlayerService().setRepeatMode(RepeatMode.REPEAT_LIST);
+            else if (repeatMode == RepeatMode.REPEAT_LIST)
+                getMusicPlayerService().setRepeatMode(RepeatMode.REPEAT_SONG);
             else getMusicPlayerService().setRepeatMode(RepeatMode.REPEAT_OFF);
             setRepeatButtonState();
         });
     }
 
-    private void setRepeatButtonState(){
+    private void setRepeatButtonState() {
         final RepeatMode repeatMode = getMusicPlayerService().getRepeatMode();
         final Drawable icon = ContextCompat.getDrawable(this,
                 repeatMode == RepeatMode.REPEAT_SONG
@@ -135,11 +224,10 @@ public class PlayerActivity extends BaseMediaActivity {
         mBinding.ivRepeat.setImageDrawable(icon);
         final boolean isRepeatModeOn = repeatMode != RepeatMode.REPEAT_OFF;
 
-        if (isRepeatModeOn){
+        if (isRepeatModeOn) {
             mBinding.ivRepeat.setColorFilter(ContextCompat.getColor(this, R.color.secondaryDarkColor),
                     android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-        else{
+        } else {
             mBinding.ivRepeat.clearColorFilter();
         }
 
@@ -149,16 +237,15 @@ public class PlayerActivity extends BaseMediaActivity {
     public void onResume() {
         super.onResume();
 
-        if (mMusicUpdatedReceiver == null){
+        if (mMusicUpdatedReceiver == null) {
             mMusicUpdatedReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     final SongInfoProgressEvent songInfo = intent.getParcelableExtra(Constants.KEY_MUSIC_PROGRESS);
                     if (songInfo == null) return;
-                    if (mSongInfo == null || mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()){
+                    if (mSongInfo == null || mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()) {
                         initMusicState(songInfo);
-                    }
-                    else {
+                    } else {
                         updateState(songInfo);
                     }
                 }
@@ -172,7 +259,7 @@ public class PlayerActivity extends BaseMediaActivity {
         final AlbumArtistEntity album = songInfo.getCurrentAlbum();
         mSongInfo = songInfo;
 
-        displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, R.drawable.bg_album,true);
+        displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, R.drawable.bg_album, true);
         mBinding.tvSongName.setText(track.getTitle());
         mBinding.tvSongArtist.setText(track.getName());
         mBinding.sbSongProgress.setMax(songInfo.getSongDurationInMilis());
@@ -180,6 +267,7 @@ public class PlayerActivity extends BaseMediaActivity {
         mBinding.tvCurrProgress.setText(DurationHelper.minutesSecondsToString(mSongInfo.getCurrProgressInMilis()));
 
         setPlayPauseButtonState(mSongInfo.isPlaying());
+        initSongInfo(track);
     }
 
 
@@ -196,8 +284,8 @@ public class PlayerActivity extends BaseMediaActivity {
         ));
     }
 
-    private void updateState(SongInfoProgressEvent songInfo){
-        if (mSongInfo.isPlaying() != songInfo.isPlaying()){
+    private void updateState(SongInfoProgressEvent songInfo) {
+        if (mSongInfo.isPlaying() != songInfo.isPlaying()) {
             setPlayPauseButtonState(songInfo.isPlaying());
         }
         mSongInfo.setPlaying(songInfo.isPlaying());
@@ -205,12 +293,17 @@ public class PlayerActivity extends BaseMediaActivity {
         setSongProgress(songInfo.getCurrProgressInMilis());
     }
 
-    private void setSongProgress(int progress){
+    private void setSongProgress(int progress) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mBinding.sbSongProgress.setProgress(progress, true);
-        }
-        else{
+        } else {
             mBinding.sbSongProgress.setProgress(progress);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(this.songInfoChangedReceiver);
     }
 }

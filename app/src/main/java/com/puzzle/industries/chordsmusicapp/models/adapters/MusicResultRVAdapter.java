@@ -35,18 +35,17 @@ public class MusicResultRVAdapter extends BaseResultsRVAdapter<SongDataStruct, I
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemResultsMusicBinding> holder, int position) {
         final SongDataStruct song = mResults.get(position);
         final int txtColor = ContextCompat.getColor(holder.itemView.getContext(), MUSIC_LIBRARY.getAlbumById(song.getAlbum().getId()) != null
-                ? R.color.secondaryLightColor:
+                ? R.color.secondaryLightColor :
                 R.color.primaryTextColor);
 
         holder.mBinding.tvName.setText(song.getSongName());
         holder.mBinding.tvDetails.setText(String.format("%s • %s", song.getArtist().getName(), song.getAlbum().getTitle()));
         holder.mBinding.tvDetails.setTextColor(txtColor);
 
-        if (MUSIC_LIBRARY.containsSong(song.getId()) || DOWNLOAD_MANAGER.containsSong(song.getId())){
+        if (MUSIC_LIBRARY.containsSong(song.getId()) || DOWNLOAD_MANAGER.containsSong(song.getId())) {
             holder.mBinding.ivDownload.setVisibility(View.GONE);
             holder.mBinding.cpi.setVisibility(View.GONE);
-        }
-        else{
+        } else {
             holder.mBinding.ivDownload.setVisibility(View.VISIBLE);
 
             holder.mBinding.ivDownload.setOnClickListener(v -> {

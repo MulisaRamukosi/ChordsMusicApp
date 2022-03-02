@@ -16,27 +16,26 @@ public abstract class BaseMediaRVAdapter<ViewBinding extends androidx.viewbindin
     protected List<MediaModel> mediaList;
     protected MediaModel currentMediaItem;
 
-    public void itemRemoved(MediaModel f){
+    public void itemRemoved(MediaModel f) {
         int posOfItemToBeRemoved = mediaList.indexOf(f);
-        if (mediaList.remove(posOfItemToBeRemoved) != null){
+        if (mediaList.remove(posOfItemToBeRemoved) != null) {
             notifyItemRemoved(posOfItemToBeRemoved);
         }
     }
 
-    public void itemAdded(MediaModel f){
-        if (!mediaList.contains(f)){
+    public void itemAdded(MediaModel f) {
+        if (!mediaList.contains(f)) {
             mediaList.add(f);
             notifyItemInserted(mediaList.size() - 1);
         }
     }
 
-    public void itemChanged(MediaModel itemInfo){
-        if (currentMediaItem == null){
+    public void itemChanged(MediaModel itemInfo) {
+        if (currentMediaItem == null) {
             currentMediaItem = itemInfo;
             final int index = mediaList.indexOf(itemInfo);
             notifyItemChanged(index);
-        }
-        else if (!currentMediaItem.equals(itemInfo)){
+        } else if (!currentMediaItem.equals(itemInfo)) {
             final int oldPos = mediaList.indexOf(currentMediaItem);
             currentMediaItem = null;
             notifyItemChanged(oldPos);
@@ -46,9 +45,10 @@ public abstract class BaseMediaRVAdapter<ViewBinding extends androidx.viewbindin
     }
 
     public abstract void showSearchResults(String word);
+
     protected abstract boolean meetsFilterRequirements(MediaModel f, String word);
 
-    public void setItemLongClickCallback(MediaItemLongClickCallback<MediaModel> itemLongClickCallback){
+    public void setItemLongClickCallback(MediaItemLongClickCallback<MediaModel> itemLongClickCallback) {
         this.callback = itemLongClickCallback;
     }
 

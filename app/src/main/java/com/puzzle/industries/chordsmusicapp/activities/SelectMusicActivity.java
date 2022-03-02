@@ -8,7 +8,6 @@ import android.text.TextWatcher;
 import androidx.annotation.Nullable;
 
 import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
-import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivitySelectSongsBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.MusicRVAdapter;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
@@ -34,10 +33,11 @@ public class SelectMusicActivity extends BaseActivity {
         init();
     }
 
-    private void init(){
+    private void init() {
 
         final Bundle bundle = getIntent().getExtras();
-        if (bundle != null) mAlreadySelectedIds = bundle.getIntegerArrayList(Constants.KEY_PLAYLIST_TRACKS);
+        if (bundle != null)
+            mAlreadySelectedIds = bundle.getIntegerArrayList(Constants.KEY_PLAYLIST_TRACKS);
         if (mAlreadySelectedIds == null) mAlreadySelectedIds = new ArrayList<>();
 
         mAdapter = new MusicRVAdapter(MusicLibraryService.getInstance().getSongs());
@@ -65,10 +65,9 @@ public class SelectMusicActivity extends BaseActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 final String word = charSequence.toString().trim();
 
-                if (word.isEmpty()){
+                if (word.isEmpty()) {
                     mAdapter.reset();
-                }
-                else{
+                } else {
                     mAdapter.showSearchResults(word);
                 }
             }

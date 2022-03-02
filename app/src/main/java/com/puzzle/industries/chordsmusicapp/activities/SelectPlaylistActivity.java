@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
 import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
@@ -25,7 +24,7 @@ public class SelectPlaylistActivity extends BaseActivity {
         setContentView(mBinding.getRoot());
     }
 
-    private void init(){
+    private void init() {
         final PlaylistFragment playlistFragment = new PlaylistFragment();
         final Bundle bundle = new Bundle();
 
@@ -34,13 +33,13 @@ public class SelectPlaylistActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(mBinding.fc.getId(), playlistFragment).commit();
         getSupportFragmentManager().setFragmentResultListener(Constants.KEY_SELECT_REQUEST, this, (requestKey, result) -> {
             final PlaylistEntity selectedPlaylist = result.getParcelable(Constants.KEY_PLAYLIST);
-            if (selectedPlaylist != null){
+            if (selectedPlaylist != null) {
                 sendPlaylistResult(selectedPlaylist);
             }
         });
     }
 
-    private void sendPlaylistResult(@NonNull PlaylistEntity playlist){
+    private void sendPlaylistResult(@NonNull PlaylistEntity playlist) {
         final Intent intent = new Intent();
         intent.putExtra(Constants.KEY_PLAYLIST, playlist);
         setResult(RESULT_OK, intent);

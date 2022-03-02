@@ -19,16 +19,15 @@ import com.puzzle.industries.chordsmusicapp.services.IMusicLibraryService;
 
 public class DatabaseManagerService implements IDatabaseManagerService {
 
+    private static DatabaseManagerService instance;
     private final TrackDao TRACK_DAO = Chords.getDatabase().trackDao();
     private final ArtistDao ARTIST_DAO = Chords.getDatabase().artistDao();
     private final AlbumDao ALBUM_DAO = Chords.getDatabase().albumDao();
 
-    private static DatabaseManagerService instance;
-
     public static DatabaseManagerService getInstance() {
-        if (instance == null){
-            synchronized (DownloadManagerService.class){
-                if (instance == null){
+        if (instance == null) {
+            synchronized (DatabaseManagerService.class) {
+                if (instance == null) {
                     instance = new DatabaseManagerService();
                 }
             }
@@ -56,13 +55,13 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         final ArtistEntity artist = new ArtistEntity(
                 artistDataStruct.getId(),
                 artistDataStruct.getName(),
-                artistDataStruct.getPicture_big()
+                artistDataStruct.getPicture_xl()
         );
 
         final AlbumEntity album = new AlbumEntity(
                 albumDataStruct.getId(),
                 albumDataStruct.getTitle(),
-                albumDataStruct.getCover_big(),
+                albumDataStruct.getCover_xl(),
                 albumDataStruct.getRelease_date(),
                 artistDataStruct.getId()
         );
@@ -77,7 +76,7 @@ public class DatabaseManagerService implements IDatabaseManagerService {
         final AlbumArtistEntity albumArtist = new AlbumArtistEntity(
                 albumDataStruct.getId(),
                 albumDataStruct.getTitle(),
-                albumDataStruct.getCover_big(),
+                albumDataStruct.getCover_xl(),
                 artist.getId(),
                 artist.getName()
         );

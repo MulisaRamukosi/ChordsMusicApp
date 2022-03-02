@@ -1,8 +1,6 @@
 package com.puzzle.industries.chordsmusicapp.workers;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -10,7 +8,6 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.google.gson.Gson;
-import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.callbacks.DownloadProgressCallback;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.IDownloadService;

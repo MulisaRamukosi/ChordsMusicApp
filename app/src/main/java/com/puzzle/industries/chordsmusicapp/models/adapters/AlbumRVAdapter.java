@@ -13,9 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.activities.AlbumViewActivity;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaRVAdapter;
@@ -27,7 +25,6 @@ import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AlbumRVAdapter extends BaseMediaRVAdapter<ItemAlbumBinding, AlbumArtistEntity> {
@@ -50,7 +47,7 @@ public class AlbumRVAdapter extends BaseMediaRVAdapter<ItemAlbumBinding, AlbumAr
         final Context ctx = holder.itemView.getContext();
         final boolean isCurrentlyPlaying = currentMediaItem != null && currentMediaItem.getId() == album.getId();
         final int txtColor = ContextCompat.getColor(ctx, isCurrentlyPlaying
-                ? R.color.secondaryLightColor:
+                ? R.color.secondaryLightColor :
                 R.color.primaryTextColor);
 
         ArtHelper.displayAlbumArtFromUrl(album.getCover_url(), holder.mBinding.ivAlbumPic);

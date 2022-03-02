@@ -1,9 +1,6 @@
 package com.puzzle.industries.chordsmusicapp.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +13,15 @@ import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.activities.AlbumViewActivity;
 import com.puzzle.industries.chordsmusicapp.activities.ArtistViewActivity;
 import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
-import com.puzzle.industries.chordsmusicapp.base.BaseMediaFragment;
 import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
 import com.puzzle.industries.chordsmusicapp.bottom_sheets.CurrentPlaylistBottomSheet;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryBinding;
-import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryTabBinding;
 import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
@@ -59,7 +49,7 @@ public class LibraryFragment extends BaseFragment {
         init();
     }
 
-    private void init(){
+    private void init() {
         initTabs();
         initObservers();
         initMediaInfoSection();
@@ -79,7 +69,7 @@ public class LibraryFragment extends BaseFragment {
         });
     }
 
-    private void initMediaInfoSection(){
+    private void initMediaInfoSection() {
         final View.OnClickListener artistClickListener = view -> {
             final Intent i = new Intent(requireContext(), ArtistViewActivity.class);
             final Pair<View, String> albumPic = Pair.create(mBinding.ivArtistArt, getString(R.string.trans_artist_pic));
@@ -94,7 +84,7 @@ public class LibraryFragment extends BaseFragment {
 
         final View.OnClickListener albumClickListener = view -> {
             final AlbumArtistEntity album = mMediaViewModel.getObservableAlbum().getValue();
-            if (album != null){
+            if (album != null) {
                 final Intent i = new Intent(requireContext(), AlbumViewActivity.class);
                 i.putExtra(Constants.KEY_ALBUM, album);
 
@@ -120,7 +110,8 @@ public class LibraryFragment extends BaseFragment {
             currentPlaylistBottomSheet.show(getChildFragmentManager(), "");
         });
     }
-    private void initTabs(){
+
+    private void initTabs() {
         final List<String> fragmentTitles = new ArrayList<>(Arrays.asList(
                 getString(R.string.Music),
                 getString(R.string.albums),

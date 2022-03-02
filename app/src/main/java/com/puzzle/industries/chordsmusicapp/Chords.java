@@ -2,9 +2,7 @@ package com.puzzle.industries.chordsmusicapp;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Handler;
 
 import androidx.room.Room;
@@ -12,16 +10,15 @@ import androidx.room.Room;
 import com.puzzle.industries.chordsmusicapp.database.ChordsMusicDB;
 import com.puzzle.industries.chordsmusicapp.database.Constants;
 import com.puzzle.industries.chordsmusicapp.services.impl.MediaPlayerNotificationService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicPlayerService;
+import com.puzzle.industries.chordsmusicapp.services.impl.MediaServiceManager;
 
 public class Chords extends Application {
 
+    public static volatile Handler applicationHandler;
     private static Chords instance;
     private static ChordsMusicDB db;
-    public static volatile Handler applicationHandler;
 
-    public static ChordsMusicDB getDatabase(){
+    public static ChordsMusicDB getDatabase() {
         return db;
     }
 
@@ -29,7 +26,7 @@ public class Chords extends Application {
         return instance.getApplicationContext();
     }
 
-    public static Resources getAppResources(){
+    public static Resources getAppResources() {
         return instance.getApplicationContext().getResources();
     }
 
@@ -42,21 +39,13 @@ public class Chords extends Application {
         applicationHandler = new Handler(this.getApplicationContext().getMainLooper());
         MediaPlayerNotificationService.getInstance().createNotificationChannel();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(new Intent(this, MusicLibraryService.class));
-            startForegroundService(new Intent(this, MusicPlayerService.class));
-        }
-        else{
-            startService(new Intent(this, MusicLibraryService.class));
-            startService(new Intent(this, MusicPlayerService.class));
-        }
+        MediaServiceManager.getInstance().startServices();
 
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        stopService(new Intent(this, MusicPlayerService.class));
-        stopService(new Intent(this, MusicLibraryService.class));
+        MediaServiceManager.getInstance().stopServices();
     }
 }

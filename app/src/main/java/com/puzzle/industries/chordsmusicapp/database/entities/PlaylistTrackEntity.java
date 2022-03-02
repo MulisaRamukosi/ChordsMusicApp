@@ -17,17 +17,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity(tableName = Constants.ENTITY_PLAYLIST_TRACK)
 public class PlaylistTrackEntity implements Parcelable {
-    @PrimaryKey(autoGenerate = true)
-    @Setter private int id;
-    @Setter private int playlistId;
-    private final int trackId;
-
-    protected PlaylistTrackEntity(Parcel in) {
-        id = in.readInt();
-        playlistId = in.readInt();
-        trackId = in.readInt();
-    }
-
     public static final Creator<PlaylistTrackEntity> CREATOR = new Creator<PlaylistTrackEntity>() {
         @Override
         public PlaylistTrackEntity createFromParcel(Parcel in) {
@@ -39,6 +28,17 @@ public class PlaylistTrackEntity implements Parcelable {
             return new PlaylistTrackEntity[size];
         }
     };
+    private final int trackId;
+    @PrimaryKey(autoGenerate = true)
+    @Setter
+    private int id;
+    @Setter private int playlistId;
+
+    protected PlaylistTrackEntity(Parcel in) {
+        id = in.readInt();
+        playlistId = in.readInt();
+        trackId = in.readInt();
+    }
 
     @Override
     public int describeContents() {
@@ -59,7 +59,7 @@ public class PlaylistTrackEntity implements Parcelable {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof PlaylistTrackEntity){
+        if (obj instanceof PlaylistTrackEntity) {
             final PlaylistTrackEntity playlistTrack = (PlaylistTrackEntity) obj;
             return playlistTrack.playlistId == playlistId && playlistTrack.trackId == trackId && playlistTrack.id == id;
         }

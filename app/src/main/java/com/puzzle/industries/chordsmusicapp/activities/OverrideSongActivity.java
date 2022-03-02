@@ -13,23 +13,21 @@ import com.puzzle.industries.chordsmusicapp.callbacks.OverrideDownloadProgressCa
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityOverrideSongBinding;
-import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
-import com.puzzle.industries.chordsmusicapp.helpers.SongFileNameHelper;
-import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.remote.interfaces.ApiCallBack;
 import com.puzzle.industries.chordsmusicapp.remote.musicFinder.MusicFinderApi;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadService;
+import com.puzzle.industries.chordsmusicapp.services.impl.ExecutorServiceManager;
 import com.puzzle.industries.chordsmusicapp.services.impl.MediaFileManagerService;
 import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class OverrideSongActivity extends BaseActivity implements OverrideDownloadProgressCallback{
+public class OverrideSongActivity extends BaseActivity implements OverrideDownloadProgressCallback {
 
     private ActivityOverrideSongBinding mBinding;
     private boolean mIsActive;
+    private boolean isCompleted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,10 +38,10 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
         init();
     }
 
-    private void init(){
+    private void init() {
 
         final Bundle extras = getIntent().getExtras();
-        if (extras != null){
+        if (extras != null) {
             final TrackArtistAlbumEntity track = extras.getParcelable(Constants.KEY_SONG);
 
             new MusicFinderApi.MusicFinderApiBuilder()
@@ -57,7 +55,7 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
 
                         @Override
                         public void onFailure(Throwable t) {
-                            showAlert(getString(R.string.error_url), true, getString(R.string.okay), null);
+                            showAlert(getString(R.string.error_url), getString(R.string.okay), null);
                         }
                     }).build();
         }
@@ -69,8 +67,10 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
         mBinding.tvOverride.setText(String.format("Overriding %s by %s, please wait", track.getTitle(), artist.getName()));
         mBinding.wv.setVisibility(View.GONE);
         final String fileName = track.getFileName();
-        if(MediaFileManagerService.getInstance().deleteFile(fileName) || !MediaFileManagerService.getInstance().fileExists(fileName)){
-            Executors.newSingleThreadExecutor().execute(() -> new DownloadService().downloadSong(fileName, url, this));
+        if (MediaFileManagerService.getInstance().deleteFile(fileName) || !MediaFileManagerService.getInstance().fileExists(fileName)) {
+            ExecutorServiceManager.getInstance().executeRunnableOnSingeThread(
+                    () -> new DownloadService().downloadSong(fileName, url, this)
+            );
         }
     }
 
@@ -79,8 +79,7 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
         runOnUiThread(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 mBinding.lpi.setProgress(currentProgress, true);
-            }
-            else{
+            } else {
                 mBinding.lpi.setProgress(currentProgress);
             }
         });
@@ -91,6 +90,7 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
     protected void onResume() {
         super.onResume();
         mIsActive = true;
+        if (isCompleted) mBinding.lpi.setVisibility(View.GONE);
     }
 
     @Override
@@ -102,9 +102,8 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
     @Override
     public void downloadComplete() {
         if (!mIsActive) return;
-        runOnUiThread(() -> {
-            showAlert("Successfully downloaded song", false, getString(R.string.okay), view -> finish());
-        });
+        isCompleted = true;
+        runOnUiThread(() -> showAlert("Successfully downloaded song", getString(R.string.okay), view -> finish()));
     }
 
     @Override
@@ -113,8 +112,17 @@ public class OverrideSongActivity extends BaseActivity implements OverrideDownlo
         runOnUiThread(() -> {
             mBinding.wv.setVisibility(View.VISIBLE);
             showAlert("Failed to download song, the web view will reappear, please try to download the song",
-                    true, getString(R.string.okay), null);
+                    getString(R.string.okay), null);
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mBinding.wv.getVisibility() == View.VISIBLE && !mBinding.wv.getUrl().equals(Constants.WEB_SITE_BASE_URL)) {
+            mBinding.wv.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

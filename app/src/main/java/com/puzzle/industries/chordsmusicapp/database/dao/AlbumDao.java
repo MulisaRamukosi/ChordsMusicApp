@@ -14,19 +14,14 @@ import java.util.List;
 public interface AlbumDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    long insert(AlbumEntity album);
+    void insert(AlbumEntity album);
 
     @Query("delete from Album where Album.id = :id")
     int delete(int id);
-
-    @Query("delete from Album where Album.artist_id = :id")
-    void deleteAlbumsByArtistId(int id);
 
     @Query("Select Album.id, Album.title, Album.cover_url, Album.artist_id, Artist.name from Album inner join Artist " +
             "on Album.artist_id = Artist.id order by Album.title asc")
     List<AlbumArtistEntity> getAllAlbums();
 
-    @Query("Select Album.id, Album.title, Album.cover_url, Album.artist_id, Artist.name from Album inner join Artist " +
-            "on Album.artist_id = Artist.id where Album.artist_id = :id order by Album.title asc")
-    List<AlbumArtistEntity> getArtistsAlbums(int id);
+
 }

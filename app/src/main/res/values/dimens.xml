@@ -5,10 +5,13 @@
     <dimen name="txt_size_caption">12sp</dimen>
     <dimen name="mp_16dp">16dp</dimen>
     <dimen name="mp_8dp">8dp</dimen>
+    <dimen name="pic_size">54dp</dimen>
+    <dimen name="artist_view_pic_size">100dp</dimen>
     <dimen name="mini_pic_size">30dp</dimen>
     <dimen name="mp_4dp">4dp</dimen>
     <dimen name="radius2dp">2dp</dimen>
     <dimen name="large_pic_size">300dp</dimen>
     <dimen name="txt_size_large">24sp</dimen>
     <dimen name="mp_32dp">32dp</dimen>
+    <dimen name="mp_20dp">20dp</dimen>
 </resources>

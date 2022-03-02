@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
-public class BaseViewHolder<G extends ViewBinding> extends RecyclerView.ViewHolder{
+public class BaseViewHolder<G extends ViewBinding> extends RecyclerView.ViewHolder {
 
     public final G mBinding;
 

@@ -9,9 +9,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
@@ -34,14 +36,18 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MusicPlayerService extends Service implements IMusicPlayerService, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
+public class MusicPlayerService extends Service implements IMusicPlayerService, MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
     private final IBinder BINDER = new MusicPlayerBinder();
     private final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
+    private final String MEDIA_SESSION_TAG = "Chords_Media_Session";
 
     private MediaPlayer mMediaPlayer;
+    private MediaSessionCompat mMediaSessionCompat;
     private TrackArtistAlbumEntity mCurrentSong;
     private ArtistEntity mCurrentArtist;
     private AlbumArtistEntity mCurrentAlbum;
@@ -49,6 +55,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     private AudioManager mAudioManager;
     private AudioFocusRequest mFocusRequest;
     private IMediaPlayerNotificationService mMediaPlayerNotificationService;
+    private ScheduledExecutorService mExecutor;
 
     private boolean isShuffleEnabled = false;
     private boolean resumeOnFocusGain = false;
@@ -57,40 +64,32 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        switch (focusChange){
+        switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
-                if (playbackDelayed || resumeOnFocusGain){
-                    synchronized (MusicPlayerService.class){
+                if (playbackDelayed || resumeOnFocusGain) {
+                    synchronized (MusicPlayerService.class) {
                         playbackDelayed = false;
                         resumeOnFocusGain = false;
                     }
-                    mMediaPlayer.start();
+                    startPlayer();
                 }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:
-                synchronized (MusicPlayerService.class){
+                synchronized (MusicPlayerService.class) {
                     playbackDelayed = false;
                     resumeOnFocusGain = false;
                 }
-                mMediaPlayer.pause();
-                displayNotification();
+                pausePlayer();
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                synchronized (MusicPlayerService.class){
+                synchronized (MusicPlayerService.class) {
                     resumeOnFocusGain = mMediaPlayer.isPlaying();
                     playbackDelayed = false;
                 }
-                mMediaPlayer.pause();
-                displayNotification();
+                pausePlayer();
                 break;
-        }
-    }
-
-    public class MusicPlayerBinder extends Binder{
-        public MusicPlayerService getService(){
-            return MusicPlayerService.this;
         }
     }
 
@@ -106,13 +105,62 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
         mMediaPlayerNotificationService = MediaPlayerNotificationService.getInstance();
         startForeground(MediaPlayerNotificationService.NOTIFICATION_ID, mMediaPlayerNotificationService.createNotification());
+        initMediaSession();
         initMediaPlayer();
         initAudioManager();
         broadCastSongInfo();
 
     }
 
-    private void initMediaPlayer(){
+    private void initMediaSession() {
+        mMediaSessionCompat = new MediaSessionCompat(this, MEDIA_SESSION_TAG);
+        mMediaSessionCompat.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onSeekTo(long pos) {
+                Log.d(MEDIA_SESSION_TAG, "seek to");
+                seekTo((int) pos);
+                if (mMediaPlayer.isPlaying()) setMediaSessionPlayState();
+                else setMediaSessionPauseState();
+            }
+
+            @Override
+            public void onPause() {
+                pause();
+                setMediaSessionPauseState();
+            }
+
+            @Override
+            public void onPlay() {
+                requestToPlay();
+                setMediaSessionPlayState();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                playNextSong();
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                playPreviousSong();
+            }
+        });
+    }
+
+    private void setMediaSessionPlayState() {
+        mMediaSessionCompat.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PLAYING, mMediaPlayer.getCurrentPosition(), 1)
+                .setActions(PlaybackStateCompat.ACTION_SEEK_TO).build());
+    }
+
+    private void setMediaSessionPauseState() {
+        mMediaSessionCompat.setPlaybackState(
+                new PlaybackStateCompat.Builder()
+                        .setState(PlaybackStateCompat.STATE_PAUSED, mMediaPlayer.getCurrentPosition(), 0)
+                        .build());
+    }
+
+    private void initMediaPlayer() {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnPreparedListener(this);
@@ -121,7 +169,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
-    private void initAudioManager(){
+    private void initAudioManager() {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         initFocusRequest();
     }
@@ -144,7 +192,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mMediaPlayer != null){
+        if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
@@ -153,10 +201,10 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null){
+        if (intent != null) {
             final String action = intent.getAction();
-            if (action != null){
-                switch (action){
+            if (action != null) {
+                switch (action) {
                     case MediaPlayerActions.ACTION_RESUME:
                         requestToPlay();
                         break;
@@ -172,32 +220,48 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
                     case MediaPlayerActions.ACTION_NEXT:
                         playNextSong();
                         break;
+
+                    case MediaPlayerActions.ACTION_CLOSE:
+                        killServices();
+                        break;
                 }
             }
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
+    }
+
+    private void killServices() {
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+            broadcastMediaState();
+        }
+        mExecutor.shutdown();
+        if (mExecutor.isShutdown()) {
+            stopForeground(true);
+            stopService(new Intent(this, MusicPlayerService.class));
+            stopService(new Intent(this, MusicLibraryService.class));
+            MediaPlayerNotificationService.getInstance().closeMediaPlayerNotification();
+        }
+
     }
 
     @Override
-    public void play(PlaySongEvent event){
+    public void play(PlaySongEvent event) {
         if (mCurrentSong == null
                 || event.getId() != mCurrentSong.getId()
                 || MUSIC_LIBRARY.getPlaylist().size() != event.getPlayList().size()
-                || playListIsDifferent(event)){
+                || playListIsDifferent(event)) {
             playSong(event.getId(), event.getPlayList());
         }
     }
 
-
-
     @Override
     public void initMiniPlayer(ImageView playPause, SeekBar songProgress) {
         playPause.setOnClickListener(v -> {
-            if (mMediaPlayer.isPlaying()){
+            if (mMediaPlayer.isPlaying()) {
                 pause();
-            }
-            else{
+            } else {
                 requestToPlay();
             }
         });
@@ -205,7 +269,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
         songProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser){
+                if (fromUser) {
                     seekTo(progress);
                 }
             }
@@ -230,14 +294,31 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     }
 
     @Override
+    public boolean isPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
+
+    private void pausePlayer() {
+        mMediaPlayer.pause();
+        displayNotification();
+        setMediaSessionPauseState();
+    }
+
+    private void startPlayer() {
+        if (mExecutor.isShutdown()) {
+            broadCastSongInfo();
+        }
+        mMediaPlayer.start();
+        setMediaSessionPlayState();
+    }
+
+    @Override
     public void pause() {
-        if (mMediaPlayer.isPlaying()){
-            mMediaPlayer.pause();
-            displayNotification();
-            if (mFocusRequest != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (mMediaPlayer.isPlaying()) {
+            pausePlayer();
+            if (mFocusRequest != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 mAudioManager.abandonAudioFocusRequest(mFocusRequest);
-            }
-            else{
+            } else {
                 mAudioManager.abandonAudioFocus(this);
             }
         }
@@ -245,7 +326,7 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public void playSong(int id, List<Integer> playList) {
-        if(isShuffleEnabled){
+        if (isShuffleEnabled) {
             Collections.shuffle(playList);
         }
         MUSIC_LIBRARY.setMusicPlaylist(playList);
@@ -257,17 +338,15 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     public void playNextSong() {
         int newPos = MUSIC_LIBRARY.getPlaylist().indexOf(mCurrentSong.getId())
                 + (mRepeatMode == RepeatMode.REPEAT_SONG ? 0 : 1);
-        if (newPos >= MUSIC_LIBRARY.getPlaylist().size()){
-            if (mRepeatMode == RepeatMode.REPEAT_LIST){
+        if (newPos >= MUSIC_LIBRARY.getPlaylist().size()) {
+            if (mRepeatMode == RepeatMode.REPEAT_LIST) {
                 newPos = 0;
                 playSong(newPos);
-            }
-            else {
+            } else {
                 seekTo(0);
                 pause();
             }
-        }
-        else{
+        } else {
             playSong(newPos);
         }
 
@@ -275,12 +354,11 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
 
     @Override
     public void playPreviousSong() {
-        if (mMediaPlayer.getCurrentPosition() > 10000 || mRepeatMode == RepeatMode.REPEAT_SONG){
+        if (mMediaPlayer.getCurrentPosition() > 10000 || mRepeatMode == RepeatMode.REPEAT_SONG) {
             seekTo(0);
-        }
-        else{
+        } else {
             int newPos = MUSIC_LIBRARY.getPlaylist().indexOf(mCurrentSong.getId()) - 1;
-            if (newPos < 0){
+            if (newPos < 0) {
                 newPos = MUSIC_LIBRARY.getPlaylist().size() - 1;
             }
             playSong(newPos);
@@ -288,8 +366,8 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     }
 
     @Override
-    public void setRepeatMode(RepeatMode repeatMode) {
-        mRepeatMode = repeatMode;
+    public boolean isShuffleModeEnabled() {
+        return isShuffleEnabled;
     }
 
     @Override
@@ -299,13 +377,13 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     }
 
     @Override
-    public boolean isShuffleModeEnabled() {
-        return isShuffleEnabled;
+    public RepeatMode getRepeatMode() {
+        return mRepeatMode;
     }
 
     @Override
-    public RepeatMode getRepeatMode() {
-        return mRepeatMode;
+    public void setRepeatMode(RepeatMode repeatMode) {
+        mRepeatMode = repeatMode;
     }
 
     @Override
@@ -324,10 +402,10 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
         this.playNextSong();
     }
 
-    private boolean playListIsDifferent(PlaySongEvent event){
+    private boolean playListIsDifferent(PlaySongEvent event) {
         final List<Integer> playList = MUSIC_LIBRARY.getPlaylist();
-        for (int id : event.getPlayList()){
-            if (!playList.contains(id)){
+        for (int id : event.getPlayList()) {
+            if (!playList.contains(id)) {
                 return false;
             }
         }
@@ -342,24 +420,25 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
     }
 
     @Override
-    public void requestToPlay(){
-        synchronized (MusicPlayerService.class){
+    public void requestToPlay() {
+        synchronized (MusicPlayerService.class) {
             int res;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) res = mAudioManager.requestAudioFocus(mFocusRequest);
-            else res = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                res = mAudioManager.requestAudioFocus(mFocusRequest);
+            else
+                res = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
             if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                mMediaPlayer.start();
+                startPlayer();
                 displayNotification();
-            }
-            else if (res == AudioManager.AUDIOFOCUS_REQUEST_DELAYED) playbackDelayed = true;
+            } else if (res == AudioManager.AUDIOFOCUS_REQUEST_DELAYED) playbackDelayed = true;
 
         }
     }
 
-    private synchronized void playSong(int pos){
+    private synchronized void playSong(int pos) {
         isPrepared = false;
-        if (pos <= -1){
+        if (pos <= -1) {
             mMediaPlayer.stop();
             mCurrentSong = null;
             mCurrentArtist = null;
@@ -378,28 +457,28 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
             mCurrentSong = song;
             mCurrentArtist = MusicLibraryService.getInstance().getArtistById(song.getArtist_id());
             mCurrentAlbum = MusicLibraryService.getInstance().getAlbumById(song.getAlbum_id());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void broadCastSongInfo(){
-        Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(() -> {
-                    if (mMediaPlayer != null && mCurrentSong != null && isPrepared){
-                        final Intent i = new Intent(Constants.ACTION_MUSIC_PROGRESS_UPDATE);
-                        i.putExtra(Constants.KEY_MUSIC_PROGRESS, buildSongProgressInfo());
-                        sendBroadcast(i);
-                    }
-                    else if (mMediaPlayer != null){
-                        final Intent i = new Intent(Constants.ACTION_MUSIC_PROGRESS_UPDATE);
-                        sendBroadcast(i);
-                    }
-                }, 0, 200, TimeUnit.MILLISECONDS);
+    private void broadCastSongInfo() {
+        mExecutor = Executors.newSingleThreadScheduledExecutor();
+        mExecutor.scheduleAtFixedRate(this::broadcastMediaState, 0, 200, TimeUnit.MILLISECONDS);
     }
 
-    private SongInfoProgressEvent buildSongProgressInfo(){
+    private void broadcastMediaState() {
+        if (mMediaPlayer != null && mCurrentSong != null && isPrepared) {
+            final Intent i = new Intent(Constants.ACTION_MUSIC_PROGRESS_UPDATE);
+            i.putExtra(Constants.KEY_MUSIC_PROGRESS, buildSongProgressInfo());
+            sendBroadcast(i);
+        } else if (mMediaPlayer != null) {
+            final Intent i = new Intent(Constants.ACTION_MUSIC_PROGRESS_UPDATE);
+            sendBroadcast(i);
+        }
+    }
+
+    private SongInfoProgressEvent buildSongProgressInfo() {
         return new SongInfoProgressEvent(
                 mCurrentSong,
                 mCurrentArtist,
@@ -409,7 +488,13 @@ public class MusicPlayerService extends Service implements IMusicPlayerService, 
                 mMediaPlayer.isPlaying());
     }
 
-    private void displayNotification(){
-        mMediaPlayerNotificationService.showMediaNotification(buildSongProgressInfo());
+    private void displayNotification() {
+        mMediaPlayerNotificationService.showMediaNotification(mMediaPlayer, mMediaSessionCompat, buildSongProgressInfo());
+    }
+
+    public class MusicPlayerBinder extends Binder {
+        public MusicPlayerService getService() {
+            return MusicPlayerService.this;
+        }
     }
 }

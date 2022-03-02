@@ -9,15 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.puzzle.industries.chordsmusicapp.base.BaseBottomSheetDialogFragment;
 import com.puzzle.industries.chordsmusicapp.databinding.BottomSheetCurrentPlaylistBinding;
-import com.puzzle.industries.chordsmusicapp.databinding.BottomSheetMediaOptionsBinding;
 import com.puzzle.industries.chordsmusicapp.fragments.MusicFragment;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.Objects;
 
-public class CurrentPlaylistBottomSheet extends BottomSheetDialogFragment {
+public class CurrentPlaylistBottomSheet extends BaseBottomSheetDialogFragment {
 
     private BottomSheetCurrentPlaylistBinding mBinding;
 
@@ -35,7 +34,7 @@ public class CurrentPlaylistBottomSheet extends BottomSheetDialogFragment {
         init();
     }
 
-    private void init(){
+    private void init() {
         final MusicFragment musicFragment = new MusicFragment();
         final Bundle bundle = new Bundle();
         bundle.putBoolean(Constants.KEY_DISPLAY_CURRENT_PLAYLIST, true);

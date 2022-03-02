@@ -11,17 +11,18 @@ import com.puzzle.industries.chordsmusicapp.R;
 public class ArtHelper {
 
 
-    public static void displayArtistArtFromUrl(String url, ImageView iv){
+    public static void displayArtistArtFromUrl(String url, ImageView iv) {
         displayImageFromUrl(url, iv, R.drawable.bg_artist);
     }
 
-    public static void displayAlbumArtFromUrl(String url, ImageView iv){
+    public static void displayAlbumArtFromUrl(String url, ImageView iv) {
         displayImageFromUrl(url, iv, R.drawable.bg_album);
     }
 
-    private static void displayImageFromUrl(String url, ImageView iv, int drawableFallbackId){
+    private static void displayImageFromUrl(String url, ImageView iv, int drawableFallbackId) {
         Glide.with(Chords.getAppContext())
                 .load(url)
+                .placeholder(drawableFallbackId)
                 .fallback(drawableFallbackId)
                 .into(iv);
     }

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/mp_16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/mp_16dp"
+            android:layout_marginHorizontal="@dimen/mp_16dp">
+
+            <TextView
+                android:id="@+id/tv_song_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Song Title"
+                style="@style/TextAppearance.Title.Bold"/>
+
+            <ImageButton
+                android:id="@+id/ib_not_correct_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_round_more_vert_24"
+                android:background="@android:color/transparent"
+                android:contentDescription="@null"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_release_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/mp_16dp"
+            style="@style/TextAppearance.Caption.Regular"
+            tools:text="release date"/>
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_32dp"
+            android:layout_marginHorizontal="@dimen/mp_16dp"
+            android:textIsSelectable="true"
+            tools:text="Song desc here"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_32dp"
+            android:layout_marginHorizontal="@dimen/mp_16dp"
+            android:text="@string/artist"
+            style="@style/TextAppearance.Title.Bold"/>
+
+        <include
+            android:id="@+id/l_artist"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            layout="@layout/item_song_artist"/>
+
+        <TextView
+            android:id="@+id/tv_featured_artists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_16dp"
+            android:layout_marginHorizontal="@dimen/mp_16dp"
+            android:text="@string/featured_artists"
+            style="@style/TextAppearance.Title.Bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_featured_artists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <TextView
+            android:id="@+id/tv_producers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mp_16dp"
+            android:layout_marginHorizontal="@dimen/mp_16dp"
+            android:text="@string/producers"
+            style="@style/TextAppearance.Title.Bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_producers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -13,6 +13,7 @@
         android:id="@+id/iv_album_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:scaleType="centerCrop"
         tools:src="@drawable/bg_artist"
         android:transitionName="@string/trans_album_pic"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Radius5dp"/>

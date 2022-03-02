@@ -28,7 +28,7 @@ public class MediaFragHelper {
         return buildAlbumFrag(artistAlbums);
     }
 
-    private static MusicFragment buildMusicFrag(List<TrackArtistAlbumEntity> songs){
+    private static MusicFragment buildMusicFrag(List<TrackArtistAlbumEntity> songs) {
         final MusicFragment musicFragment = new MusicFragment();
         final Bundle bundle = new Bundle();
 
@@ -37,7 +37,7 @@ public class MediaFragHelper {
         return musicFragment;
     }
 
-    private static AlbumFragment buildAlbumFrag(List<AlbumArtistEntity> albums){
+    private static AlbumFragment buildAlbumFrag(List<AlbumArtistEntity> albums) {
         final AlbumFragment albumFragment = new AlbumFragment();
         final Bundle bundle = new Bundle();
 

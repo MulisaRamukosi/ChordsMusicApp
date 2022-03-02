@@ -25,7 +25,7 @@ public class FetchPlaylistsWorker extends Worker {
         return Result.success();
     }
 
-    private void loadPlaylists(){
+    private void loadPlaylists() {
         final List<PlaylistEntity> playlists = Chords.getDatabase().playlistDao().getAll();
         MusicLibraryService.getInstance().setPlaylists(playlists);
     }

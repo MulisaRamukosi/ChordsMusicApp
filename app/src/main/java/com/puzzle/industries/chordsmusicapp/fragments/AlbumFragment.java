@@ -1,28 +1,15 @@
 package com.puzzle.industries.chordsmusicapp.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.puzzle.industries.chordsmusicapp.R;
-import com.puzzle.industries.chordsmusicapp.activities.AlbumViewActivity;
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaFragment;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
-import com.puzzle.industries.chordsmusicapp.databinding.FragmentLibraryTabBinding;
-import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.models.adapters.AlbumRVAdapter;
-import com.puzzle.industries.chordsmusicapp.models.viewModels.MediaVM;
-import com.puzzle.industries.chordsmusicapp.services.impl.MusicLibraryService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
@@ -38,26 +25,26 @@ public class AlbumFragment extends BaseMediaFragment<AlbumArtistEntity> {
         init();
     }
 
-    private void init(){
+    private void init() {
         initExtras();
         initAdapters();
         initObservables();
     }
 
-    private void initExtras(){
+    private void initExtras() {
         final Bundle bundle = getArguments();
-        if (bundle != null){
+        if (bundle != null) {
             mAlbums = bundle.getParcelableArrayList(Constants.KEY_ALBUMS);
         }
     }
 
-    private void initAdapters(){
+    private void initAdapters() {
         mAdapter = new AlbumRVAdapter(mAlbums == null ? MUSIC_LIBRARY.getAlbums() : mAlbums);
         mBinding.getRoot().setAdapter(mAdapter);
         mAdapter.setItemLongClickCallback(this);
     }
 
-    private void initObservables(){
+    private void initObservables() {
         mMediaViewModel.getObservableAlbum().observe(getViewLifecycleOwner(), album -> mAdapter.itemChanged(album));
     }
 

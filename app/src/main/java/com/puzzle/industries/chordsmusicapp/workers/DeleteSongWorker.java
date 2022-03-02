@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.work.WorkerParameters;
 
 import com.puzzle.industries.chordsmusicapp.base.BaseMediaDeleteWorker;
-import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 
 public class DeleteSongWorker extends BaseMediaDeleteWorker {
 

@@ -11,7 +11,7 @@ public class BaseVPAdapter extends FragmentStateAdapter {
 
     private final List<Fragment> mFragments;
 
-    public BaseVPAdapter(@NonNull Fragment fragment, List<Fragment> fragments){
+    public BaseVPAdapter(@NonNull Fragment fragment, List<Fragment> fragments) {
         super(fragment);
         this.mFragments = fragments;
     }

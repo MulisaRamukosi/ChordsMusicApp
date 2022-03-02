@@ -12,9 +12,9 @@ import androidx.work.WorkRequest;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
 import com.puzzle.industries.chordsmusicapp.Chords;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseActivity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivitySplashBinding;
 import com.puzzle.industries.chordsmusicapp.workers.FetchAlbumsWorker;
 import com.puzzle.industries.chordsmusicapp.workers.FetchArtistsWorker;
@@ -38,18 +38,18 @@ public class SplashActivity extends BaseActivity {
         setupLoadingAnimation();
     }
 
-    private boolean isInDarkMode(){
+    private boolean isInDarkMode() {
         return (Resources.getSystem().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
                 == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    private void setupLoadingAnimation(){
+    private void setupLoadingAnimation() {
         mBinding.animation.setAnimation(isInDarkMode() ? R.raw.anim_music_dark : R.raw.anim_music_light);
         mBinding.animation.setRepeatCount(LottieDrawable.INFINITE);
         mBinding.animation.playAnimation();
     }
 
-    private void initMusicLibrary(){
+    private void initMusicLibrary() {
         final WorkRequest songsRequest = new OneTimeWorkRequest.Builder(FetchSongsWorker.class).build();
         final WorkRequest artistsRequest = new OneTimeWorkRequest.Builder(FetchArtistsWorker.class).build();
         final WorkRequest albumRequest = new OneTimeWorkRequest.Builder(FetchAlbumsWorker.class).build();
@@ -61,7 +61,7 @@ public class SplashActivity extends BaseActivity {
                 .getResult();
 
         result.addListener(() -> {
-            if (result.isDone()){
+            if (result.isDone()) {
                 Chords.applicationHandler.postDelayed(() -> {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
@@ -74,10 +74,9 @@ public class SplashActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        if (isPermissionsGranted(this)){
+        if (isPermissionsGranted(this)) {
             initMusicLibrary();
-        }
-        else{
+        } else {
             requestPermissions(this);
         }
     }

@@ -8,15 +8,15 @@ public class SearchVM extends ViewModel {
 
     private MutableLiveData<String> mSearchWord;
 
-    public LiveData<String> getObservableSearchWord(){
-        if (mSearchWord == null){
+    public LiveData<String> getObservableSearchWord() {
+        if (mSearchWord == null) {
             mSearchWord = new MutableLiveData<>();
         }
 
         return mSearchWord;
     }
 
-    public void updateSearchWord(String word){
+    public void updateSearchWord(String word) {
         mSearchWord.setValue(word);
     }
 }

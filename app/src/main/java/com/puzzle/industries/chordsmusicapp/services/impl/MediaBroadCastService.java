@@ -8,19 +8,18 @@ import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.PlaylistTrackEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
-import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
+import com.puzzle.industries.chordsmusicapp.models.dataModels.SongInfoStruct;
 import com.puzzle.industries.chordsmusicapp.services.IMediaBroadCastService;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
-import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
 public class MediaBroadCastService implements IMediaBroadCastService {
 
     private static MediaBroadCastService instance;
 
-    public static MediaBroadCastService getInstance(){
-        if (instance == null){
-            synchronized (MediaBroadCastService.class){
-                if (instance == null){
+    public static MediaBroadCastService getInstance() {
+        if (instance == null) {
+            synchronized (MediaBroadCastService.class) {
+                if (instance == null) {
                     instance = new MediaBroadCastService();
                 }
             }
@@ -87,6 +86,13 @@ public class MediaBroadCastService implements IMediaBroadCastService {
     @Override
     public void playlistTracksRemoved() {
         Chords.getAppContext().sendBroadcast(new Intent(Constants.ACTION_PLAYLIST_TRACKS_DELETED));
+    }
+
+    @Override
+    public void songInfoStructChanged(SongInfoStruct songInfo) {
+        final Intent i = new Intent(Constants.ACTION_SONG_INFO_STRUCT_CHANGED);
+        i.putExtra(Constants.KEY_SONG_INFO, songInfo);
+        Chords.getAppContext().sendBroadcast(i);
     }
 
 }

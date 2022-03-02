@@ -20,29 +20,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MusicLibraryService extends Service implements IMusicLibraryService {
 
-    private List<Integer> playlist;
-    private int currentPosOfQueue;
-
+    private static MusicLibraryService instance;
     private final Map<Integer, TrackArtistAlbumEntity> SONGS = new HashMap<>();
     private final Map<Integer, ArtistEntity> ARTISTS = new HashMap<>();
     private final Map<Integer, AlbumArtistEntity> ALBUMS = new HashMap<>();
     private final Map<Integer, PlaylistEntity> PLAYLISTS = new HashMap<>();
     private final Map<Integer, Set<PlaylistTrackEntity>> PLAYLISTS_TRACKS = new HashMap<>();
+    private List<Integer> playlist;
+    private int currentPosOfQueue;
 
-    private static MusicLibraryService instance;
-
-    public static MusicLibraryService getInstance(){
-        if (instance == null){
-            synchronized (MusicLibraryService.class){
-                if (instance == null){
+    public static MusicLibraryService getInstance() {
+        if (instance == null) {
+            synchronized (MusicLibraryService.class) {
+                if (instance == null) {
                     instance = new MusicLibraryService();
                 }
             }
@@ -64,7 +60,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -74,37 +70,30 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
 
     @Override
     public void setMusicList(List<TrackArtistAlbumEntity> songs) {
-        for (TrackArtistAlbumEntity track : songs){
+        for (TrackArtistAlbumEntity track : songs) {
             this.SONGS.put(track.getId(), track);
         }
     }
 
     @Override
     public void setArtistList(List<ArtistEntity> artists) {
-        for (ArtistEntity artist : artists){
+        for (ArtistEntity artist : artists) {
             this.ARTISTS.put(artist.getId(), artist);
         }
     }
 
     @Override
     public void setAlbumList(List<AlbumArtistEntity> albums) {
-        for (AlbumArtistEntity album : albums){
+        for (AlbumArtistEntity album : albums) {
             this.ALBUMS.put(album.getId(), album);
         }
     }
 
     @Override
-    public void setPlaylists(List<PlaylistEntity> playlists) {
-        for (PlaylistEntity playlist : playlists){
-            this.PLAYLISTS.put(playlist.getId(), playlist);
-        }
-    }
-
-    @Override
     public void addPlaylistsTracks(List<PlaylistTrackEntity> playlistsTracks) {
-        for (PlaylistTrackEntity playlistTrack : playlistsTracks){
+        for (PlaylistTrackEntity playlistTrack : playlistsTracks) {
             this.PLAYLISTS_TRACKS.compute(playlistTrack.getPlaylistId(), (integer, playlistTrackEntities) -> {
-                if (playlistTrackEntities == null){
+                if (playlistTrackEntities == null) {
                     playlistTrackEntities = new HashSet<>();
                 }
                 playlistTrackEntities.add(playlistTrack);
@@ -126,9 +115,9 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     @Override
     public List<TrackArtistAlbumEntity> getCurrentPlaylistSongs() {
         final List<TrackArtistAlbumEntity> currentSongs = new ArrayList<>();
-        for (int songId : playlist){
+        for (int songId : playlist) {
             final TrackArtistAlbumEntity track = SONGS.get(songId);
-            if (track != null){
+            if (track != null) {
                 currentSongs.add(track);
             }
         }
@@ -155,6 +144,13 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     }
 
     @Override
+    public void setPlaylists(List<PlaylistEntity> playlists) {
+        for (PlaylistEntity playlist : playlists) {
+            this.PLAYLISTS.put(playlist.getId(), playlist);
+        }
+    }
+
+    @Override
     public List<TrackArtistAlbumEntity> getAlbumSongs(int albumId) {
         return new ArrayList<>(SONGS.values()).stream()
                 .filter(trackArtistAlbumEntity -> trackArtistAlbumEntity.getAlbum_id() == albumId)
@@ -166,8 +162,8 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     public List<TrackArtistAlbumEntity> getPlaylistTracks(int playlistId) {
         final Set<PlaylistTrackEntity> playlistTracksIds = PLAYLISTS_TRACKS.get(playlistId);
         final List<TrackArtistAlbumEntity> playlistTracks = new ArrayList<>();
-        if (playlistTracksIds != null){
-            for (PlaylistTrackEntity playlistTrack : playlistTracksIds){
+        if (playlistTracksIds != null) {
+            for (PlaylistTrackEntity playlistTrack : playlistTracksIds) {
                 playlistTracks.add(SONGS.get(playlistTrack.getTrackId()));
             }
         }
@@ -193,7 +189,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     }
 
     @Override
-    public TrackArtistAlbumEntity getSongById(int id){
+    public TrackArtistAlbumEntity getSongById(int id) {
         return this.SONGS.get(id);
     }
 
@@ -215,7 +211,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     @Override
     public PlaylistTrackEntity getPlaylistTrackByIds(int playlistId, int playlistTrackId) {
         final Set<PlaylistTrackEntity> playlistTracks = PLAYLISTS_TRACKS.get(playlistId);
-        if (playlistTracks == null){
+        if (playlistTracks == null) {
             return null;
         }
         return playlistTracks.stream().filter(playlistTrackEntity -> playlistTrackEntity.getId() == playlistTrackId).findFirst().get();
@@ -259,10 +255,9 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
 
     @Override
     public void setAsShuffled(boolean shuffle) {
-        if (shuffle){
+        if (shuffle) {
             Collections.shuffle(playlist);
-        }
-        else{
+        } else {
             Collections.sort(playlist, (id, otherId) -> {
                 final TrackArtistAlbumEntity track = SONGS.get(id);
                 final TrackArtistAlbumEntity otherTrack = SONGS.get(otherId);
@@ -274,7 +269,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     @Override
     public void addPlaylistTrack(PlaylistTrackEntity playlistTrack) {
         PLAYLISTS_TRACKS.compute(playlistTrack.getPlaylistId(), (integer, playlistTrackEntities) -> {
-            if (playlistTrackEntities == null){
+            if (playlistTrackEntities == null) {
                 playlistTrackEntities = new HashSet<>();
             }
             playlistTrackEntities.add(playlistTrack);
@@ -286,7 +281,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     public boolean removePlaylistTrack(PlaylistTrackEntity playlistTrack) {
         AtomicBoolean removed = new AtomicBoolean(false);
         PLAYLISTS_TRACKS.compute(playlistTrack.getPlaylistId(), (integer, playlistTrackEntities) -> {
-            if (playlistTrackEntities != null){
+            if (playlistTrackEntities != null) {
                 removed.set(playlistTrackEntities.remove(playlistTrack));
             }
             return playlistTrackEntities;
@@ -323,7 +318,7 @@ public class MusicLibraryService extends Service implements IMusicLibraryService
     @Override
     public boolean containsPlaylistTrack(int playlistId, PlaylistTrackEntity playlistTrackEntity) {
         final Set<PlaylistTrackEntity> playlistTracks = this.PLAYLISTS_TRACKS.get(playlistId);
-        if (playlistTracks != null){
+        if (playlistTracks != null) {
             return playlistTracks.contains(playlistTrackEntity);
         }
         return false;

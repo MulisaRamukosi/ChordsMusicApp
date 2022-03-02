@@ -6,15 +6,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
+import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.ArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityArtistViewBinding;
 import com.puzzle.industries.chordsmusicapp.fragments.AlbumFragment;
-import com.puzzle.industries.chordsmusicapp.fragments.ArtistAlbumFragment;
-import com.puzzle.industries.chordsmusicapp.base.BaseVPAdapter;
 import com.puzzle.industries.chordsmusicapp.fragments.MusicFragment;
 import com.puzzle.industries.chordsmusicapp.helpers.MediaFragHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
@@ -37,8 +36,8 @@ public class ArtistViewActivity extends BaseMediaActivity {
         init();
     }
 
-    private void init(){
-        if (initArtist()){
+    private void init() {
+        if (initArtist()) {
             initArtistInfo();
             initArtistSongsSection();
         }
@@ -67,7 +66,7 @@ public class ArtistViewActivity extends BaseMediaActivity {
                 .attach();
     }
 
-    private boolean initArtist(){
+    private boolean initArtist() {
         final Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             mArtist = bundle.getParcelable(Constants.KEY_ARTIST);
@@ -76,11 +75,10 @@ public class ArtistViewActivity extends BaseMediaActivity {
         return false;
     }
 
-    private void initArtistInfo(){
-        if (mArtist.getPicture_url() != null){
+    private void initArtistInfo() {
+        if (mArtist.getPicture_url() != null) {
             displayImageFromLink(mArtist.getPicture_url(), mBinding.ivArtist, R.drawable.bg_artist, true);
-        }
-        else{
+        } else {
             displayImageFromDrawable(R.drawable.bg_artist, mBinding.ivArtist, R.drawable.bg_artist, true);
         }
 

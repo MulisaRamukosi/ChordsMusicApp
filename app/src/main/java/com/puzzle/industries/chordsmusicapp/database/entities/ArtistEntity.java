@@ -17,17 +17,6 @@ import lombok.Getter;
 @Entity(tableName = Constants.ENTITY_ARTIST)
 public class ArtistEntity implements Parcelable {
 
-    @PrimaryKey
-    private final int id;
-    private final String name;
-    private final String picture_url;
-
-    protected ArtistEntity(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        picture_url = in.readString();
-    }
-
     public static final Creator<ArtistEntity> CREATOR = new Creator<ArtistEntity>() {
         @Override
         public ArtistEntity createFromParcel(Parcel in) {
@@ -39,6 +28,16 @@ public class ArtistEntity implements Parcelable {
             return new ArtistEntity[size];
         }
     };
+    @PrimaryKey
+    private final int id;
+    private final String name;
+    private final String picture_url;
+
+    protected ArtistEntity(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        picture_url = in.readString();
+    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

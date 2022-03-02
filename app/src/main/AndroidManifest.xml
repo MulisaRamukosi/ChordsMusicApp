@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.puzzle.industries.chordsmusicapp">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
@@ -17,9 +19,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.ChordsMusicApp">
+        android:theme="@style/Theme.ChordsMusicApp"
+        tools:targetApi="m">
         <activity
-            android:name=".activities.SplashActivity"
+            android:name=".activities.SecurityActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +31,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.SplashActivity"/>
         <activity android:name=".activities.MainActivity"/>
         <activity android:name=".activities.PlayerActivity"/>
         <activity android:name=".activities.AlbumViewActivity"/>
@@ -37,6 +41,8 @@
         <activity android:name=".activities.SelectMusicActivity"/>
         <activity android:name=".activities.ViewPlaylistActivity"/>
         <activity android:name=".activities.SelectPlaylistActivity"/>
+        <activity android:name=".activities.SongInfoActivity"/>
+        <activity android:name=".activities.ArtistInfoViewActivity"/>
 
         <service android:name=".services.impl.MusicPlayerService"/>
         <service android:name=".services.impl.MusicLibraryService"/>

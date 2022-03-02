@@ -11,7 +11,7 @@ public class ScriptLoaderUtils {
 
     private static final ScriptLoaderUtils instance = new ScriptLoaderUtils();
 
-    public static ScriptLoaderUtils getInstance(){
+    public static ScriptLoaderUtils getInstance() {
         return instance;
     }
 
@@ -23,7 +23,7 @@ public class ScriptLoaderUtils {
         StringBuilder stringBuilder = new StringBuilder();
         String line;
 
-        while((line = reader.readLine()) != null){
+        while ((line = reader.readLine()) != null) {
             stringBuilder.append(line).append('\n');
         }
 

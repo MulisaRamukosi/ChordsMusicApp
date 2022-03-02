@@ -27,7 +27,7 @@ public class PlaylistTracksRVAdapter extends RecyclerView.Adapter<BaseViewHolder
     @Getter private final List<PlaylistTrackEntity> playlistTracks;
     private final IMusicLibraryService MUSIC_LIBRARY = MusicLibraryService.getInstance();
 
-    public PlaylistTracksRVAdapter(List<PlaylistTrackEntity> playlistTracks){
+    public PlaylistTracksRVAdapter(List<PlaylistTrackEntity> playlistTracks) {
         this.playlistTracks = playlistTracks;
     }
 
@@ -43,7 +43,7 @@ public class PlaylistTracksRVAdapter extends RecyclerView.Adapter<BaseViewHolder
         final PlaylistTrackEntity playlistTrack = playlistTracks.get(position);
         final TrackArtistAlbumEntity track = MUSIC_LIBRARY.getSongById(playlistTrack.getTrackId());
 
-        if (track != null){
+        if (track != null) {
             final ArtistEntity artist = MUSIC_LIBRARY.getArtistById(track.getArtist_id());
             final AlbumArtistEntity album = MUSIC_LIBRARY.getAlbumById(track.getAlbum_id());
 
@@ -52,29 +52,28 @@ public class PlaylistTracksRVAdapter extends RecyclerView.Adapter<BaseViewHolder
         }
     }
 
-    public void addNewSongs(List<Integer> songIds){
+    public void addNewSongs(List<Integer> songIds) {
         if (songIds.isEmpty()) return;
         boolean changesOccurred = false;
-        for (final PlaylistTrackEntity playlistTrack : playlistTracks){
-            if (songIds.contains(playlistTrack.getTrackId())){
+        for (final PlaylistTrackEntity playlistTrack : playlistTracks) {
+            if (songIds.contains(playlistTrack.getTrackId())) {
                 songIds.remove(Integer.valueOf(playlistTrack.getTrackId()));
-            }
-            else{
+            } else {
                 changesOccurred = true;
                 playlistTracks.remove(playlistTrack);
             }
         }
 
-        if (changesOccurred){
+        if (changesOccurred) {
             notifyDataSetChanged();
         }
 
         final int lastKnownSize = playlistTracks.size();
-        for (int songId : songIds){
+        for (int songId : songIds) {
             playlistTracks.add(new PlaylistTrackEntity(0, 0, songId));
         }
 
-        if (lastKnownSize != playlistTracks.size()){
+        if (lastKnownSize != playlistTracks.size()) {
             notifyItemRangeChanged(lastKnownSize, getItemCount());
         }
     }
@@ -85,7 +84,7 @@ public class PlaylistTracksRVAdapter extends RecyclerView.Adapter<BaseViewHolder
     }
 
     public void removeSongs(Set<PlaylistTrackEntity> mRemovedSongs) {
-        if(this.playlistTracks.removeAll(mRemovedSongs)){
+        if (this.playlistTracks.removeAll(mRemovedSongs)) {
             notifyDataSetChanged();
         }
     }

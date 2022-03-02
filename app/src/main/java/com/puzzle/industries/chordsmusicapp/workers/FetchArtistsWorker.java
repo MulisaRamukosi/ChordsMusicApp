@@ -22,7 +22,7 @@ public class FetchArtistsWorker extends Worker {
         return Result.success();
     }
 
-    private void loadArtists(){
+    private void loadArtists() {
         MusicLibraryService.getInstance().setArtistList(Chords.getDatabase().artistDao().getAllArtists());
     }
 }

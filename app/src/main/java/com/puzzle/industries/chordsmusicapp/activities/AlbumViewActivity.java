@@ -15,7 +15,7 @@ import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
 
-public class AlbumViewActivity extends BaseMediaActivity{
+public class AlbumViewActivity extends BaseMediaActivity {
 
     private ActivityAlbumViewBinding mBinding;
 
@@ -37,11 +37,10 @@ public class AlbumViewActivity extends BaseMediaActivity{
         if (bundle != null) {
             AlbumArtistEntity album = bundle.getParcelable(Constants.KEY_ALBUM);
             displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, R.drawable.bg_album, true);
-            if (album.getCover_url() != null){
+            if (album.getCover_url() != null) {
                 displayImageFromLink(album.getCover_url(), mBinding.ivAlbum, R.drawable.bg_album, true);
-            }
-            else{
-                displayImageFromDrawable(R.drawable.bg_album, mBinding.ivAlbum, R.drawable.bg_album,true);
+            } else {
+                displayImageFromDrawable(R.drawable.bg_album, mBinding.ivAlbum, R.drawable.bg_album, true);
             }
             mBinding.tvAlbumName.setText(album.getTitle());
             mBinding.tvAlbumArtist.setText(album.getName());

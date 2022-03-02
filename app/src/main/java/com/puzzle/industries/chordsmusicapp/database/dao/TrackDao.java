@@ -37,7 +37,7 @@ public interface TrackDao {
     int delete(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insert(TrackEntity track);
+    void insert(TrackEntity track);
 
     @Query("UPDATE Track SET location = :new_location WHERE id = :id")
     int updateSongLocation(int id, String new_location);

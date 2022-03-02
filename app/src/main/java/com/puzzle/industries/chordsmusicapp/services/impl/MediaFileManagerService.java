@@ -8,14 +8,13 @@ import java.io.IOException;
 
 public class MediaFileManagerService implements IMediaFileManagerService {
 
+    private static MediaFileManagerService instance;
     private final File MEDIA_FOLDER = Chords.getAppContext().getExternalMediaDirs()[0];
 
-    private static MediaFileManagerService instance;
-
     public static MediaFileManagerService getInstance() {
-        if (instance == null){
-            synchronized (DownloadManagerService.class){
-                if (instance == null){
+        if (instance == null) {
+            synchronized (MediaFileManagerService.class) {
+                if (instance == null) {
                     instance = new MediaFileManagerService();
                 }
             }
@@ -39,7 +38,7 @@ public class MediaFileManagerService implements IMediaFileManagerService {
     @Override
     public boolean deleteFile(String fileName) {
         final File songFile = new File(MEDIA_FOLDER, fileName);
-        if (songFile.exists()){
+        if (songFile.exists()) {
             return songFile.delete();
         }
         return false;

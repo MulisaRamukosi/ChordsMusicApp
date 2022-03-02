@@ -17,46 +17,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class AlertBottomSheet extends BottomSheetDialogFragment {
 
-    private BottomSheetAlertBinding mBinding;
     private final FragmentManager fragmentManager;
     private final String message;
     private final String actionBtnText;
     private final boolean cancelable;
     private final View.OnClickListener actionBtnClickListener;
+    private BottomSheetAlertBinding mBinding;
 
-    public static class AlertBottomSheetBuilder{
-        private String message;
-        private String actionBtnText;
-        private boolean cancelable;
-        private View.OnClickListener actionBtnClickListener;
-        private final FragmentManager fragmentManager;
-
-        public AlertBottomSheetBuilder(FragmentManager fragmentManager){
-            this.fragmentManager = fragmentManager;
-        }
-
-        public AlertBottomSheetBuilder setMessage(String message){
-            this.message = message;
-            return this;
-        }
-
-        public AlertBottomSheetBuilder setCancelable(boolean cancelable){
-            this.cancelable = cancelable;
-            return this;
-        }
-
-        public AlertBottomSheetBuilder setAction(String actionBtnText, View.OnClickListener actionBtnClickListener){
-            this.actionBtnText = actionBtnText;
-            this.actionBtnClickListener = actionBtnClickListener;
-            return this;
-        }
-
-        public AlertBottomSheet build(){
-            return new AlertBottomSheet(this);
-        }
-    }
-
-    public AlertBottomSheet(AlertBottomSheetBuilder builder){
+    public AlertBottomSheet(AlertBottomSheetBuilder builder) {
         this.fragmentManager = builder.fragmentManager;
         this.message = builder.message;
         this.cancelable = builder.cancelable;
@@ -64,7 +32,7 @@ public class AlertBottomSheet extends BottomSheetDialogFragment {
         this.actionBtnClickListener = builder.actionBtnClickListener;
     }
 
-    public void show(){
+    public void show() {
         show(fragmentManager, "");
     }
 
@@ -81,25 +49,55 @@ public class AlertBottomSheet extends BottomSheetDialogFragment {
 
         getDialog().setCanceledOnTouchOutside(cancelable);
         mBinding.tvMessage.setText(message);
-        if (actionBtnText != null){
+        if (actionBtnText != null) {
             mBinding.btnAction.setText(actionBtnText);
 
-            if (actionBtnClickListener != null){
+            if (actionBtnClickListener != null) {
                 mBinding.btnAction.setOnClickListener(actionBtnClickListener);
                 mBinding.btnAction.setFocusableInTouchMode(true);
                 mBinding.btnAction.setOnFocusChangeListener((v, hasFocus) -> {
-                    if (hasFocus){
+                    if (hasFocus) {
                         v.callOnClick();
                     }
                     Chords.applicationHandler.postDelayed(this::dismiss, 300);
                 });
-            }
-            else{
+            } else {
                 mBinding.btnAction.setOnClickListener(v -> dismiss());
             }
-        }
-        else{
+        } else {
             mBinding.btnAction.setVisibility(View.GONE);
+        }
+    }
+
+    public static class AlertBottomSheetBuilder {
+        private final FragmentManager fragmentManager;
+        private String message;
+        private String actionBtnText;
+        private boolean cancelable;
+        private View.OnClickListener actionBtnClickListener;
+
+        public AlertBottomSheetBuilder(FragmentManager fragmentManager) {
+            this.fragmentManager = fragmentManager;
+        }
+
+        public AlertBottomSheetBuilder setMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public AlertBottomSheetBuilder setCancelable(boolean cancelable) {
+            this.cancelable = cancelable;
+            return this;
+        }
+
+        public AlertBottomSheetBuilder setAction(String actionBtnText, View.OnClickListener actionBtnClickListener) {
+            this.actionBtnText = actionBtnText;
+            this.actionBtnClickListener = actionBtnClickListener;
+            return this;
+        }
+
+        public AlertBottomSheet build() {
+            return new AlertBottomSheet(this);
         }
     }
 }

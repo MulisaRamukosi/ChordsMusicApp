@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -16,19 +15,15 @@ import androidx.core.util.Pair;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.bumptech.glide.Glide;
-import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseMediaActivity;
 import com.puzzle.industries.chordsmusicapp.database.entities.AlbumArtistEntity;
 import com.puzzle.industries.chordsmusicapp.database.entities.TrackArtistAlbumEntity;
 import com.puzzle.industries.chordsmusicapp.databinding.ActivityMainBinding;
 import com.puzzle.industries.chordsmusicapp.events.SongInfoProgressEvent;
 import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
+import com.puzzle.industries.chordsmusicapp.services.impl.MediaServiceManager;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends BaseMediaActivity {
@@ -48,19 +43,19 @@ public class MainActivity extends BaseMediaActivity {
         init();
     }
 
-    private void init(){
+    private void init() {
         initNavigation();
-        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleAtFixedRate(() -> {
-            if (getMusicPlayerService() != null){
-                initPlayer();
-                executorService.shutdown();
-            }
-        }, 0, 200, TimeUnit.MILLISECONDS);
+        initPlayer();
+    }
+
+    @Override
+    protected void serviceConnected() {
+        super.serviceConnected();
+        getMusicPlayerService().initMiniPlayer(mBinding.ivPlayPause, mBinding.sbSongProgress);
     }
 
     private void initPlayer() {
-        getMusicPlayerService().initMiniPlayer(mBinding.ivPlayPause, mBinding.sbSongProgress);
+
         mBinding.llPlayer.setOnClickListener(v -> {
             final Intent i = new Intent(this, PlayerActivity.class);
             i.putExtra(Constants.KEY_SONG, mSongInfo);
@@ -80,7 +75,7 @@ public class MainActivity extends BaseMediaActivity {
 
     }
 
-    private void initNavigation(){
+    private void initNavigation() {
         mNavHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(mBinding.navHostFragment.getId());
         if (mNavHost != null) {
             NavigationUI.setupWithNavController(mBinding.bottomNavigation, mNavHost.getNavController());
@@ -91,19 +86,18 @@ public class MainActivity extends BaseMediaActivity {
     public void onResume() {
         super.onResume();
 
-        if (mMusicUpdatedReceiver == null){
+        if (mMusicUpdatedReceiver == null) {
             mMusicUpdatedReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     final SongInfoProgressEvent songInfo = intent.getParcelableExtra(Constants.KEY_MUSIC_PROGRESS);
-                    if (songInfo == null){
+                    if (songInfo == null) {
                         hideMediaPlayer();
                         return;
                     }
-                    if (mSongInfo == null || mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()){
+                    if (mSongInfo == null || mSongInfo.getCurrentSong().getId() != songInfo.getCurrentSong().getId()) {
                         initMusicState(songInfo);
-                    }
-                    else {
+                    } else {
                         updateState(songInfo);
                     }
                 }
@@ -112,7 +106,7 @@ public class MainActivity extends BaseMediaActivity {
         registerReceiver(mMusicUpdatedReceiver, new IntentFilter(Constants.ACTION_MUSIC_PROGRESS_UPDATE));
     }
 
-    private void hideMediaPlayer(){
+    private void hideMediaPlayer() {
         mSongInfo = null;
         mBinding.llPlayer.setVisibility(View.GONE);
     }
@@ -130,7 +124,7 @@ public class MainActivity extends BaseMediaActivity {
         setPlayPauseButtonState(mSongInfo.isPlaying());
     }
 
-    private void setPlayPauseButtonState(boolean isPlaying){
+    private void setPlayPauseButtonState(boolean isPlaying) {
         mCurrentPlayingState = isPlaying;
         mBinding.ivPlayPause.setImageDrawable(ContextCompat.getDrawable(this,
                 isPlaying ? R.drawable.ic_round_pause_24 : R.drawable.ic_round_play_arrow_24
@@ -144,7 +138,15 @@ public class MainActivity extends BaseMediaActivity {
         mMusicUpdatedReceiver = null;
     }
 
-    private void updateState(SongInfoProgressEvent songInfo){
+    @Override
+    protected void onDestroy() {
+        if (!getMusicPlayerService().isPlaying()) {
+            MediaServiceManager.getInstance().stopServices();
+        }
+        super.onDestroy();
+    }
+
+    private void updateState(SongInfoProgressEvent songInfo) {
         mSongInfo.setCurrProgressInMilis(songInfo.getCurrProgressInMilis());
         if (mCurrentPlayingState != songInfo.isPlaying()) {
             setPlayPauseButtonState(songInfo.isPlaying());
@@ -153,8 +155,7 @@ public class MainActivity extends BaseMediaActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mBinding.sbSongProgress.setProgress(songInfo.getCurrProgressInMilis(), true);
-        }
-        else{
+        } else {
             mBinding.sbSongProgress.setProgress(songInfo.getCurrProgressInMilis());
         }
     }

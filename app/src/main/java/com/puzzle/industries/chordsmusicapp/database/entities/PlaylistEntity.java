@@ -19,13 +19,10 @@ import lombok.Setter;
 public class PlaylistEntity implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
-    @Setter private int id;
+    @Setter
+    private int id;
     private final String name;
 
-    protected PlaylistEntity(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-    }
 
     public static final Creator<PlaylistEntity> CREATOR = new Creator<PlaylistEntity>() {
         @Override
@@ -38,6 +35,11 @@ public class PlaylistEntity implements Parcelable {
             return new PlaylistEntity[size];
         }
     };
+
+    protected PlaylistEntity(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+    }
 
     @Override
     public int describeContents() {

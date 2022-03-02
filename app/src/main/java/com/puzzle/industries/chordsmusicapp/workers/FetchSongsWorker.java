@@ -1,7 +1,6 @@
 package com.puzzle.industries.chordsmusicapp.workers;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -27,7 +26,7 @@ public class FetchSongsWorker extends Worker {
         return Result.success();
     }
 
-    private void loadSongs(){
+    private void loadSongs() {
         final List<TrackArtistAlbumEntity> tracks = Chords.getDatabase().trackDao().getAllTracks();
         MusicLibraryService.getInstance().setMusicPlaylist(tracks.stream().mapToInt(TrackArtistAlbumEntity::getId).boxed().collect(Collectors.toList()));
         MusicLibraryService.getInstance().setMusicList(tracks);

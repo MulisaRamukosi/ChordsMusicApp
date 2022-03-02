@@ -9,8 +9,8 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.R;
+import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadSearchBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.AlbumResultRVAdapter;
 import com.puzzle.industries.chordsmusicapp.remote.deezer.api.DeezerApiCall;
@@ -37,12 +37,11 @@ public class AlbumDownloadFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         Objects.requireNonNull(mBinding.tilSearch.getEditText()).setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 final String searchText = mBinding.tilSearch.getEditText().getText().toString().trim();
-                if (searchText.isEmpty()){
+                if (searchText.isEmpty()) {
                     mBinding.tilSearch.setError(getString(R.string.error_search_input_required));
-                }
-                else{
+                } else {
                     searchForAlbum(searchText);
                 }
             }
@@ -51,7 +50,7 @@ public class AlbumDownloadFragment extends BaseFragment {
     }
 
     private void displayResults(DeezerAlbumDataModel results) {
-        if (mAdapter == null){
+        if (mAdapter == null) {
             mAdapter = new AlbumResultRVAdapter();
             mBinding.rvResults.setAdapter(mAdapter);
         }
@@ -76,7 +75,7 @@ public class AlbumDownloadFragment extends BaseFragment {
         });
     }
 
-    private void setAsLoading(boolean isLoading){
+    private void setAsLoading(boolean isLoading) {
         mBinding.li.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         mBinding.tilSearch.setEnabled(!isLoading);
     }

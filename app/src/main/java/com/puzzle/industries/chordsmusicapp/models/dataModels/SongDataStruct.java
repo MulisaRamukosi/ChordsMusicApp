@@ -7,12 +7,6 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
-import com.puzzle.industries.chordsmusicapp.utils.Constants;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,18 +14,26 @@ import lombok.Setter;
 @Getter
 public class SongDataStruct implements Parcelable {
 
-    private final int id;
+    public static final Creator<SongDataStruct> CREATOR = new Creator<SongDataStruct>() {
+        @Override
+        public SongDataStruct createFromParcel(Parcel in) {
+            return new SongDataStruct(in);
+        }
 
+        @Override
+        public SongDataStruct[] newArray(int size) {
+            return new SongDataStruct[size];
+        }
+    };
+    private final int id;
     @SerializedName("title")
     private final String songName;
-
+    private final String release_date;
     @Setter private ArtistDataStruct artist;
     @Setter private AlbumDataStruct album;
-
     @Setter private int track_position;
-    private final String release_date;
 
-    public SongDataStruct(int id, String songName, ArtistDataStruct artist, AlbumDataStruct album, int track_position, String release_date){
+    public SongDataStruct(int id, String songName, ArtistDataStruct artist, AlbumDataStruct album, int track_position, String release_date) {
         this.id = id;
         this.songName = songName;
         this.artist = artist;
@@ -48,18 +50,6 @@ public class SongDataStruct implements Parcelable {
         track_position = in.readInt();
         release_date = in.readString();
     }
-
-    public static final Creator<SongDataStruct> CREATOR = new Creator<SongDataStruct>() {
-        @Override
-        public SongDataStruct createFromParcel(Parcel in) {
-            return new SongDataStruct(in);
-        }
-
-        @Override
-        public SongDataStruct[] newArray(int size) {
-            return new SongDataStruct[size];
-        }
-    };
 
     @Override
     public boolean equals(@Nullable Object obj) {

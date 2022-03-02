@@ -13,9 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.puzzle.industries.chordsmusicapp.R;
 import com.puzzle.industries.chordsmusicapp.activities.ArtistViewActivity;
@@ -28,7 +26,6 @@ import com.puzzle.industries.chordsmusicapp.helpers.ArtHelper;
 import com.puzzle.industries.chordsmusicapp.utils.Constants;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ArtistRVAdapter extends BaseMediaRVAdapter<ItemArtistBinding, ArtistEntity> {
@@ -51,7 +48,7 @@ public class ArtistRVAdapter extends BaseMediaRVAdapter<ItemArtistBinding, Artis
         final ArtistEntity artist = mediaList.get(position);
         final boolean isCurrentlyPlaying = currentMediaItem != null && currentMediaItem.getId() == artist.getId();
         final int txtColor = ContextCompat.getColor(ctx, isCurrentlyPlaying
-                ? R.color.secondaryLightColor:
+                ? R.color.secondaryLightColor :
                 R.color.primaryTextColor);
 
         final ViewGroup.LayoutParams lp = holder.mBinding.getRoot().getLayoutParams();

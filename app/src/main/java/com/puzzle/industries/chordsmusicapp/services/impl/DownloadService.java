@@ -19,15 +19,15 @@ public class DownloadService implements IDownloadService {
     private final IMediaFileManagerService MEDIA_FILE_MANAGER = MediaFileManagerService.getInstance();
 
     @Override
-    public void downloadSong(SongDataStruct song, String fileUrl, DownloadProgressCallback callback){
+    public void downloadSong(SongDataStruct song, String fileUrl, DownloadProgressCallback callback) {
         final String fileName = SongFileNameHelper.generateSongFileName(song);
 
-        if(MEDIA_FILE_MANAGER.fileExists(fileName) && !MusicLibraryService.getInstance().containsSong(song.getId())){
+        if (MEDIA_FILE_MANAGER.fileExists(fileName) && !MusicLibraryService.getInstance().containsSong(song.getId())) {
             //song file exists but was not saved to db due to some error
             MEDIA_FILE_MANAGER.deleteFile(fileName);
         }
 
-        if (!MEDIA_FILE_MANAGER.fileExists(fileName) && MEDIA_FILE_MANAGER.createFile(fileName)){
+        if (!MEDIA_FILE_MANAGER.fileExists(fileName) && MEDIA_FILE_MANAGER.createFile(fileName)) {
             int count;
 
             try {
@@ -41,9 +41,9 @@ public class DownloadService implements IDownloadService {
                 final byte[] data = new byte[1024];
                 long total = 0;
 
-                while ((count = input.read(data)) != -1){
+                while ((count = input.read(data)) != -1) {
                     total += count;
-                    final int progress = Integer.parseInt("" + (int)((total * 100)/ fileLength));
+                    final int progress = Integer.parseInt("" + (int) ((total * 100) / fileLength));
                     callback.updateProgress(progress);
                     output.write(data, 0, count);
                 }
@@ -53,13 +53,11 @@ public class DownloadService implements IDownloadService {
                 input.close();
 
                 callback.downloadComplete(song);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 callback.downloadFailed();
             }
-        }
-        else{
+        } else {
             callback.downloadComplete(song);
         }
 
@@ -67,7 +65,7 @@ public class DownloadService implements IDownloadService {
 
     @Override
     public void downloadSong(String fileName, String fileUrl, OverrideDownloadProgressCallback callback) {
-        if (!MEDIA_FILE_MANAGER.fileExists(fileName) && MEDIA_FILE_MANAGER.createFile(fileName)){
+        if (!MEDIA_FILE_MANAGER.fileExists(fileName) && MEDIA_FILE_MANAGER.createFile(fileName)) {
             int count;
 
             try {
@@ -81,9 +79,9 @@ public class DownloadService implements IDownloadService {
                 final byte[] data = new byte[1024];
                 long total = 0;
 
-                while ((count = input.read(data)) != -1){
+                while ((count = input.read(data)) != -1) {
                     total += count;
-                    final int progress = Integer.parseInt("" + (int)((total * 100)/ fileLength));
+                    final int progress = Integer.parseInt("" + (int) ((total * 100) / fileLength));
                     callback.updateProgress(progress);
                     output.write(data, 0, count);
                 }
@@ -93,13 +91,11 @@ public class DownloadService implements IDownloadService {
                 input.close();
 
                 callback.downloadComplete();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 callback.downloadFailed();
             }
-        }
-        else{
+        } else {
             callback.downloadComplete();
         }
     }

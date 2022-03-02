@@ -8,11 +8,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.WorkInfo;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.puzzle.industries.chordsmusicapp.R;
@@ -22,22 +19,18 @@ import com.puzzle.industries.chordsmusicapp.models.dataModels.AlbumDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.ArtistDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.DownloadItemDataStruct;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
-import com.puzzle.industries.chordsmusicapp.services.IDownloadManagerService;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
-import com.puzzle.industries.chordsmusicapp.utils.Constants;
 import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 
-public class DownloadsRVAdapter extends RecyclerView.Adapter<BaseViewHolder<ItemDownloadMusicBinding>>{
+public class DownloadsRVAdapter extends RecyclerView.Adapter<BaseViewHolder<ItemDownloadMusicBinding>> {
 
     private final List<MutableLiveData<DownloadItemDataStruct>> mSongDownloadItems;
 
@@ -71,7 +64,7 @@ public class DownloadsRVAdapter extends RecyclerView.Adapter<BaseViewHolder<Item
             final DownloadState downloadState = downloadItemDataStruct.getDownloadState();
 
             updateDownloadStateView(holder, downloadItemDataStruct);
-            if (downloadState == DownloadState.DOWNLOADING){
+            if (downloadState == DownloadState.DOWNLOADING) {
                 updateDownloadProgress(holder, downloadItemDataStruct);
             }
         });
@@ -85,23 +78,24 @@ public class DownloadsRVAdapter extends RecyclerView.Adapter<BaseViewHolder<Item
 
     public void updateDownloadItems(Map<Integer, MutableLiveData<DownloadItemDataStruct>> downloadQueue) {
         int lastKnownPos = getItemCount() - 1;
-        for (MutableLiveData<DownloadItemDataStruct> item : downloadQueue.values()){
-            if (!mSongDownloadItems.contains(item)){
+        for (MutableLiveData<DownloadItemDataStruct> item : downloadQueue.values()) {
+            if (!mSongDownloadItems.contains(item)) {
                 mSongDownloadItems.add(item);
             }
         }
         notifyItemRangeChanged(lastKnownPos, getItemCount());
     }
 
-    private void updateDownloadProgress(BaseViewHolder<ItemDownloadMusicBinding> holder, DownloadItemDataStruct item){
+    private void updateDownloadProgress(BaseViewHolder<ItemDownloadMusicBinding> holder, DownloadItemDataStruct item) {
         final int downloadProgress = item.getDownloadProgress();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) holder.mBinding.lpi.setProgress(downloadProgress, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            holder.mBinding.lpi.setProgress(downloadProgress, true);
         else holder.mBinding.lpi.setProgress(downloadProgress);
     }
 
-    private void updateDownloadStateView(BaseViewHolder<ItemDownloadMusicBinding> holder, DownloadItemDataStruct item){
+    private void updateDownloadStateView(BaseViewHolder<ItemDownloadMusicBinding> holder, DownloadItemDataStruct item) {
         final Context ctx = holder.itemView.getContext();
-        switch (item.getDownloadState()){
+        switch (item.getDownloadState()) {
             case IN_QUEUE:
                 holder.mBinding.lpi.setIndicatorColor(
                         ContextCompat.getColor(ctx, R.color.secondaryColor),

@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class BaseResultsRVAdapter<T, F extends ViewBinding> extends RecyclerView.Adapter<BaseViewHolder<F>> {
     protected final List<T> mResults = new ArrayList<>();
 
-    public void setData(List<T> results){
+    public void setData(List<T> results) {
         mResults.clear();
         mResults.addAll(results);
         notifyDataSetChanged();

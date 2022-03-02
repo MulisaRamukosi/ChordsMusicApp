@@ -1,9 +1,5 @@
 package com.puzzle.industries.chordsmusicapp.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +13,7 @@ import com.puzzle.industries.chordsmusicapp.base.BaseFragment;
 import com.puzzle.industries.chordsmusicapp.databinding.FragmentDownloadsBinding;
 import com.puzzle.industries.chordsmusicapp.models.adapters.DownloadsRVAdapter;
 import com.puzzle.industries.chordsmusicapp.models.dataModels.DownloadItemDataStruct;
-import com.puzzle.industries.chordsmusicapp.models.dataModels.SongDataStruct;
 import com.puzzle.industries.chordsmusicapp.services.impl.DownloadManagerService;
-import com.puzzle.industries.chordsmusicapp.utils.Constants;
-import com.puzzle.industries.chordsmusicapp.utils.DownloadState;
 
 import java.util.Map;
 
@@ -47,7 +40,7 @@ public class DownloadsFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         final Map<Integer, MutableLiveData<DownloadItemDataStruct>> downloadQueue = DownloadManagerService.getInstance().getDownloadsQueue();
-        if (downloadQueue.size() != mAdapter.getItemCount()){
+        if (downloadQueue.size() != mAdapter.getItemCount()) {
             mAdapter.updateDownloadItems(downloadQueue);
         }
 

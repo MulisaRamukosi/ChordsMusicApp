@@ -91,7 +91,7 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
-    private Bundle getMediaBundle(MediaType type){
+    private Bundle getMediaBundle(MediaType type) {
         final Bundle bundle = new Bundle();
         bundle.putSerializable(Constants.KEY_MEDIA_TYPE, type);
         return bundle;
